@@ -1,6 +1,12 @@
 LeetCode Complete
 ======
 
+0. 说明
+------
+
+* 原则上使用 C 做，如果需要用到 Hash, Stack, Queue，或者返回值特别复杂，或者需要大量拼接字符串时，使用 C++。
+* 请在了解基本数据结构的基础上阅读，大概是大三的水平吧。
+
 
 1. 从数组中找出两个数字使得他们的和是给定的数字
 ------
@@ -254,4 +260,279 @@ bool isMatch(char* s, char* p) {
     return *s == 0;
 }
 ```
+11. Contaier with most water
+------
+
+This problem seems to have been chanaged since last time I visited leetcode.
+
+12. 十进制转换为罗马数字
+------
+
+直接按每位把罗马数字转换出来在拼接就好了，使用 C 的话，拼接字符串很麻烦。
+
+```c++
+string intToRoman(int num) {
+    // note, the leading empty string is the trick here
+    string thousands[] = {"", "M", "MM", "MMM"};
+    string handreds[] = {"", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"};
+    string tens[] = {"", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"};
+    string ones[] = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"};
+    return thousands[num/1000] + handreds[num%1000 / 100] + tens[num % 100 / 10] + ones[num % 10];
+
+}
+```
+
+13. 罗马数字转为十进制
+------
+
+主要是当前一个数字小于后一个数字的时候，需要添加的是后一个谁和钱一个数字的差
+
+
+```
+// acts like a dict or map
+int getVal(char c) {
+    switch (c) {
+        case 'I': return 1;
+        case 'V': return 5;
+        case 'X': return 10;
+        case 'L': return 50;
+        case 'C': return 100;
+        case 'D': return 500;
+        case 'M': return 1000;
+    }
+}
+
+int romanToInt(char* s) {
+    int result = 0;
+    for (int i = 0; s[i] != 0; ) {
+        if (getVal(s[i]) < getVal(s[i+1]))
+            result += getVal(s[i+1]) - getVal(s[i]), i += 2;
+        else
+            result += getVal(s[i]), i++;
+    }
+    return result;
+}
+```
+
+14. 最长公共前缀
+------
+
+横向遍历，从头到尾，如果，不一致，返回当前子串即可。如果约定不能更改当前字符串的化，最好用
+C++做，不然操作字符串太复杂了，没必要出错。
+
+```c
+char* longestCommonPrefix(char** strs, int strsSize) {
+    if (!strs || !strs[0]) return "";
+    if (strsSize == 1) return strs[0];
+    int len = strlen(strs[0]);
+
+    for (int i = 0; i < len; i++) {
+        for (int j = 1; j < strsSize; j++) {
+            if (strs[j][i] != strs[0][i]) {
+                strs[0][i] = '\0';
+                return strs[0];
+            }
+        }
+    }
+    return strs[0];
+}
+```
+
+15. 从数组中找出三个数使得他们的和是0
+------
+
+按照 LeetCode 的要求的话，使用 C 做，返回值太复杂了，所以用 C++ 做了。
+首先，把数组排序，然后使用类似 two sum 的方法做就好了
+
+```C++
+vector<vector<int>> threeSum(vector<int>& nums) {
+    sort(nums.begin(), nums.end());
+    vector<vector<int>> result;
+    for (int i = 0; i < nums.size(); i++) {
+        if (i > 0 && nums[i] == nums[i-1])
+            continue;
+        int k = nums.size() - 1;
+        int j = i + 1;
+        while (j < k) {
+            if (nums[i] + nums[j] + nums[k] > 0)
+                k--;
+            else if (nums[i] + nums[j] + nums[k] < 0)
+                j++;
+            else {
+                result.push_back({nums[i], nums[j], nums[k]});
+                // skipping duplicates
+                while (j < k && nums[k] == nums[k - 1])
+                    k--;
+                while (j < k && nums[j] == nums[j + 1])
+                    j++;
+                k--;
+                j++;
+            }
+        }
+    }
+    return result;
+}
+```
+
+16. 在数组中找到三个数字使得他们得和尽可能的接近给定数字，假设结果唯一
+------
+
+和上一题解法类似，在 http://stackoverflow.com/q/2070359 有详尽解释
+
+```C
+int cmp(int* a, int* b) {
+    return *a - *b;
+}
+
+int threeSumClosest(int* nums, int numsSize, int target) {
+    if (numsSize <= 3) 
+        return nums[0] + nums[1] + nums[2];
+    qsort(nums, numsSize, sizeof(int), cmp);
+
+    int result = nums[0] + nums[1] +nums[2];
+    for (int i = 0; i < numsSize; i++) {
+        int j = i + 1;
+        int k = numsSize - 1;
+        while (j < k) {
+            int sum = nums[i] + nums[j] + nums[k];
+            if (sum == target)
+                return target;
+            if (abs(target - sum) < abs(target - result))
+                result = sum;
+            if (sum > target)
+                k--;
+            else
+                j++;
+        }
+    }
+    return result;
+}
+```
+
+17. 生成电话键盘按键数字对应的所有可能的字符串，不限制返回结果的顺序
+------
+
+![键盘](http://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Telephone-keypad2.svg/200px-Telephone-keypad2.svg.png)
+遍历数字，设当前结果为{a, b, c}，下一个数字是`3`，找出对应的字母{d, e, f}，则新的结果是
+
+    { a + {def}, b + {def}, c + {def}}
+
+然后把新获得的数组作为下一轮的初始数组。最开始时，使用空数组开始。
+
+```C++
+vector<string> letterCombinations(string digits) {
+    if (digits.size() == 0) return vector<string> {};
+    string mapping[] = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+    vector<string> combinations(1, "");
+
+    for (int i = 0; i < digits.size(); i++) {
+        int digit = digits[i] - '0';
+        if
+            (mapping[digit].empty())
+                continue;
+        vector<string>
+            temp;
+        for (auto& c : mapping[digit])
+            for (auto& combination : combinations)
+                temp.push_back(combination + c);
+        swap(combinations, temp);
+    }
+    return combinations;
+} 
+```
+
+18. 太难了，先跳过
+------
+
+19. 删除链表中倒数第 k 的节点
+------
+
+双指针经典题目，一个快指针先走 k 步，另一个慢指针再出发，注意链表长度小于 k 时。
+注意：LeetCode 给定的 n 都是有效地，但要求返回头指针，如果头指针被删除需要额外注意，因此采用 dummy head
+
+```C
+struct ListNode* removeNthFromEnd(struct ListNode* head, int n) {
+    struct ListNode dummy, *fast, *slow;
+    dummy.next = fast = head;
+    slow = &dummy;
+
+    while (n--)
+        fast = fast->next;
+    while (fast) {
+        fast = fast->next;
+        slow = slow->next;
+    }
+    struct ListNode* next = slow->next;
+    slow->next = next->next;
+    free(next); // remeber to free memory
+    return dummy.next;
+}
+```
+
+20. 判定给定的字符串是否是合法的括号序列，可能包括大中小三类
+------
+
+使用栈的基础题
+
+```C
+char opposite(char c) {
+    switch (c) {
+        case ')' : return '(';
+        case ']' : return '[';
+        case '}' : return '{';
+    }
+}
+
+bool isValid(string s) {
+    stack<char> stk;
+    for (auto& c : s) {
+        if (c == '(' || c == '[' || c == '{')
+            stk.push(c);
+        else if (!stk.empty() && stk.top() == opposite(c))
+            stk.pop();
+        else
+            return false;
+    }
+
+    return stk.empty();
+}
+```
+
+21. 合并两个已经排序的链表
+------
+
+考察链表的基本操作，很简单
+
+```C
+struct ListNode* mergeTwoLists(struct ListNode* l1, struct ListNode* l2) {
+    if (l1 == NULL) return l2;
+    if (l2 == NULL) return l1;
+    struct ListNode dummy;
+    dummy.next == NULL;
+    struct ListNode* p = &dummy;
+    while (l1 && l2) {
+        if (l1->val < l2->val) {
+            p->next = l1;
+            l1 = l1->next;
+        } else {
+            p->next = l2;
+            l2 = l2->next;
+        }
+        
+        p = p->next;
+    }
+    
+    if (l1)
+        p->next = l1;
+    
+    if (l2)
+        p->next = l2;
+    
+    return dummy.next;
+}
+```
+
+22. 给定数字n，生成所有合法的 n 个括号组成的序列
+------
+
 

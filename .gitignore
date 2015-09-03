@@ -1,0 +1,4 @@
+*.swp
+a.out
+*.c
+*.cpp
