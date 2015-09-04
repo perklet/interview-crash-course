@@ -535,4 +535,293 @@ struct ListNode* mergeTwoLists(struct ListNode* l1, struct ListNode* l2) {
 22. 给定数字n，生成所有合法的 n 个括号组成的序列
 ------
 
+解释暂时说不清粗
+
+```C++
+vector<string> result;
+vector<string> generateParenthesis(int n) {
+    gen("", n, n);
+    return result;
+}
+
+void gen(string s, int left, int right) {
+    if (left == 0 && right == 0) {
+        result.push_back(s);
+        return;
+    }
+    if (left != 0)
+        gen(s + '(', left - 1, right);
+    if (left < right)
+        gen(s + ')', left, right - 1);
+}
+```
+
+23. 合并 k 个已经排序的列表
+------
+
+把列表看做一个队列，每次拿出两个列表，合并他们后放回到列表中，每次遍历列表的一半，这样每次遍历完一遍，
+列表的长度都会减半，直到列表的长度为1， 合并函数使用21题中的合并两个列表的函数
+
+```C
+struct ListNode* mergeTwoLists(struct ListNode* l1, struct ListNode* l2) {
+    // see above
+}
+
+struct ListNode* mergeKLists(struct ListNode** lists, int listsSize) {
+    if (!lists || listsSize < 1)
+        return NULL;
+    if (listsSize == 1)
+        return lists[0];
+    while (listsSize > 1) {
+        // listsize is halfed
+        for (int i = 0; i < listsSize / 2; i++)
+            // merge i and last i list
+            lists[i] = mergeTwoLists(lists[i], lists[listsSize-1-i]);
+        listsSize = (listsSize + 1) / 2;
+        
+    }
+    return lists[0];
+}
+```
+
+23. 给定一个链表，交换两个相邻几点的值
+------
+
+最简单的做法显然是直接把前后两个节点的值交换，但是LeetCode规定不能改变节点的值。
+主要考察链表的指针操作，注意各种细节，一定要在纸上先把链表画出来。
+
+```
+struct ListNode* swapPairs(struct ListNode* head) {
+    struct ListNode dummy, *temp, *pnext, *p = &dummy;
+    dummy.next = head;
+    while (p->next && p->next->next) {
+        temp = p->next;
+        p->next = temp->next;
+        temp->next = p->next->next;
+        p->next->next = temp;
+        p = temp;
+    }
+    return dummy.next;
+}
+```
+
+25. 给定一个链表，把相邻的 k 个节点反转
+------
+
+和上题一样，同样禁止改变节点的值。比较简单地解法是浪费一点空间，使用
+Stack，实现逆转 k 个节点，注意如果 k 较大的话，这种方法是不合适的。
+
+```
+ListNode* reverseKGroup(ListNode* head, int k) {
+    stack<ListNode*> stk;
+    ListNode dummy(-1), *p = &dummy, *pp;
+    dummy.next = head;
+    while (1) {
+        pp = p;
+        for (int i = 0; i < k; i++) {
+            if (pp->next) {
+                stk.push(pp->next);
+                pp = pp->next;
+            } else {
+                break;
+            }
+        }
+
+        if (stk.size() < k)
+            return dummy.next;
+
+        pp = stk.top()->next;
+        while (!stk.empty()) {
+            p->next
+                = stk.top();
+            stk.pop();
+            p = p->next;
+        }
+
+        p->next = pp;
+    }
+}
+```
+
+26. 从已排序数组中删除重复元素，并返回新数组的长度
+------
+
+in-place的删除重复元素，使用两个指针，一个遍历，一个指向当前的结尾。
+
+PS：这个基础题竟然做了半个小时才做对，⊙﹏⊙b汗，要加强基础啊！
+
+```C
+int removeDuplicates(int* nums, int numsSize) {
+    if (numsSize <= 1) return numsSize;
+    int len = 0;
+    for (int i = 1; i < numsSize; i++) {
+        if (nums[i] != nums[len])
+            nums[++len] = nums[i];
+    }
+    return len + 1;
+}
+```
+
+27. 删除元素
+------
+
+和上一题类似，注意细节
+
+```
+int removeElement(int* nums, int numsSize, int val) {
+    if (!nums || numsSize == 0) return 0;
+    int len = 0;
+    for (int i = 0; i < numsSize; i++) {
+        if (nums[i] != val)
+            nums[len++] = nums[i];
+    }
+    return len;
+}
+```
+
+28. 实现 strstr 函数，即查找子串
+------
+
+使用暴力算法，时间复杂度O(n)。也可以用 kmp 算法。
+
+```C
+/*
+ * Brute Force
+ */
+int strStr(char* haystack, char* needle) {
+    int h = strlen(haystack);
+    int n = strlen(needle);
+    if (strlen(needle) == 0) return 0;
+    // note h - n + 1
+    for (int i = 0; i < h - n + 1; i++) {
+        for (int j = 0; j < n; j++) {
+            if (needle[j] != haystack[i+j])
+                break;
+            if (j == n - 1)
+                return i;
+        }
+    }
+    return -1;
+}
+```
+
+```
+/*
+ * KMP
+ */
+
+int strStr(char* haystack, char* needle) {
+    if (strlen(needle) == 0) return 0;
+    return kmp(needle, haystack);
+}
+
+void construct(char* pattern, int* lps) {
+
+    int n = strlen(pattern);
+    lps[0] = 0;
+    int i = 1, len = 0;
+    while (i < n) {
+        if (pattern[i] == pattern[len]) {
+            lps[i++] = ++len;
+        } else {
+            if (len != 0)
+                len = lps[len - 1];
+            else
+                lps[i++] = 0;
+        }
+    }
+}
+
+int kmp(char* needle, char* haystack) {
+
+    int n = strlen(needle);
+    int m = strlen(haystack);
+
+    int* lps = malloc(sizeof(int) * n);
+    construct(needle, lps);
+
+    int i = 0, j = 0;
+    while (i < m) {
+        if (haystack[i] == needle[j])
+            i++, j++;
+        if (j == n) {
+            return i - n;
+            j = lps[j - 1];
+        } else if (i < m && needle[j] != haystack[i]) {
+            if (j != 0)
+                j = lps[j - 1];
+            else
+                i++;
+        }
+    }
+
+    free(lps);
+    return -1;
+}
+```
+
+29. 给定连个整数，不使用乘法和除法计算除法。
+------
+
+[这里](https://leetcode.com/discuss/38997/detailed-explained-8ms-c-solution)有一个非常好的算法
+
+```
+int divide(int dividend, int divisor) {
+    // abs(INT_MIN) == INT_MAX + 1
+    if (divisor == 0 || (dividend == INT_MIN && divisor == -1)) 
+        return INT_MAX;
+    int sign = (dividend > 0) == (divisor > 0) ? 1 : -1;
+    long long n = labs(dividend);
+    long long d = labs(divisor);
+    
+    int result = 0;
+    while (n >= d) {
+        long long temp = d;
+        long long multi = 1;
+        while (n >= (temp << 1)) {
+            temp <<= 1;
+            multi <<= 1;
+        }
+         n -= temp;
+         result += multi;
+    }
+    
+    return sign * result;
+}
+```
+
+30. 没读懂题目 = =
+------
+
+31. 给定一个数组，生成下一个字典序的组合，如果已经是最大，返回最小的组合
+------
+
+首先，对于所有的组合，最小的一个一定是按照升序排序的，最大的一定是倒过来，因此
+1. 如果我们发现是倒序的，直接翻转就好了；
+2. 如果是一般情况，从后向前遍历，找到逆序的数字的边界， 假设是 k。那么我们翻转
+
+```
+void nextPermutation(vector<int>& nums) {
+    int k = -1;
+    for (int i = nums.size() - 2; i >= 0; i--) {
+        if (nums[i] < nums[i + 1]) {
+            k = i;
+            break;
+        }
+    } 
+    if (k == -1) {
+        reverse(nums.begin(), nums.end());
+        return;
+    }
+    int l = -1;
+    for (int i = nums.size() - 1; i > k; i--) {
+        if (nums[i] > nums[k]) {
+            l = i;
+            break;
+        } 
+    } 
+    swap(nums[k], nums[l]);
+    reverse(nums.begin() + k + 1, nums.end()); 
+}
+```
 
