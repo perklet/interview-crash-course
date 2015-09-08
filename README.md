@@ -562,10 +562,10 @@ void gen(string s, int left, int right) {
 把列表看做一个队列, 每次拿出两个列表, 合并他们后放回到列表中, 每次遍历列表的一半, 这样每次遍历完一遍, 
     列表的长度都会减半, 直到列表的长度为1,  合并函数使用21题中的合并两个列表的函数
 
-    ```C
-    struct ListNode* mergeTwoLists(struct ListNode* l1, struct ListNode* l2) {
-        // see above
-    }
+```C
+struct ListNode* mergeTwoLists(struct ListNode* l1, struct ListNode* l2) {
+    // see above
+}
 
 struct ListNode* mergeKLists(struct ListNode** lists, int listsSize) {
     if (!lists || listsSize < 1)
@@ -584,7 +584,7 @@ struct ListNode* mergeKLists(struct ListNode** lists, int listsSize) {
 }
 ```
 
-23. 给定一个链表, 交换两个相邻几点的值
+24. 给定一个链表, 交换两个相邻几点的值
 ------
 
 最简单的做法显然是直接把前后两个节点的值交换, 但是LeetCode规定不能改变节点的值。
@@ -863,9 +863,9 @@ int longestValidParentheses(char* s) {
 不同于普通二分搜索的两种情况, 我们有了四种情况:
 
 1. 前半部分有序, 并且在前半部分当中, 
-    2. 前半部分有序, 但是不在前半部分
-    3. 后半部分有序, 并且在后半部分
-    4. 后半部分有序, 但是不在后半部分
+2. 前半部分有序, 但是不在前半部分
+3. 后半部分有序, 并且在后半部分
+4. 后半部分有序, 但是不在后半部分
 
     ```C
     int search(int* nums, int numsSize, int target) {
@@ -1189,3 +1189,202 @@ int maxSubArray(int* nums, int numsSize) {
 
 54. 顺时针螺旋打印矩阵
 ------
+
+一圈一圈地打印就好了
+
+```C
+int* spiralOrder(int** matrix, int row, int col) {
+    if (row == 0 || col == 0) return NULL;
+    int top = 0, right = col - 1, down = row - 1, left = 0;
+    int index = 0;
+    int* result = malloc(sizeof(int) * row * col);
+    while (top <= down && left <= right) {
+        for (int i = left; i <= right; i++)
+            result[index++] = matrix[top][i];
+        top++;
+        for (int i = top; i <= down; i++)
+            result[index++] = matrix[i][right];
+        right--;
+        // 注意这个 if 语句
+        if (top <= down)
+            for (int i = right; i >= left; i--)
+                result[index++] = matrix[down][i];
+        down--;
+        // 注意这个 if 语句
+        if (left <= right)
+            for (int i = down; i >= top; i--)
+                result[index++] = matrix[i][left];
+        left++;
+    }
+    return result;
+}
+```
+
+55. 给定一个数组，每个数字表示在当前步可以移动的距离，返回是不是能够到达终点
+------
+
+使用动态规划求解，如果当前距离大于最远距离，更新最远距离，如果已经超过了最远距离，跳出
+
+```C
+bool canJump(int* nums, int numsSize) {
+    int i;
+    int reach = 0;
+    for (i = 0; i < numsSize && i <= reach; i++)
+        if (nums[i] + i > reach)
+            reach = nums[i] + i;
+    return i == numsSize;
+}
+```
+
+56. 合并序列，给定一组序列，把其中重叠的序列合并
+------
+
+这道题用 Python 做竟然比用 C++ 还要快
+
+```Python
+"""
+class Interval(object):
+    def __init__(self, start=0, end=0):
+        self.start = start
+        self.end= end
+"""
+
+def merge(intervals):
+    intervals.sort(key=lambda x: x.start)
+    combined = []
+    for interval in intervals:
+        if combined and interval.start <= combined[-1].end:
+            combined[-1].end = max(combined[-1].end, interval.end)
+        else:
+            combined.append(interval)
+    return combined
+```
+
+57. 添加序列，给定一组已经排序的序列，向其中插入一个序列，需要合并的合并
+------
+
+这道题inplace 的做法感觉没有什么意义，因为如果在中间插入的话，后半部分还是要被拷贝
+
+```Python
+def insert(self, intervals, newInterval):
+    result = []
+    start = newInterval.start
+    end = newInterval.end
+    remainder = 0
+    for interval in intervals:
+        if start <= interval.end:
+            if end < interval.start:
+                break
+            start = min(start, interval.start)
+            end = max(end, interval.end)
+        else:
+            result.append(interval)
+        remainder += 1
+    result.append(Interval(start, end))
+    result += intervals[remainder:]
+    return result
+```
+
+58. 给定一个字符串，求其中最后一个单词的长度
+------
+
+显然这道题可以用 strlen 求出长度然后从后往前数，但是，这样相当于多遍历了一次
+直接从后往前可以保证只遍历一次
+
+```C
+int lengthOfLastWord(char* s) {
+    int len = 0;
+    bool inWord = false;
+    while (*s) {
+        if (isspace(*s)) {
+            inWord = false;
+        } else {
+            if (!inWord) {
+                len = 1;
+                inWord = true;
+            } else {
+                len++;
+            }
+        }
+        s++;
+    }
+    return len;
+}
+```
+
+59. 给定 n，把1, 2, 3 ...螺旋打印到矩阵中
+------
+
+和上一个完全一样的思路，只是这次是打印罢了
+
+```C
+/**
+ * Return an array of arrays.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int** generateMatrix(int n) {
+    int** matrix = malloc(sizeof(int*) * n);
+    for (int i = 0; i < n; i++)
+        matrix[i] = malloc(sizeof(int) * n);
+        
+    int top = 0, left = 0, down = n - 1, right = n - 1;
+    int a = 1;
+    while (top <= down && left <= right) {
+        for (int i = left; i <=right; i++)
+            matrix[top][i] = a++;
+        top++;
+        for (int i = top; i <= down; i++) {
+            matrix[i][right] = a++;
+        }
+        right--;
+        if (top <= down)
+            for (int i = right; i >= left; i--)
+                matrix[down][i] = a++;
+        down--;
+        if (left <= right)
+            for (int i = down; i >= top; i--)
+                matrix[i][left] = a++;
+        left++;
+    }
+    return matrix;
+}
+```
+
+60. 
+------
+
+61. 把列表旋转到倒数第 k 位
+------
+
+需要注意的是 k 大于列表长度的情况，这时候需要取余
+
+```C
+struct ListNode* rotateRight(struct ListNode* head, int k) {
+    if (!head || k <= 0) return head;
+    
+    int l = 1;
+    struct ListNode* n = head;
+    while (n->next) {
+        n = n->next;
+        l++;
+    }
+    // n is now the tail!
+    
+    if (k >= l) k %= l;
+    if (k == 0) return head;
+    
+    struct ListNode dummy, *p = &dummy;
+    dummy.next = head;
+    int i = l - k;
+    while (i--)
+        p = p->next;
+    
+    dummy.next = p->next;
+    p->next = NULL;
+    n->next = head;
+    
+    return dummy.next;
+}
+```
+
+62. 
