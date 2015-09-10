@@ -4,9 +4,12 @@ LeetCode Complete
 0. 说明
 ------
 
+* 欢迎 Star/Fork/Pull request，不理解的也可以加我QQ：860220736（仅限学妹）。
 * 原则上使用 C 做, 如果需要用到 Hash, Stack, Queue, 或者返回值特别复杂, 或者需要大量拼接字符串时, 使用 C++。
+* 这份文档的目的是复习用的，并不是教如何解题的，因此只有简略介绍，适合面试前查漏补缺复习
 * 请在了解基本数据结构的基础上阅读, 大概是大三的水平吧。
 
+Let the hack begin!
 
 1. 从数组中找出两个数字使得他们的和是给定的数字
 ------
@@ -1387,4 +1390,262 @@ struct ListNode* rotateRight(struct ListNode* head, int k) {
 }
 ```
 
-62. 
+62. 给定一个`m*n`的矩阵，有多少种方法从左上角移动到右下角
+------
+
+显然可以使用组合数学直接求出来解，但是容易溢出。而且这是一道经典的动态规划题目，对于
+每个格子，可以从他的上部或者左面移动过来。
+
+```C++
+int uniquePaths(int m, int n) {
+    vector<vector<int>> grid(m, vector<int> (n, 1));
+    for (int i = 1; i < m; i++)
+        for (int j = 1; j < n; j++)
+            grid[i][j] = grid[i - 1][j] + grid[i][j - 1];
+    return grid[m - 1][n - 1];
+}
+```
+
+63. 同上题，区别是在一些位置是有障碍物的
+------
+
+经过分析可知，递推关系是一样的，只需要把有障碍格子的到达方法设定为0。这个主要是实现上的一些技巧，
+见注释。
+
+```C++
+int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
+    int m = obstacleGrid.size(), n = obstacleGrid[0].size();
+    // 注意设定长宽均 +1，但是初始化为0，边界就成了障碍
+    vector<vector<int>> pathes(m + 1, vector<int> (n + 1, 0));
+    pathes[0][1] = 1; // 给定一个入口
+    for (int i = 1; i < m + 1; i++)
+        for (int j = 1; j < n + 1; j++)
+            // 注意此处的偏移
+            if (obstacleGrid[i-1][j-1] == 1)
+                pathes[i][j] = 0;
+            else
+                pathes[i][j] = pathes[i-1][j] + pathes[i][j-1];
+    return pathes[m][n]; }
+```
+
+64. 给定一个`m*n`矩阵，每个数字代表经过该处的耗费，找出一条耗费最小的路径
+------
+
+依然是动态规划
+
+```C++
+inline int min(int a, int b) {
+    return a < b ? a : b;
+}
+int minPathSum(vector<vector<int>>& grid) {
+    // if modifying the grid is disallowed, copy it 
+    for (int i = 0; i < grid.size(); i++)
+        for (int j = 0; j < grid[0].size(); j++)
+            if (i == 0 && j == 0)
+                continue;
+            else if (i == 0 && j != 0)
+                grid[i][j] += grid[i][j-1];
+            else if (i != 0 && j == 0)
+                grid[i][j] += grid[i-1][j];
+            else
+                grid[i][j] += min(grid[i-1][j], grid[i][j-1]);
+    return grid[grid.size()-1][grid[0].size()-1];
+}
+```
+
+65. 判定一个字符串是否是合法的数字，包括了正负号，小数点，`e`等
+------
+
+一些例子：
+
+    "0" => true
+    " 0.1 " => true
+    "abc" => false
+    "1 a" => false
+    "2e10" => true
+
+这道题就是细节题，用 C 处理字符串太蛋疼了，直接上 Python 了
+
+```Python
+def isNumber(self, s):
+    BEFORE = 0 # before dot
+    AFTER = 1 # after dot
+    EXP = 2 # after e
+    phase = BEFORE
+    allow_sign = True
+
+    s = s.strip()
+
+    if not any([c.isdigit() for c in s]):
+        return False
+
+    if s == '' or s[0] == 'e' or s[-1] == 'e' or s == '.':
+        return False
+    if s[0] == '.' and s[1] == 'e':
+        return False
+    if s[0] == '-' and s[1] == 'e':
+        return False
+
+    for c in s:
+        if '0' <= c <= '9':
+            allow_sign = False
+        elif c == '.':
+            allow_sign = False
+            if phase == EXP or phase == AFTER:
+                return False
+            else:
+                phase = AFTER
+        elif c == 'e':
+            if phase == EXP:
+                return False
+            allow_sign = True
+            phase = EXP
+
+        elif c == '-' or c == '+':
+            if not allow_sign:
+                return False
+            allow_sign = False
+        else:
+            return False
+
+    if phase == EXP:
+        return s[-1].isdigit()
+
+    return True
+```
+
+66. 给定一个字符串代表的数字，返回加1后的数字
+------
+
+我们知道只有当数字是999....999的时候，才会使得数字的长度+1变为1000...000。
+
+```C++
+vector<int> plusOne(vector<int>& digits) {
+    int n = digits.size();
+    for (int i = n - 1; i >= 0; i--) {
+        if (digits[i] == 9) {
+            digits[i] = 0;
+        } else {
+            digits[i]++;
+            return digits;
+        }
+    }
+    // real trick here, we know that the number is 999...999
+    digits[0] = 1;
+    digits.push_back(0);
+    return digits;
+}
+```
+
+67. 给定两个字符串代表的二进制数字，返回他们相加的和
+------
+
+和上一题一样，按照加法定义做就好了
+
+```C
+#define tonum(c) (c - '0')
+#define tochar(i) (i + '0')
+
+char* addBinary(char* a, char* b) {
+    int m = strlen(a), n = strlen(b);
+    int len = (m > n ? m : n) + 1; // strlen(c)
+    char* c = malloc(sizeof(char) * len + 1); // with ending null
+    memset(c, '0', len+1);
+    c[len] = 0;
+    int carry = 0;
+    for (int i = 1; i <= len; i++) {
+         c[len-i] = tochar((i <= m ? tonum(a[m-i]) : 0) ^ (i <= n ? tonum(b[n-i]) : 0) ^ carry);
+         carry = ((i <= m ? tonum(a[m-i]) : 0) + (i <= n ? tonum(b[n-i]) : 0) + carry) >> 1;
+    }
+    return c[0] == '0' ? c+1 : c;
+}
+```
+
+68. 文字对齐
+------
+
+待研究
+
+```C++
+vector<string> fullJustify(vector<string>& words, int L) {
+    vector<string> res;
+    for(int i = 0, k, l; i < words.size(); i += k) {
+        for(k = l = 0; i + k < words.size() and l + words[i+k].size() <= L - k; k++) {
+            l += words[i+k].size();
+        }
+        string tmp = words[i];
+        for(int j = 0; j < k - 1; j++) {
+            if(i + k >= words.size()) tmp += " ";
+            else tmp += string((L - l) / (k - 1) + (j < (L - l) % (k - 1)), ' ');
+            tmp += words[i+j+1];
+        }
+        tmp += string(L - tmp.size(), ' ');
+        res.push_back(tmp);
+    }
+    return res;
+}
+```
+
+69. 给定整数x，求 sqrt(x)
+------
+
+比较坑的是 LeetCode 要求的是 `y*y < x` 的最大整数
+
+```C
+int mySqrt(int x) {
+    if (x <= 1) return x;
+    const double EPS = x * 0.0001;
+    double y = x / 2; // initial guess
+    while (fabs(y * y - x) > EPS) {
+        y = (y + x / y) / 2;
+    }
+     
+    long z = (long) y;
+    while (z * z > x) z--;
+    return z;
+}
+```
+
+70. 爬梯子，一次可以爬一步或者两步，有几种方法爬完梯子
+------
+
+斐波那契数列，也可以理解为动态规划
+
+```C
+int climbStairs(int n) {
+    int a = 1, b = 1, t;
+    for (int i = 1; i < n; i++)
+        t = b, b += a, a = t;
+    return b;
+}
+```
+
+71. 简化 Unix 路径，需要处理`.`, `..` 和多个斜杠等情况
+------
+
+没有什么需要注意的，主要是使用 stringstream 用作string.split
+
+```C++
+string simplifyPath(string& path) {
+    vector<string> dirs;
+    stringstream ss(path);
+    string dir;
+    while (getline(ss, dir, '/')) {
+        if (dir == "." || dir == "")
+            continue;
+        else if (dir == "..") {
+            if (!dirs.empty())
+            dirs.pop_back();
+        } else
+            dirs.push_back(dir);
+    }
+    string result;
+    for (auto& dir : dirs)
+        if (!dir.empty())
+            result += "/" + dir;
+    return result.size() ? result : "/";
+}
+```
+
+72. 编辑距离
+------
