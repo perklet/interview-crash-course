@@ -1718,10 +1718,87 @@ void sortColors(int* nums, int numsSize) {
 }
 ```
 
+76. 跳过
+
+77. 给定数字 n 和 k，生成从 n 中取出 k 个数字的所有情况
+------
+
+数学上的组合，使用回溯来做，对状态空间进行深度搜索。
+
+回溯方法通常适合对状态空间树的深度优先搜索相结合的，当一个解已经不满足条件时，剪枝；
+如果满足条件，直到找到完全解未知。
+
+```C++
+// 组合是不要求顺序的
+vector<vector<int>> combine(int n, int k) {
+    vector<vector<int>> result;
+    if (n < k)
+        return result;
+    vector<int> temp(0, k);
+    combine(result, temp, 0, 0, n, k);
+    return result;
+}
+
+void combine(vector<vector<int>>& result, vector<int>& temp, int start, int count, int n, int k) {
+    // 1. 回溯条件，找到了一个解
+    if (count == k) {
+        result.push_back(temp);
+        return;
+    }
+    // 2. 深度优先搜索
+    for (int i = start; i < n; i++) {
+        temp.push_back(i + 1);
+        // 只搜索比 i 大的即可
+        combine(result, temp, i+ 1, count+1, n, k);
+        temp.pop_back();
+    }
+}
+```
+
+
+
+78. 给定一个集合，找到他的所有子集
+------
+
+我们知道对于 n 个元素的集合，有2^n个子集，通过每个元素在不在子集中构造一个状态空间树
+
+```C++
+// use backtracking and do a dfs search
+
+vector<vector<int>> subsets(vector<int>& nums) {
+    vector<vector<int>> result;
+    if (nums.empty()) return result;
+    sort(nums.begin(), nums.end());
+    vector<int> temp;
+    subsets(nums, result, temp, 0);
+    return result;
+}
+
+// for each solution, the can be divided into two sub solutions: in or out
+void subsets(vector<int>& nums, vector<vector<int>>& result, vector<int> temp, int i) {
+    if (i == nums.size()) {
+        result.push_back(temp);
+        return;
+    }
+    
+    vector<int> t = temp;
+    subsets(nums, result, temp, i + 1);
+    temp.push_back(nums[i]);
+    subsets(nums, result, temp, i + 1);
+}
+```
+
+
+
+
+
+
+
 155. 设计一个栈，在普通栈的基础上支持 getmin 操作
 ------
 
-题目的要求是在O(1)时间内实现 getmin，使用另一个栈存储每个元素对应的最小值即可
+题目的要求是在O(1)时间内实现 getmin，使用另一个栈存储每个元素对应的最小值即可。
+注意使用一个和原有栈大小相同的栈是浪费空间的，待更新！
 
 ```C++
 class MinStack {
