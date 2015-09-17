@@ -1649,3 +1649,273 @@ string simplifyPath(string& path) {
 
 72. 编辑距离
 ------
+
+73. 给定一个矩阵，如果某个元素为零，把所在的行和所在的列都设为零
+------
+
+一种可以接受的方法是使用O(m+n)的空间，记录哪行哪列需要设为零
+
+```C++
+void setZeroes(vector<vector<int>>& matrix) {
+    int m = matrix.size();
+    if (m == 0) return;
+    int n = matrix[0].size();
+    if (n == 0) return;
+    
+    vector<bool> row(m), column(n);
+    
+    for (int i = 0; i < m; ++i)
+        for (int j = 0; j < n; ++j)
+            if (matrix[i][j] == 0)
+                row[i] = true, column[j] = true;
+    
+    for (int i = 0; i < m; ++i)
+        for (int j = 0; j < n; ++j)
+            if (row[i] || column[j])
+                matrix[i][j] = 0;
+}
+```
+
+74. 搜索矩阵，矩阵每行从左到右依次增大，每行都比上一行大
+------
+
+当做数组直接二分搜索就可以了
+
+```C++
+bool searchMatrix(int** matrix, int row, int col, int target) {
+    int left = 0, right = row * col - 1;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (matrix[mid/col][mid%col] < target)
+            left = mid + 1;
+        else if (matrix[mid/col][mid%col] == target)
+            return true;
+        else
+            right = mid - 1;
+    }
+    return false;
+}
+```
+
+75. 颜色排序，每个物体有颜色属性，把他们按照RGB的顺序排序
+------
+
+一种方法是简单地2 pass解法，遍历一遍计数再输出。另一种方法是把红色往前交换，蓝色往后交换
+
+```
+
+void swap(int* a, int* b) {
+    int t = *a; *a = *b; *b = t;
+}
+
+void sortColors(int* nums, int numsSize) {
+    const int RED = 0, GREEN = 1, BLUE = 2;
+    int reds = 0,  blues = numsSize - 1;
+    for (int i = 0; i <= blues; i++) {
+        while (nums[i] == BLUE && i < blues) swap(&nums[i], &nums[blues--]);
+        while (nums[i] == RED && i > reds) swap(&nums[i], &nums[reds++]);
+    }
+}
+```
+
+155. 设计一个栈，在普通栈的基础上支持 getmin 操作
+------
+
+题目的要求是在O(1)时间内实现 getmin，使用另一个栈存储每个元素对应的最小值即可
+
+```C++
+class MinStack {
+private:
+    stack<int> m_stk;
+    stack<int> m_min;
+public:
+    void push(int x) {
+        m_min.push(m_stk.empty() ? x : min(x, m_min.top()));
+        m_stk.push(x);
+    }
+
+    void pop() {
+        m_min.pop();
+        m_stk.pop();
+    }
+
+    int top() {
+        return m_stk.top();
+    }
+
+    int getMin() {
+        return m_min.top();
+    }
+};
+```
+
+156-159 Locked
+------
+
+160. 求两个链表的交叉点
+------
+
+分析题目可知，如果有一个交叉点，那么在这之后的所有点都是交叉的。这里有一个非常巧妙
+的做法。使用两个指针，如果到达结尾就指向另一个链表，会产生一下三种情况：
+
+1. 如果交叉点前面的节点数目相同，显然会返回正确节点。
+2. 如果不同假设 A 的节点为 a + c，B 的节点为 b + c，则在下一次遍历时：
+    a + c + b == b + c + a，恰好到达相同部分的第一个顶点 C1
+3. 如果两个列表不相交，那么经过 a + b, b + a距离后，恰好都等于 NULL
+
+```C
+struct ListNode *getIntersectionNode(struct ListNode *headA, struct ListNode *headB) {
+    if (!headA || !headB) return NULL;
+    struct ListNode *p1 = headA, *p2=headB;
+    while (p1 != p2) {
+        // 两个列表手尾相接，如果有一个点相同，一定会返回
+        // a + c + b == b + c + a   --> C1
+        // a + b == b + a    --> NULL
+        p1 = p1 ? p1->next : headB;
+        p2 = p2 ? p2->next : headA;
+    }
+    
+    return p1;
+}
+```
+
+161. Locked
+------
+
+162.  找到极大值，给定一个数组，可能有多个极大值，找到任意一个即可，给定数组中A[i] != A[i+1]
+------
+
+题目要求在对数时间内做出来，二分搜索，如果中间的数在左半部分，就向右找。
+
+```C
+int findPeakElement(int* nums, int numsSize) {
+    int left = 0, right = numsSize - 1;
+    while (left < right) {
+        int mid = left + (right - left) / 2;
+        if (nums[mid] < nums[mid + 1]) // mid in left part of summit
+            left = mid + 1;
+        else                           // mid in right part of summit
+            right= mid;
+    }
+    return left;
+}
+```
+
+
+
+168. 生成 Excel 表格标题
+------
+
+注意 A 对应的是1而不是0
+
+```C++
+string convertToTitle(int n) {
+    string title;
+    while (n) {
+        char c = (n-1) % 26 + 'A';
+        n = (n-1) / 26;
+        title = c + title;
+    }
+    return title;
+}
+```
+
+169. 给定一个数组，有一个数字的出现频率超过了一半，找出这个数字
+------
+
+非常经典的一道题，首先我们假设拿到的数字就是目标，并记录他出现的次数，如果下一个
+数字和他不一样，那么我们减一，当次数为0的时候，我们知道这个数字在已经便利过的数字
+中出现小于一半了，这时候我们换下一个数字，最后剩下的一定是超过一半的数字。
+
+```C
+int majorityElement(int* nums, int numsSize) {
+    int candidate = nums[0];
+    int times = 1;
+    for (int i = 1; i < numsSize; i++) {
+        if (times == 0) {
+            candidate = nums[i];
+            times++;
+        } else {
+            if (nums[i] == candidate)
+                times++;
+            else
+                times--;
+        }
+    }
+    return candidate;
+}
+```
+
+170. Locked
+------
+
+171. Excel 标题转换为数字
+------
+
+同样，我们需要注意 A 对应的是1，而不是0
+
+```C
+int titleToNumber(char* s) {
+    int result = 0;
+    while (*s)
+        result = result * 26 + *s++ - 'A' + 1;
+    return result;
+}
+```
+
+196. 翻转二进制表示
+------
+
+
+```C
+uint32_t reverseBits(uint32_t n) {
+    uint32_t r = 0;
+    int len = sizeof(n) * 8 - 1;
+    while (len--) { // 31 times shift
+        r |= n & 0x1;
+        n >>= 1;
+        r <<= 1; // only shift 31 times
+    }
+    
+    r |= n & 0x1;
+    return r;
+}
+```
+
+197. 数字二进制表示中1的个数
+------
+
+我们知道n&(n-1)会把 n 中的最后一个1去掉，所以循环直到 n 为0即可
+
+```C
+int hammingWeight(uint32_t n) {
+    int count = 0;
+    while (n) {
+        n &= n - 1;
+        count++;
+    }
+    return count;
+}
+```
+
+198.  有一排房子，每个房子中都有一定财产，但是不能偷相邻的两个房子，求能偷到的最大值
+------
+
+使用 DP，对于每个房子，可以选择不偷或者前 i-1个房子加上偷当前房子，即`dp[i+1]
+= max(dp[i], dp[i-1] + A[i])`
+
+```C
+int rob(int* nums, int numsSize) {
+    if (!nums) return 0;
+    // 因为不能相邻，所以可以从相隔一个的取值
+    // dp[n] = max(dp[n-1], dp[n-2] + A[n])
+    int temp, m = 0, n = nums[0];
+    for (int i = 1; i < numsSize; i++) {
+        temp = n;
+        if (m + nums[i] > n)
+            n = m + nums[i];
+        m = temp;
+    }
+    return n;
+}
+```
