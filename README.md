@@ -88,7 +88,39 @@ int lengthOfLongestSubstring(char* s) {
 4. 找到两个排序数组的中值
 ------
 
-这个题好难啊, 先放放
+解法在[这里](https://leetcode.com/discuss/15790/share-my-o-log-min-m-n-solution-with-explanation)
+
+```C
+#define max(a,b) ((a)>(b)?(a):(b))
+#define min(a,b) ((a)<(b)?(a):(b))
+double findMedianSortedArrays(int* A, int m, int* B, int n) {
+    if (m > n) return findMedianSortedArrays(B, n, A, m);
+    int minidx = 0, maxidx = m, i, j, num1, mid = (m + n + 1) >> 1,num2;
+    while (minidx <= maxidx) {
+        i = (minidx + maxidx) >> 1;
+        j = mid - i;
+        if (i<m && j>0 && B[j-1] > A[i])
+            minidx = i + 1;
+        else if (i>0 && j<n && B[j] < A[i-1])
+            maxidx = i - 1;
+        else {
+            if (i == 0) num1 = B[j-1];
+            else if (j == 0) num1 = A[i - 1];
+            else num1 = max(A[i-1],B[j-1]);
+            break;
+        }
+    }
+    if (((m + n) & 0x1)) // odd
+        return num1;
+    if (i == m)
+        num2 = B[j];
+    else if (j == n)
+        num2 = A[i];
+    else 
+        num2 = min(A[i], B[j]);
+    return (num1 + num2) / 2.;
+}
+```
 
 5. 最长回文子串
 ------
@@ -265,7 +297,8 @@ bool isMatch(char* s, char* p) {
 11. Contaier with most water
 ------
 
-This problem seems to have been chanaged since last time I visited leetcode.
+还是看不懂题
+
 
 12. 十进制转换为罗马数字
 ------
@@ -441,10 +474,10 @@ vector<string> letterCombinations(string digits) {
         swap(combinations, temp);
     }
     return combinations;
-} 
+}
 ```
 
-18. 太难了, 先跳过
+18. 
 ------
 
 19. 删除链表中倒数第 k 的节点
@@ -870,33 +903,33 @@ int longestValidParentheses(char* s) {
 3. 后半部分有序, 并且在后半部分
 4. 后半部分有序, 但是不在后半部分
 
-    ```C
-    int search(int* nums, int numsSize, int target) {
-        int left = 0, right = numsSize - 1;
+```C
+int search(int* nums, int numsSize, int target) {
+    int left = 0, right = numsSize - 1;
 
-        // plain old binary search
-        while (left <= right) {
-            int mid = left + (right - left) / 2;
-            if (nums[mid] == target)
-                return mid;
+    // plain old binary search
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (nums[mid] == target)
+            return mid;
 
-            // left half is sorted
-            if (nums[left] <= nums[mid]) {
-                if (nums[left] <= target && target < nums[mid])
-                    right = mid - 1;
-                else
-                    left = mid + 1;
-                // right half is sorted
-            } else {
-                if (nums[mid] < target && target <= nums[right])
-                    left = mid + 1;
-                else
-                    right = mid - 1;
-            }
+        // left half is sorted
+        if (nums[left] <= nums[mid]) {
+            if (nums[left] <= target && target < nums[mid])
+                right = mid - 1;
+            else
+                left = mid + 1;
+            // right half is sorted
+        } else {
+            if (nums[mid] < target && target <= nums[right])
+                left = mid + 1;
+            else
+                right = mid - 1;
         }
-
-        return -1;
     }
+
+    return -1;
+}
 ```
 
 34. 查找数组中一个重复出现数字的下界和上界, 数组已排序
@@ -970,7 +1003,7 @@ string countAndSay(int n) {
 }
 ```
 
-39. 40. 不会
+39. 
 ------
 
 41. 给定一个数组,找到第一个缺失的正数
@@ -980,7 +1013,22 @@ string countAndSay(int n) {
 这样如果有位置不是 i+1, 则找到了结果, 如果都相等则是 n+1.
 
 ```c
+void swap(int* a, int* b) {
+    int t = *a; *a = *b; *b = t;
+}
 
+int firstMissingPositive(int* nums, int numsSize) {
+    for (int i = 0; i < numsSize; i++)
+        // 注意此处的 while
+        while (nums[i] > 0 && nums[i] <= numsSize && nums[i] != nums[nums[i] - 1])
+            swap(&nums[i], &nums[nums[i] - 1]);
+    
+    for (int i = 0; i < numsSize; i++)
+        if (nums[i] != i + 1)
+            return i + 1;
+    
+    return numsSize + 1;
+}
 ```
 
 42. 给定一个数组表示柱子的高度，求能存贮的雨水的总量
@@ -1719,6 +1767,7 @@ void sortColors(int* nums, int numsSize) {
 ```
 
 76. 跳过
+------
 
 77. 给定数字 n 和 k，生成从 n 中取出 k 个数字的所有情况
 ------
@@ -1755,16 +1804,14 @@ void combine(vector<vector<int>>& result, vector<int>& temp, int start, int coun
 }
 ```
 
-
-
-78. 给定一个集合，找到他的所有子集
+78. 给定一个集合，找到它的所有子集
 ------
 
 我们知道对于 n 个元素的集合，有2^n个子集，通过每个元素在不在子集中构造一个状态空间树
 
 ```C++
 // use backtracking and do a dfs search
-
+    
 vector<vector<int>> subsets(vector<int>& nums) {
     vector<vector<int>> result;
     if (nums.empty()) return result;
@@ -1788,11 +1835,395 @@ void subsets(vector<int>& nums, vector<vector<int>>& result, vector<int> temp, i
 }
 ```
 
+79. 给定一个二维字符数组，查找一个单词是否能够有连续的字母构成，不能交叉
+------
+
+也是深度优先的做法，首先找到开始的字母，然后依次向上下左右查找，注意还需要统计有没有访问过
+
+```C++
+bool exist(vector<vector<char>>& board, string word) {
+    int row = board.size();
+    int col = board[0].size();
+    vector<vector<bool>> visited(row, vector<bool> (col, false));
+    
+    bool found = false;
+    for (int i = 0; i < row; i++) {
+        for (int j = 0; j < col; j++) {
+            if (board[i][j] == word[0]) {
+                if (findNext(board, word, visited, i, j, 0))
+                    found = true;
+            }
+        }
+    }
+    return found;
+}
+
+bool findNext(vector<vector<char>>& board, string& word, vector<vector<bool>>& visited, int m, int n, int i) {
+    
+    if (i == word.size())
+        return true;
+    if (m >= board.size() || n >= board[0].size() || m < 0 || n < 0|| visited[m][n] || board[m][n] != word[i])
+        return false;
+    char temp = board[m][n];
+    board[m][n] = -1;
+     
+    bool exist = findNext(board, word, visited, m + 1, n, i+1) ||
+        findNext(board, word, visited, m - 1, n, i+1) ||
+        findNext(board, word, visited, m, n+1, i+1) ||
+        findNext(board, word, visited, m, n-1, i+1);
+    board[m][n] = temp;
+    return exist;
+}
+```
+
+80. 从排序数组中删除重复元素，但是允许一个元素重复出现两次
+------
+
+巧妙地解法，和`i-2`的元素对比
+
+```C
+int removeDuplicates(int* nums, int numsSize) {
+    if (!nums || numsSize < 1) return 0;
+    int len = 0, counter = 0;
+    for (int i = 0; i < numsSize; i++) {
+        if (len < 2 || nums[i] != nums[len-2])
+            nums[len++] = nums[i];
+    }
+    return len;
+}
+```
+
+81. 在被翻转的数组中查找元素
+------
+
+经典题目，还是一个二分查找问题，只是要分很多种情况
+
+```C
+bool search(int A[], int n, int key) {
+    int l = 0, r = n - 1;
+    while (l <= r) {
+        int m = l + (r - l)/2;
+        if (A[m] == key) return true; //return m in Search in Rotated Array I
+        if (A[l] < A[m]) { //left half is sorted
+            if (A[l] <= key && key < A[m])
+                r = m - 1;
+            else
+                l = m + 1;
+        } else if (A[l] > A[m]) { //right half is sorted
+            if (A[m] < key && key <= A[r])
+                l = m + 1;
+            else
+                r = m - 1;
+        } else {
+            l++;
+        }
+    }
+    return false;
+}
+```
+
+82. 从已经排序的链表中删除所有重复过的元素，只留下只出现一次的元素
+------
+
+考察链表操作
+
+```C
+struct ListNode* deleteDuplicates(struct ListNode* head) {
+    struct ListNode dummy, *p = &dummy;
+    dummy.next = head;
+    while (p && p->next && p->next->next) {
+        if (p->next->val == p->next->next->val) {
+            struct ListNode* distinct = p->next;
+            int dup = p->next->val;
+            while (distinct && distinct->val == dup) {
+                distinct = distinct->next; // TODO: fix mem leak
+            }
+            p->next = distinct;
+        } else {
+            p=p->next;
+        }
+    }
+    return dummy.next;
+}
+```
+
+83. 从已经排序的链表中删除所有重复过的元素，但是重复过的也留下一个，即，使新链表不重复
+------
+
+同样是考察链表基本操作
+
+```C
+struct ListNode* deleteDuplicates(struct ListNode* head) {
+    struct ListNode dummy, *p = &dummy; dummy.next = head;
+    while (p && p->next) {
+        if (p->val == p->next->val) {
+            int dup = p->val;
+            while (p->next && p->next->val == dup)
+                p->next = p->next->next; // TODO: fix mem leak
+        } else
+            p = p->next;
+    }
+    return dummy.next;
+}
+```
+
+84. 在柱状图中查找最大的矩形
+------
+
+见注释
+
+```C++
+int largestRectangleArea(vector<int>& height) {
+    stack<int> stk;
+    height.push_back(0); // dummy end
+    int result  =0;
+    // 总结，对于需要查找上一次最大元素的问题，可以考虑使用栈存储
+    for (int i = 0; i < height.size(); ) {
+        // 当遇到更高的柱子时候，先存入堆栈
+        if (stk.empty() || height[i] > height[stk.top()]) // meet higher
+            stk.push(i++);
+        // 当遇到低一些的柱子时候，计算这些柱子到上一个更矮的柱子之间的最大举行，如果已经清空，说明之前所有柱子都更低
+        else { // lower
+            int h = stk.top();
+            stk.pop();
+            result = max(result, height[h] * (stk.empty() ? i : i - stk.top() -1));
+        }
+    }
+    return result;
+}
+```
+
+86. 链表分区，要求把小于某个值得元素全都放到前面
+------
+
+对于链表这道题很简单，分两个列表在合并就好了，问题是当我们处理类似的数组问题时，也有一种巧妙地O(n)的解法
+
+```C
+struct ListNode* partition(struct ListNode* head, int x) {
+    struct ListNode small, *psmall = &small;
+    struct ListNode big, *pbig = &big;
+    psmall->next = pbig->next = NULL;
+    
+    while (head != NULL) {
+        if (head->val < x) {
+            psmall->next = head;
+            psmall = psmall->next;
+        } else {
+            pbig->next = head;
+            pbig = pbig->next;
+        }
+        head = head->next;
+    }
+    psmall->next = big.next;
+    pbig->next = NULL;
+    return small.next;
+}
+```
+
+88. 合并已排序数组，要求合并到其中一个空间较大的数组中
+------
+
+对于这种要求 in-place的算法，从后往前往往可以解决
+
+```C
+void merge(int* nums1, int m, int* nums2, int n) {
+    int len = m + n - 1;
+    m--, n--;
+    while (m >= 0 && n >= 0) {
+        if (nums1[m] > nums2[n]) {
+            nums1[len--] = nums1[m--];
+        } else {
+            nums1[len--] = nums2[n--];
+        }
+    }
+    while (n >= 0) {
+        nums1[n] = nums2[n];
+        n--;
+    }
+    
+}
+```
+
+89. 生成格雷码(Gray Code)
+------
+
+记住格雷码的生成规则
+
+```C++
+vector<int> grayCode(int n) {
+    vector<int> v;
+    for (int i = 0; i < (1 << n); i++) {
+        v.push_back((i >> 1) ^ i);
+    }
+    return v;
+}
+```
+
+90. 由给定元素生成子集，可能包含重复元素
+------
+
+使用了和手机键盘生成字符串号码类似的迭代算法，注意其中对重复元素的处理
+
+```C++
+vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+    vector<vector<int>> sets;
+    sets.push_back({});
+    sort(nums.begin(), nums.end());
+    for (int i = 0; i < nums.size(); ) {
+        int count = 0; // dup count
+        while (count + i < nums.size() && nums[count+i] == nums[i])
+            count++;
+        int prev_n = sets.size();
+        for (int j = 0; j < prev_n; j++) {
+            vector<int> instance = sets[j];
+            // put dup element `count` times
+            for (int k = 0; k < count; k++) {
+                instance.push_back(nums[i]);
+                sets.push_back(instance);
+            }
+        }
+        i += count;
+        
+    }
+    return sets;
+}
+```
+
+91. 给定一个数组只包含1-9，可以用1-26代表字母，求出从其中能都得到多少字符串
+------
+
+使用动态规划，但是注意其中0的处理，很玄妙
+
+```C
+int numDecodings(char* s) {
+    if (!s || strlen(s) == 0 || s[0] == '0') return 0;
+    int r1 = 1, r2 = 1; // r1: 前一个字符， r2：前两个字符
+    char* p = s++; // 上一个字符
+
+    while (*s) {
+        if (*s == '0')
+             r1 = 0; // 0 不能单独构成字母
+        if (*p == '1' || *p == '2' && *s < '7') { // 形成两种可能
+            int t = r1; 
+            r1 = r2 + r1; 
+            r2 = t;
+        } else {
+            r2 = r1; // 新加入的数字只能单独构成字母
+        }
+        
+        p = s++;
+    }
+    return r1;
+}
+```
+
+92. 在给定区间上翻转数组
+------
+
+同样是数组草错细节题
+
+```C
+struct ListNode* reverseBetween(struct ListNode* head, int m, int n) {
+    if (m == n) return head;
+    struct ListNode dummy, *p = &dummy, * small_node, * big_node; // actually the prev ones
+    dummy.next = head;
+    n -= m;
+    
+    while (--m) // m starts from 1, so not m--
+        p = p->next;
+    struct ListNode* start = p->next;
+    while (n--) {
+        struct ListNode* next = start->next;
+        start->next = next->next;
+        next->next = p->next;
+        p->next = next;
+    }
+    
+    return dummy.next;
+}
+```
+
+93. 恢复 IP 地址，给定一个字符串，适当插入点，一共有多少种方式构成 IP 地址
+------
+
+又是一道 DFS 的题，注意对于字符串问题如何处理
+
+```C++
+vector<string> restoreIpAddresses(string s) {
+    vector<string> result;
+    restore(result, s, "", 0, 0);
+    return result;
+}
+
+void restore(vector<string>& result, string& s, string restored, int start, int dots) {
+    if (dots > 4) return;
+    if (dots == 4 && start == s.size())
+        result.push_back(restored);
+    
+    for (int i = 1; i < 4; i++) {
+        if (start + i > s.size())
+            break;
+        string part = s.substr(start, i);
+        if (part[0] == '0' && part.size() > 1 || i == 3 && stoi(part) > 255)
+            continue;
+        restore(result, s, restored + part + (dots==3 ? "" : "."), start + i, dots + 1);
+        
+    }
+
+}
+```
+
+94. 中序遍历二叉树
+------
+
+当然是使用栈了
+
+```C++
+vector<int> inorderTraversal(TreeNode* root) {
+    vector<int> result;
+    stack<TreeNode*> stk;
+    TreeNode* current = root;
+    
+    while (!stk.empty() || current) {
+        if (current) {
+            stk.push(current);
+            current = current->left;
+        } else {
+            current = stk.top();
+            stk.pop();
+            result.push_back(current->val);
+            current = current->right;
+        }
+    }
+    return result;
+}
+```
 
 
+96. 给定数字n，从1到 n 作为节点有多少种方式生成二叉树
+------
 
+这道题看似是树，实际上是一个动态规划问题。
 
+```C
+int numTrees(int n) {
+    if (n == 0) return 0;
+    
+    int* dp = malloc(sizeof(int) * (n+1));
+    dp[0] = 1;
+    
+    for (int i = 1; i <= n; i++) {
+        int num = 0;
+        for (int j = 0; j <= i; j++) // 依次选取第 k 个点作为根
+            num += dp[j - 1] * dp[i - j];
+        dp[i] = num;
+    }
+    return dp[n];
+}
+```
 
+97. 
+------
 
 155. 设计一个栈，在普通栈的基础上支持 getmin 操作
 ------
