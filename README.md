@@ -2222,8 +2222,554 @@ int numTrees(int n) {
 }
 ```
 
-97. 
+97. 给定两个字符串交叉是否能够构成第三个字符串
 ------
+
+这道题是一道二维的 DP 问题，因为需要对于每个字符串的每个位置用另一个字符串尝试匹配
+
+```C
+bool isInterleave(char* s1, char* s2, char* s3) {
+    int l1 = strlen(s1), l2 = strlen(s2), l3 = strlen(s3);
+    if (l1 + l2 != l3) return false;
+    // 在 i+j 位置 s1[i] s2[j] 是否能够构成s[i+j]
+    bool** dp = malloc(sizeof(bool*) * (l1 + 1));
+    for (int i = 0; i <= l1; i++)
+        dp[i] = malloc(sizeof(bool) * (l2 + 1));
+    
+    for (int i = 0; i <= l1; i++)
+        for (int j = 0; j <= l2; j++)
+            if (i == 0 && j == 0)
+                dp[i][j] = true;
+            else if (i == 0)
+                dp[i][j] = (dp[i][j-1] && s2[j-1] == s3[i+j-1]); // 注意：赋值的优先级更高
+            else if (j == 0)
+                dp[i][j] = (dp[i-1][j] && s1[i-1] == s3[i+j-1]);
+            else
+                dp[i][j] = (dp[i-1][j] && s1[i-1] == s3[i+j-1] || dp[i][j-1] && s2[j-1] == s3[i+j-1]);
+    return dp[l1][l2];
+}
+```
+
+98. 验证二叉搜索树是否合法
+------
+
+先序遍历即可
+
+```C
+bool valid(struct TreeNode* root, long left, long right) {
+    return root == NULL || root->val > left && root->val < right &&
+        valid(root->left, left, root->val) &&
+        valid(root->right, root->val, right);
+}
+ 
+bool isValidBST(struct TreeNode* root) {
+    return valid(root, INT_MIN - 1l, INT_MAX + 1l);
+}
+```
+
+99. 在二叉搜索树中有两个节点被调换了，找出这两个节点，并恢复该二叉树
+------
+
+```C
+struct TreeNode* prev = NULL;
+struct TreeNode* first = NULL;
+struct TreeNode* second = NULL;
+
+void traverse(struct TreeNode* root) {
+    if (!root) return;
+    traverse(root->left);
+    if (prev && prev->val > root->val) {
+         if (!first) first = prev;
+         second = root;
+    }
+    prev = root;
+    traverse(root->right);
+}
+
+void recoverTree(struct TreeNode* root) {
+    prev = first = second = NULL;
+    traverse(root);
+    if (!first) return;
+    int temp = first->val;
+    first->val = second->val;
+    second->val = temp;
+}
+```
+
+100. 判断是否是相同的树
+------
+
+```C
+bool isSameTree(struct TreeNode *p, struct TreeNode *q) {
+    if (p == NULL || q == NULL) {
+        return p == q;
+    } else {
+        return p->val == q->val
+            && isSameTree(p->left, q->left)
+            && isSameTree(p->right, q->right);
+    }
+}
+```
+
+101. 判断是不是左右对称的树
+------
+
+```C
+bool sym(struct TreeNode* left, struct TreeNode* right) {
+    if (left && !right || !left && right)
+        return false;
+    return !left && !right ||
+        left->val == right->val && 
+        sym(left->left, right->right) &&
+        sym(right->left, left->right);
+}
+
+bool isSymmetric(struct TreeNode* root) {
+    if (!root) return true;
+    return sym(root->left, root->right);
+}
+```
+
+102. 二叉树层序遍历
+------
+
+```C++
+vector<vector<int>> levelOrder(TreeNode* root) {
+    vector<vector<int>> result;
+    if (!root) return result;
+    vector<TreeNode*> current, next;
+    current.push_back(root);
+    while (!current.empty()) {
+        next.resize(0);
+        vector<int> vals;
+        for (int i = 0; i < current.size(); i++) {
+            if (current[i]->left)
+                next.push_back(current[i]->left);
+            if (current[i]->right)
+                next.push_back(current[i]->right);
+            vals.push_back(current[i]->val);
+        }
+        result.push_back(vals);
+        current = next;
+    }
+    return result;
+}
+```
+
+103. 二叉树 ZigZag 层序遍历
+------
+
+这道题更好的做法是使用一个栈，从而使得每行的顺序都是上一行的翻转
+
+```C++
+vector<vector<int>> zigzagLevelOrder(TreeNode* root) {
+    vector<vector<int>> result;
+    if (!root) return result;
+    vector<TreeNode*> current, next;
+    current.push_back(root);
+    bool odd = true;
+    while (!current.empty()) {
+        next.resize(0);
+        vector<int> vals;
+        for (int i = 0; i < current.size(); i++) {
+            if (current[i]->left)
+                next.push_back(current[i]->left);
+            if (current[i]->right)
+                next.push_back(current[i]->right);
+            vals.push_back(current[i]->val);
+        }
+        if (!odd) reverse(vals.begin(), vals.end());
+        odd = !odd;
+        result.push_back(vals);
+        current = next;
+    }
+    return result;
+}
+```
+
+104. 树的最大深度
+------
+
+```C
+int maxDepth(struct TreeNode* root) {
+    if (!root) return 0;
+    int left = maxDepth(root->left), right = maxDepth(root->right);
+    return (left > right ?left : right) + 1;
+}
+```
+
+105. 从前序遍历和中序遍历生成生二叉树
+------
+
+```C
+struct TreeNode* build(int* prestart, int* preend, int* instart, int* inend) {
+    struct TreeNode* root = malloc(sizeof(struct TreeNode));
+    root->val = *prestart;
+    root->left = root->right = NULL;
+    
+    if (prestart == preend)
+        return root;
+    
+    int* root_inorder = instart;
+    while (root_inorder <= inend && *root_inorder != *prestart)
+        root_inorder++;
+    int left_len = root_inorder - instart;
+    int right_len = inend - root_inorder;
+    if (left_len > 0)
+        root->left = build(prestart + 1, prestart + left_len, instart, root_inorder - 1);
+    if (right_len > 0)
+        root->right = build(prestart + left_len + 1, preend, root_inorder + 1, inend);
+    return root;
+}
+// m always equals n, otherwise it's bad input
+struct TreeNode* buildTree(int* preorder, int m, int* inorder, int n) {
+    if (n==0) return NULL;
+    return build(preorder, preorder + n - 1, inorder, inorder + n - 1);
+}
+```
+
+106. 从中序遍历和后序遍历生成二叉树
+------
+
+```C
+struct TreeNode* build(int* instart, int* inend, int* poststart, int* postend) {
+    struct TreeNode* root = malloc(sizeof(struct TreeNode));
+    root->val = *postend;
+    root->left = root->right = NULL;
+    
+    if (poststart == postend)
+        return root;
+    
+    int* root_inorder = instart;
+    while (root_inorder <= inend && *root_inorder != *postend)
+        root_inorder++;
+    int left_len = root_inorder - instart;
+    int right_len = inend - root_inorder;
+    if (left_len > 0)
+        root->left = build(instart, root_inorder - 1, poststart, poststart + left_len - 1);
+    if (right_len > 0)
+        root->right = build(root_inorder + 1, inend, poststart + left_len, postend - 1);
+    return root;
+}
+struct TreeNode* buildTree(int* inorder, int m, int* postorder, int n) {
+    if (n == 0) return NULL;
+    return build(inorder, inorder + n - 1, postorder, postorder +n - 1);
+}
+```
+
+107. 二叉树层序遍历，但要生成翻转的遍历序列
+------
+
+```C++
+vector<vector<int>> levelOrderBottom(TreeNode* root) {
+    vector<vector<int>> result;
+    if (!root) return result;
+    vector<TreeNode*> current, next;
+    current.push_back(root);
+    while (!current.empty()) {
+        next.resize(0);
+        vector<int> vals;
+        for (int i = 0; i < current.size(); i++) {
+            if (current[i]->left)
+                next.push_back(current[i]->left);
+            if (current[i]->right)
+                next.push_back(current[i]->right);
+            vals.push_back(current[i]->val);
+        }
+        result.push_back(vals);
+        current = next;
+    }
+    reverse(result.begin(), result.end());
+    return result;
+}
+```
+
+108. 把排序数组转化为二叉树
+------
+
+```C
+ struct TreeNode* bst(int* left, int* right) {
+    int* mid = left + (right - left) / 2;
+    struct TreeNode* root = malloc(sizeof(struct TreeNode));
+    root->val = *mid;
+    root->left = root->right = NULL;
+    if (left < mid)
+        root->left = bst(left, mid-1);
+    if (mid < right)
+        root->right = bst(mid+1, right);
+    return root;
+}
+struct TreeNode* sortedArrayToBST(int* nums, int n) {
+    if (n == 0) return NULL;
+    return bst(nums, nums + n -1);
+}
+```
+
+109. 把排序列表转化为二叉树
+------
+
+```C
+struct ListNode* list;
+int len(struct ListNode* head) {
+    int l = 0;
+    while (head)
+        head = head->next, l++;
+    return l;
+}
+
+struct TreeNode* bst(int n) {
+    if (n == 0) return NULL;
+    struct TreeNode* root = malloc(sizeof(struct TreeNode));
+    root->left = bst(n/2);
+    root->val = list->val;
+    list = list->next;
+    root->right = bst(n - n / 2 - 1);
+    return root;
+}
+struct TreeNode* sortedListToBST(struct ListNode* head) {
+    if (!head) return 0;
+    list = head;
+    return bst(len(head));
+}
+```
+
+110. 平衡二叉树
+------
+
+```C
+int height(struct TreeNode* root) {
+    if (!root) return 0;
+    int left = height(root->left);
+    int right = height(root->right);
+    if (left > right + 1 || right > left + 1 || left == -1 || right == -1)
+        return -1;
+    return (left > right ? left : right) + 1;
+}
+bool isBalanced(struct TreeNode* root) {
+    return height(root) != -1;
+}
+```
+
+111. 二叉树最小高度
+------
+
+```C
+int minDepth(struct TreeNode* root) {
+    if (!root) return 0;
+    int left = minDepth(root->left);
+    int right = minDepth(root->right);
+    if (!right) return left + 1;
+    if (!left) return right + 1; // tricky here,当有空节点时，不能返回0，而是返回另一个值
+    
+    return (left < right ? left : right) + 1;
+}
+```
+
+112. 二叉树中是否存在和为某个数的路径
+------
+
+```C
+bool hasPathSum(struct TreeNode* root, int sum) {
+    if (!root) return false;
+    if (!root->left && !root->right) return sum == root->val;
+    return hasPathSum(root->left, sum - root->val) ||
+        hasPathSum(root->right, sum - root->val);
+}
+```
+
+113. 接上题，把这个路径找出来
+------
+
+```C++
+vector<vector<int>> pathSum(TreeNode* root, int sum) {
+    vector<vector<int>> result;
+    vector<int> path;
+    getPaths(result, path, root, sum);
+    return result;
+}
+
+void getPaths(vector<vector<int>>& result, vector<int> path, TreeNode* root, int sum) {
+    if (!root)
+        return;
+    path.push_back(root->val);
+    if (!root->left && !root->right && sum == root->val) {
+        result.push_back(path);
+        return;
+    }
+    
+    getPaths(result, path, root->left, sum - root->val);
+    getPaths(result, path, root->right, sum - root->val);
+}
+```
+
+114. 把二叉树扁平成列表
+------
+
+```C++
+TreeNode* prev;
+void flatten(TreeNode* root) {
+    if (!root) return;
+    flatten(root->right);
+    flatten(root->left);
+    root->right = prev;
+    root->left = NULL;
+    prev = root; // last flattened element
+}
+```
+
+115. 买卖股票最佳时机，只能交易一次
+------
+
+```C
+int maxProfit(int* prices, int pricesSize) {
+    if (pricesSize < 2) return 0;
+    int profit = 0;
+    int min = prices[0];
+    // 从前到后依次遍历，如果有更好的收益更新，或者更新 min，限制条件是先出现最小值
+    for (int i = 0; i < pricesSize; i++) {
+        if (prices[i] > min) {
+            if (prices[i] - min > profit)
+                profit = prices[i] - min;
+        } else {
+            min = prices[i];
+        }
+    }
+    return profit;
+}
+```
+
+136. 找出数组中只出现一次的数字
+------
+
+```C
+int singleNumber(int* nums, int numsSize) {
+    int result = nums[0];
+    for (int i = 1; i < numsSize; i++)
+        result ^= nums[i];
+    return result;
+}
+```
+
+139. 查找单词是否能组成句子
+------
+
+```C++
+bool wordBreak(string s, unordered_set<string>& wordDict) {
+    if (wordDict.empty()) return false;
+    vector<bool> dp(s.size() + 1, false);
+    dp[0] = true;
+    // 动态规划，假设前 i 个字符已经匹配到了，尝试匹配 i 到 i+j，如果找到了，就匹配到了 i+j
+    for (int i = 1; i <= s.size(); i++) {
+        for (int j = i-1; j >= 0; j--) {
+            if (dp[j]) {
+                string word = s.substr(j, i-j);
+                if (wordDict.find(word) != wordDict.end()) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+    }
+    return dp[s.size()];
+}
+```
+
+141. 列表是否有环
+------
+
+```C
+bool hasCycle(struct ListNode *head) {
+    struct ListNode* slow = head, * fast = head;
+    while (fast && fast->next && fast->next->next) {
+        fast = fast->next->next;
+        slow = slow->next;
+        if (slow == fast)
+            return true;
+    }
+    return false;
+}
+```
+
+142. 列表是否有环？如果有找到环的开始
+------
+
+```C
+struct ListNode *detectCycle(struct ListNode *head) {
+    struct ListNode* slow = head, * fast = head, *entry = NULL;
+    int counter = 0;
+    bool found = false;
+    while (!found && fast && fast->next && fast->next->next) {
+        fast = fast->next->next;
+        slow = slow->next;
+        counter++;
+        if (slow == fast)
+            found = true;
+    }
+    
+    if (!found) return NULL;
+    
+    slow = head;
+    while (slow != fast) {
+        slow = slow->next;
+        fast = fast->next;
+    }
+    
+    return slow;
+}
+```
+
+143. 前序遍历
+------
+
+```C++
+vector<int> preorderTraversal(TreeNode* root) {
+    vector<int> result;
+    if (!root) return result;
+    
+    stack<TreeNode*> stk;
+    stk.push(root);
+    
+    while (!stk.empty()) {
+        TreeNode* node  = stk.top();
+        stk.pop();
+        result.push_back(node->val);
+        if (node->right)
+            stk.push(node->right);
+        if (node->left)
+            stk.push(node->left);
+        
+    }
+    
+    return result;
+        
+}
+```
+
+144. 在旋转数组中查找最小值，可能有重复
+------
+
+```C
+int findMin(int* A, int n) {
+    int left = 0, right = n - 1;
+    while (left < right) {
+        int mid = left + (right - left) / 2;
+        if (A[mid] > A[right]) { // 当需要找的是 left，也就是较小的数字，使用 right 比较不需要等于号
+            left = mid + 1;
+        } else if (A[right] < A[mid]) {
+            right = mid;
+        } else {
+            right--;
+        }
+    }
+    return A[left];
+}
+```
+
+
+
+
+
+
 
 155. 设计一个栈，在普通栈的基础上支持 getmin 操作
 ------
@@ -2309,6 +2855,43 @@ int findPeakElement(int* nums, int numsSize) {
 }
 ```
 
+166. 分数生成小数
+------
+
+```C++
+string fractionToDecimal(long numerator, long denominator) {
+    if (numerator == 0) return "0";
+    string result;
+    
+    // 符号
+    if (numerator < 0 ^ denominator < 0)
+        result += "-";
+    long n = abs(numerator), d = abs(denominator);
+    
+    // 整数部分
+    result += to_string(n / d);
+    if (n % d == 0) return result;
+    
+    // 小数部分
+    result+= ".";
+    unordered_map<int, int> map;
+    for (long r = n % d; r != 0; r %= d) { // 模拟手工除法
+        if (map.count(r) > 0) {
+            result.insert(map[r], 1, '(');
+            result += ")";
+            break;
+        }
+        
+        map[r] = result.size(); // 记录对应的位置，以便插入括号
+        r *= 10; // 从上借位
+        result += to_string(r / d);
+    }
+    return result;
+}
+```
+
+
+
 
 
 168. 生成 Excel 表格标题
@@ -2371,6 +2954,132 @@ int titleToNumber(char* s) {
 }
 ```
 
+172. 阶乘中能有几个0
+------
+
+```C
+int trailingZeroes(int n) {
+    int fives = 0;
+    while (n) {
+        fives += n / 5;
+        n /= 5;
+    }
+    return fives;
+}
+```
+
+173. 二叉树中序遍历迭代器
+------
+
+```C
+class BSTIterator {
+public:
+    BSTIterator(TreeNode *root) {
+        pushAll(root);
+    }
+
+    /** @return whether we have a next smallest number */
+    bool hasNext() {
+        return !m_stack.empty();
+        
+    }
+
+    /** @return the next smallest number */
+    int next() {
+        TreeNode* temp = m_stack.top();
+        m_stack.pop();
+        pushAll(temp->right);
+        return temp->val;
+    }
+    
+private:
+    stack<TreeNode*> m_stack;
+    void pushAll(TreeNode* root) {
+        while (root) {
+            m_stack.push(root);
+            root = root->left;
+        }
+    }
+};
+
+/**
+ * Your BSTIterator will be called like this:
+ * BSTIterator i = BSTIterator(root);
+ * while (i.hasNext()) cout << i.next();
+ */
+```
+
+174. 地下城游戏
+------
+
+王子在格子的左上角，需要到右下角去救公主，在过程中王子不能死掉
+
+```C++
+int calculateMinimumHP(vector<vector<int>>& dungeon) {
+    int row = dungeon.size();
+    int col = dungeon[0].size();
+    vector<vector<int>> bloods(row + 1, vector<int> (col + 1, INT_MAX));
+    bloods[row][col-1] = bloods[row-1][col] = 1;
+    for (int i = row-1; i >= 0; i--) {
+        for (int j = col-1; j >= 0; j--) {
+             int need = min(bloods[i+1][j], bloods[i][j+1]) - dungeon[i][j];
+             bloods[i][j] = need > 0 ? need : 1;
+        }
+    }
+    return bloods[0][0];
+}
+```
+
+179. 最大的数字
+------
+
+神奇的排序方法
+
+```C++
+string largestNumber(vector<int>& nums) {
+    vector<string> num_strings(nums.size());
+    for (int i = 0; i < nums.size(); i++)
+        num_strings[i] = to_string(nums[i]);
+    auto comparator = [] (string& s1, string& s2) {
+        return s1 + s2 > s2 + s1;
+    };
+    sort(num_strings.begin(), num_strings.end(), comparator);
+    string result;
+    for (auto& num_string: num_strings)
+        result += num_string;
+    int start = result.find_first_not_of("0");
+    if (start == string::npos) return "0";
+    return result.substr(start, result.size() - start);
+}
+```
+
+翻转树组
+
+```C
+void reverse(int* nums, int left, int right) {
+    while (left < right) {
+        int temp = nums[left];
+        nums[left] = nums[right];
+        nums[right] = temp;
+        left++;
+        right--;
+    }
+
+}
+
+void rotate(int* nums, int numsSize, int k) {
+    if (k >= numsSize) k %= numsSize;
+    if (k <= 0) return;
+    reverse(nums, 0, numsSize - k - 1);
+    reverse(nums, numsSize - k, numsSize - 1);
+    reverse(nums, 0, numsSize - 1);
+}
+```
+
+
+
+
+
 196. 翻转二进制表示
 ------
 
@@ -2427,3 +3136,39 @@ int rob(int* nums, int numsSize) {
     return n;
 }
 ```
+
+231. 2的次方
+------
+
+```
+bool isPowerOfTwo(int n) {
+    if (n <= 0) return false;
+    return (n & (n - 1)) == 0;
+}
+```
+
+H-Index
+------
+
+```int hIndex(int* cites, int n) {
+    int* hs = malloc(sizeof(int) * n + 1);
+    for (int i = 0; i < n + 1; i++)
+        hs[i] = 0;
+    for (int i = 0; i < n; i++) {
+        if (cites[i] > n)
+            hs[n]++;
+        else
+            hs[cites[i]]++;
+    }
+    
+    for (int i = n, papers = 0; i >= 0; i--) {
+        papers += hs[i];
+        if (papers >= i)
+            return i;
+    }
+    
+    return 0;
+}
+```
+
+
