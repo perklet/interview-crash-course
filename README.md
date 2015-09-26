@@ -85,48 +85,55 @@ int lengthOfLongestSubstring(char* s) {
 }
 ```
 
-4. 找到两个排序数组的中值
+4. 找到两个排序数组的中位数
 ------
 
 解法在[这里](https://leetcode.com/discuss/15790/share-my-o-log-min-m-n-solution-with-explanation)
+把 AB 分成两份，比如 A[0..i], B[0..j] 和 A[i, m], B[j, n]，这样我们只需要下面两个条件就可以了
+
+1. i+j = m-i + n-j
+2. B[j-1] <= A[i] && A[i-1] <= B[j]
+
+这时候我们就得到了A[i]就是我们的中位数，或者之一。
+i 的初始值在0到 m 指尖，然后我们二分搜索 `i = (imin + imax) / 2, j = mid - i`。
 
 ```C
 #define max(a,b) ((a)>(b)?(a):(b))
 #define min(a,b) ((a)<(b)?(a):(b))
 double findMedianSortedArrays(int* A, int m, int* B, int n) {
     if (m > n) return findMedianSortedArrays(B, n, A, m);
-    int minidx = 0, maxidx = m, i, j, num1, mid = (m + n + 1) >> 1,num2;
-    while (minidx <= maxidx) {
-        i = (minidx + maxidx) >> 1;
+    int imin = 0, maxidx = m, i, j, num1, mid = (m + n + 1) >> 1,num2;
+    while (imin <= maxidx) {
+        i = (imin + maxidx) >> 1;
         j = mid - i;
-        if (i<m && j>0 && B[j-1] > A[i])
-            minidx = i + 1;
-        else if (i>0 && j<n && B[j] < A[i-1])
+        if (i < m && j > 0 && B[j-1] > A[i]) // B中的数字偏大
+            imin = i + 1;
+        else if (i > 0 && j < n && B[j] < A[i-1]) // A中的数字偏大
             maxidx = i - 1;
         else {
             if (i == 0) num1 = B[j-1];
             else if (j == 0) num1 = A[i - 1];
-            else num1 = max(A[i-1],B[j-1]);
+            else num1 = max(A[i-1],B[j-1]); // 普通情况
             break;
         }
     }
-    if (((m + n) & 0x1)) // odd
+    if ((m + n) & 0x1) // odd
         return num1;
     if (i == m)
         num2 = B[j];
     else if (j == n)
         num2 = A[i];
     else 
-        num2 = min(A[i], B[j]);
-    return (num1 + num2) / 2.;
+        num2 = min(A[i], B[j]); // 普通情况
+    return (num1 + num2) / 2.0; // 注意整数除法
 }
 ```
 
 5. 最长回文子串
 ------
 
-解法1：以某个元素为中心, 向两边展开, 注意处理奇数和偶数两种情况
-解法2：Manacher 算法, 参见http://taop.marchtea.com/01.05.html
+1. 以某个元素为中心, 向两边展开, 注意处理奇数和偶数两种情况
+2. Manacher 算法, 参见http://taop.marchtea.com/01.05.html
 
 ````C
 char* longestPalindrome(char* s) {
@@ -170,21 +177,21 @@ char* longestPalindrome(char* s) {
 6. ZigZag 字符串, 把字符串掰弯, 然后再按行输出
 ------
 
-考察数学, 找出规律, 按行货的重构后的字符串
+考察数学, 找出规律, 所以实际上并不是 Z 子形，而是由 V 组成的，然后组合按行号重构后的字符串即可。
 
 ``` C
 char* convert(char* s, int numRows) {
     int len = strlen(s);
-    if (!s || numRows <= 1 || len < numRows) return s;
+    if (!s || numRows <= 1 || len < numRows) return s; // no need to convert
 
-    char* zigzag = malloc(sizeof(char) * len + 1);
+    char* zigzag = malloc(sizeof(char) * (len + 1));
     int cur = 0;
 
     for (int i = 0; i < numRows; i++) {
-        for (int j = i; j < len; j += 2 * (numRows - 1)) {
+        for (int j = i; j < len; j += 2 * (numRows - 1)) { // 每个 v 字型长度
             zigzag[cur++] = s[j];
-            if (i != 0 && i != numRows - 1) {
-                int t = j + 2 * (numRows - 1) - 2 * i;
+            if (i != 0 && i != numRows - 1) { // 中间行有斜线
+                int t = j + 2 * (numRows - 1) - 2 * i; // V 的第二笔
                 if (t < len)
                     zigzag[cur++] = s[t];
             }
@@ -222,7 +229,7 @@ int reverse(int x) {
 
 1. 首先过滤空格
 2. 判定符号, 符号只能出现一次
-3  是否溢出, 溢出返回 INT_MAX 或者 INT_MIN
+3. 是否溢出, 溢出返回 INT_MAX 或者 INT_MIN
 
 ```C
 int myAtoi(char* str) {
@@ -269,13 +276,14 @@ bool isPalindrome(int x) {
         x /= 10;
     }
 
-    return x == y || x == y / 10;
+    return x == y || x == y / 10; // 注意 x 可能是奇数长度也可能是偶数
 }
 ```
 10. 正则表达式
 ------
 
-实现正则表达式, 只需要实现`.`代表任意字符, `*`代表任意重复。
+实现正则表达式, 只需要实现`.`代表任意字符, `*`代表任意重复。只需要特殊处理`*`，如果遇到了`*`，贪婪地向后匹配。
+和通配符的不同之处在于，正则表达式需要两个字母组成模式，`*`是对前一个字母的修饰。
 
 ```c
 bool isMatch(char* s, char* p) {
@@ -294,6 +302,7 @@ bool isMatch(char* s, char* p) {
     return *s == 0;
 }
 ```
+
 11. Contaier with most water
 ------
 
@@ -312,7 +321,7 @@ string intToRoman(int num) {
     string handreds[] = {"", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"};
     string tens[] = {"", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"};
     string ones[] = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"};
-    return thousands[num/1000] + handreds[num%1000 / 100] + tens[num % 100 / 10] + ones[num % 10];
+    return thousands[num / 1000] + handreds[num % 1000 / 100] + tens[num % 100 / 10] + ones[num % 10];
 
 }
 ```
@@ -400,7 +409,7 @@ vector<vector<int>> threeSum(vector<int>& nums) {
                     k--;
                 while (j < k && nums[j] == nums[j + 1])
                     j++;
-                k--;
+                k--; // 别忘了这里，还要继续寻找下一组
                 j++;
             }
         }
@@ -444,7 +453,7 @@ int threeSumClosest(int* nums, int numsSize, int target) {
 }
 ```
 
-17. 生成电话键盘按键数字对应的所有可能的字符串, 不限制返回结果的顺序
+ E17. 生成电话键盘按键数字对应的所有可能的字符串, 不限制返回结果的顺序
 ------
 
 ![键盘](http://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Telephone-keypad2.svg/200px-Telephone-keypad2.svg.png)
@@ -459,15 +468,13 @@ int threeSumClosest(int* nums, int numsSize, int target) {
 vector<string> letterCombinations(string digits) {
     if (digits.size() == 0) return vector<string> {};
     string mapping[] = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
-    vector<string> combinations(1, "");
+    vector<string> combinations(1, ""); // 注意使用空字符串作为种子
 
     for (int i = 0; i < digits.size(); i++) {
         int digit = digits[i] - '0';
-        if
-            (mapping[digit].empty())
-                continue;
-        vector<string>
-            temp;
+        if (mapping[digit].empty())
+            continue;
+        vector<string> temp;
         for (auto& c : mapping[digit])
             for (auto& combination : combinations)
                 temp.push_back(combination + c);
@@ -480,7 +487,7 @@ vector<string> letterCombinations(string digits) {
 18. 
 ------
 
-19. 删除链表中倒数第 k 的节点
+E19. 删除链表中倒数第 k 的节点
 ------
 
 双指针经典题目, 一个快指针先走 k 步, 另一个慢指针再出发, 注意链表长度小于 k 时。
@@ -505,10 +512,10 @@ struct ListNode* removeNthFromEnd(struct ListNode* head, int n) {
 }
 ```
 
-20. 判定给定的字符串是否是合法的括号序列, 可能包括大中小三类
+E20. 判定给定的字符串是否是合法的括号序列, 可能包括大中小三类
 ------
 
-使用栈的基础题
+使用栈的基础题，注意逻辑简化
 
 ```C
 char opposite(char c) {
@@ -530,11 +537,11 @@ bool isValid(string s) {
             return false;
     }
 
-    return stk.empty();
+    return stk.empty(); // 注意为空的条件
 }
 ```
 
-21. 合并两个已经排序的链表
+E21. 合并两个已经排序的链表
 ------
 
 考察链表的基本操作, 很简单
@@ -568,7 +575,7 @@ struct ListNode* mergeTwoLists(struct ListNode* l1, struct ListNode* l2) {
 }
 ```
 
-22. 给定数字n, 生成所有合法的 n 个括号组成的序列
+H22. 给定数字n, 生成所有合法的 n 个括号组成的序列
 ------
 
 解释暂时说不清粗
@@ -580,6 +587,7 @@ vector<string> generateParenthesis(int n) {
     return result;
 }
 
+// left 剩下的左括号，right 剩下的右括号
 void gen(string s, int left, int right) {
     if (left == 0 && right == 0) {
         result.push_back(s);
@@ -592,7 +600,7 @@ void gen(string s, int left, int right) {
 }
 ```
 
-23. 合并 k 个已经排序的列表
+M23. 合并 k 个已经排序的列表
 ------
 
 把列表看做一个队列, 每次拿出两个列表, 合并他们后放回到列表中, 每次遍历列表的一半, 这样每次遍历完一遍, 
@@ -613,14 +621,14 @@ struct ListNode* mergeKLists(struct ListNode** lists, int listsSize) {
         for (int i = 0; i < listsSize / 2; i++)
             // merge i and last i list
             lists[i] = mergeTwoLists(lists[i], lists[listsSize-1-i]);
-        listsSize = (listsSize + 1) / 2;
+        listsSize = (listsSize + 1) / 2; // 注意这里！
 
     }
     return lists[0];
 }
 ```
 
-24. 给定一个链表, 交换两个相邻几点的值
+24. 给定一个链表, 交换两个相邻节点的值
 ------
 
 最简单的做法显然是直接把前后两个节点的值交换, 但是LeetCode规定不能改变节点的值。
@@ -663,10 +671,10 @@ ListNode* reverseKGroup(ListNode* head, int k) {
             }
         }
 
-        if (stk.size() < k)
+        if (stk.size() < k) // 剩下的节点不够 k 个了
             return dummy.next;
 
-        pp = stk.top()->next;
+        pp = stk.top()->next; // 下一组中的第一个
         while (!stk.empty()) {
             p->next = stk.top();
             stk.pop();
@@ -687,7 +695,7 @@ PS：这个基础题竟然做了半个小时才做对, ⊙﹏⊙b汗, 要加强�
 
 ```C
 int removeDuplicates(int* nums, int numsSize) {
-    if (numsSize <= 1) return numsSize;
+    if (!nums || numsSize <= 1) return numsSize;
     int len = 0;
     for (int i = 1; i < numsSize; i++) {
         if (nums[i] != nums[len])
@@ -726,7 +734,7 @@ int removeElement(int* nums, int numsSize, int val) {
 int strStr(char* haystack, char* needle) {
     int h = strlen(haystack);
     int n = strlen(needle);
-    if (strlen(needle) == 0) return 0;
+    if (n == 0) return 0;
     // note h - n + 1
     for (int i = 0; i < h - n + 1; i++) {
         for (int j = 0; j < n; j++) {
@@ -800,6 +808,8 @@ int kmp(char* needle, char* haystack) {
 
 [这里](https://leetcode.com/discuss/38997/detailed-explained-8ms-c-solution)有一个非常好的算法
 
+计算可以从被除数中减去除数的次数
+
 ```c
 int divide(int dividend, int divisor) {
     // abs(INT_MIN) == INT_MAX + 1
@@ -832,6 +842,7 @@ int divide(int dividend, int divisor) {
 ------
 
 首先, 对于所有的组合, 最小的一个一定是按照升序排序的, 最大的一定是倒过来, 因此
+
 1. 如果我们发现是倒序的, 直接翻转就好了；
 2. 如果是一般情况, 从后向前遍历, 找到逆序的数字的边界,  假设是 k。那么我们翻转
 
@@ -843,7 +854,8 @@ void nextPermutation(vector<int>& nums) {
             k = i;
             break;
         }
-    } 
+    }
+    // 完全是逆序的，直接返回第一个，也就是升序排列
     if (k == -1) {
         reverse(nums.begin(), nums.end());
         return;
@@ -881,7 +893,7 @@ int longestValidParentheses(char* s) {
         int match = i + dp[i+1] + 1;
         if (s[i] == '(' && match < len && s[match] == ')') {
             dp[i] = dp[i+1] + 2;
-            // 拼接合法序列
+            // 拼接合法序列，注意 match + 1
             if (match + 1 < len)
                 dp[i] += dp[match + 1];
         }
@@ -945,9 +957,9 @@ vector<int> searchRange(vector<int>& nums, int target) {
 
 int lower(vector<int>& nums, int target) {
     int first = 0, last = nums.size();
-    while (first != last) {
-        int middle = (first + last) / 2;
-        if (target > nums[middle]) 
+    while (first < last) {
+        int middle = first + (last - first) / 2;
+        if (target > nums[middle]) // 寻找下界
             first = middle + 1;
         else
             last = middle;
@@ -957,9 +969,9 @@ int lower(vector<int>& nums, int target) {
 
 int upper(vector<int>& nums, int target) {
     int first = 0, last = nums.size();
-    while (first != last) {
-        int middle = (first + last) / 2;
-        if (target >= nums[middle]) // >only >difference >with >lower
+    while (first < last) {
+        int middle = first + (last - first) / 2;
+        if (target >= nums[middle]) // 寻找上界only difference with lower
             first = middle + 1;
         else
             last = middle;
@@ -1062,7 +1074,7 @@ int trap(int* height, int heightSize) {
 }
 ```
 
-43. 给定两个任意长的字符串，返回一个字符串，代表他们项城的结果
+43. 给定两个任意长的字符串，返回一个字符串，代表他们相乘的结果
 ------
 
 按整数除法运算即可，重点是下标的表示
@@ -1102,14 +1114,9 @@ char* multiply(char* num1, char* num2) {
 44. 通配符匹配，`?` 代表任意一个字符，`*`代表任意一个或多个字符
 ------
 
-注意和正则表达式的区别，要求完全匹配
+注意和正则表达式的区别，要求完全匹配。这道题的关键在于对星号的处理, 如果出现星号的时候, 我们记录当时的p 和 s 的值, 如果发生了不匹配的话, 我们尝试回到该位置的下一个位置开始匹配
 
 ```C
-/*
- * 这道题的关键在于对星号的处理, 如果出现星号的时候, 我们记录当时的p 和 s 的值,
- * 如果发生了不匹配的话, 我们尝试回到该位置的下一个位置开始匹配
- */
-
 
 bool isMatch(char* s, char* p) {
     char* star = NULL;
@@ -1252,20 +1259,20 @@ int* spiralOrder(int** matrix, int row, int col) {
     while (top <= down && left <= right) {
         for (int i = left; i <= right; i++)
             result[index++] = matrix[top][i];
-        top++;
+        top++; //
         for (int i = top; i <= down; i++)
             result[index++] = matrix[i][right];
-        right--;
+        right--; // 
         // 注意这个 if 语句
         if (top <= down)
             for (int i = right; i >= left; i--)
                 result[index++] = matrix[down][i];
-        down--;
+        down--; // 
         // 注意这个 if 语句
         if (left <= right)
             for (int i = down; i >= top; i--)
                 result[index++] = matrix[i][left];
-        left++;
+        left++; // 
     }
     return result;
 }
@@ -1473,7 +1480,8 @@ int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
                 pathes[i][j] = 0;
             else
                 pathes[i][j] = pathes[i-1][j] + pathes[i][j-1];
-    return pathes[m][n]; }
+    return pathes[m][n]; 
+}
 ```
 
 64. 给定一个`m*n`矩阵，每个数字代表经过该处的耗费，找出一条耗费最小的路径
@@ -2638,6 +2646,29 @@ int maxProfit(int* prices, int pricesSize) {
 }
 ```
 
+134. 加油站
+------
+
+```C
+int canCompleteCircuit(int* gas, int gasSize, int* cost, int costSize) {
+    int total = 0;
+    int j = -1;
+    
+    for (int i = 0, sum = 0; i < gasSize; ++i) {
+        sum += gas[i] - cost[i]; // 从此处经过能够净增多少汽油
+        total += gas[i] - cost[i]; // 记录总的汽油量是否是正的
+        if (sum < 0) { // 如果当前汽油量已经小于 0，说明之前的节点都是不行的，到下一个节点
+            j = i;
+            sum = 0; // 同时重新开始计数
+        }
+    }
+    
+    return total >= 0 ? j + 1 : -1;
+}
+```
+
+
+
 136. 找出数组中只出现一次的数字
 ------
 
@@ -3150,7 +3181,8 @@ bool isPowerOfTwo(int n) {
 H-Index
 ------
 
-```int hIndex(int* cites, int n) {
+```
+int hIndex(int* cites, int n) {
     int* hs = malloc(sizeof(int) * n + 1);
     for (int i = 0; i < n + 1; i++)
         hs[i] = 0;
