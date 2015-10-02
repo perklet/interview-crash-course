@@ -8,6 +8,7 @@ LeetCode Complete
 * 原则上使用 C 做, 如果需要用到 Hash, Stack, Queue, 或者返回值特别复杂, 或者需要大量拼接字符串时, 使用 C++。
 * 这份文档的目的是复习用的，并不是教如何解题的，因此只有简略介绍，适合面试前查漏补缺复习
 * 请在了解基本数据结构的基础上阅读, 大概是大三的水平吧。
+* 每道题都有归纳解题思路，这样才能学会解决没有遇到过的问题。
 
 Let the hack begin!
 
@@ -984,6 +985,7 @@ int upper(vector<int>& nums, int target) {
 
 35. 二分查找数字, 如果没有找到, 返回应该插入的位置
 ------
+
 
 36. 合法数独, 给定一个数独表,判定当前是否合法
 ------
@@ -2646,6 +2648,202 @@ int maxProfit(int* prices, int pricesSize) {
 }
 ```
 
+116. 完全二叉树中把每个节点指向他这一层的右面的节点
+------
+
+显然左节点的下一个节点是父节点的右节点，右节点的下一个节点是父节点下一个节点的左节点。
+
+```C
+void connect(struct TreeLinkNode *root) {
+    if (!root)
+        return;
+    if (root->left)
+        root->left->next = root->right;
+    if (root->right)
+        root->right->next = root->next ? root->next->left : NULL;
+    connect(root->left);
+    connect(root->right);
+}
+```
+
+117. 同上题，但是是任意的🌲
+------
+
+通过上一层已经被连接的 next 指针，顺序层序访问，从而连接下一层。
+
+```
+void connect(struct TreeLinkNode *root) {
+    struct TreeLinkNode* head = root, * prev = NULL, *p = NULL;
+    while (head) { // head 是每层的开始
+        p = head;
+        prev = head = NULL;
+        
+        while (p) {
+            if (p->left) {
+                if (prev)
+                    prev->next = p->left;
+                else 
+                    head = p->left;
+                prev = p->left;
+            } 
+            
+            if (p->right) {
+                if (prev)
+                    prev->next = p->right;
+                else
+                    head = p->right;
+                prev = p->right;
+            }
+            p = p->next;
+        }
+    }
+}
+```
+
+118. 杨辉三角
+------
+
+注意坐标关系，不要被骗了
+
+```C++
+vector<vector<int>> generate(int n) {
+    vector<vector<int>> result(n);
+    
+    
+    for (int i = 0; i < n; i++) {
+        result[i].resize(i+1);
+        result[i][0] = result[i][i] = 1;
+        for (int j = 1; j < i; j++)
+            result[i][j] = result[i-1][j-1] + result[i-1][j];
+    }
+    return result;
+}
+```
+
+119. 返回杨辉三角的第 k 行
+------
+
+要求只能使用O(k)的额外空间，比较蛋疼的是这里的 k 是从0计数的。
+
+```C++
+vector<int> getRow(int rowIndex) {
+    rowIndex++;
+    vector<int> row;
+    for (int i = 0; i < rowIndex; i++) {
+        vector<int> newRow(i+1);
+        newRow[0] = newRow[i] = 1;
+        for (int j = 1; j < i; j++)
+            newRow[j] = row[j-1] + row[j];
+        swap(row, newRow);
+    }
+    return row;
+}
+```
+
+120. 给定一个类似杨辉三角形状的数组，求从顶部到底部的最短路径
+------
+
+显然是使用 DP，但是有一个问题，如果是 top down 的话，最后还需要遍历一下，而如果是 bottom up 就只需要返回dp[0]就好了。
+
+```C++
+int minimumTotal(vector<vector<int>>& triangle) {
+    vector<int> dp(triangle.back()); // 复制最后一行
+    for (int layer = triangle.size() - 2; layer >= 0; layer--)
+        for (int i = 0; i <= layer; i++)
+            dp[i] = triangle[layer][i] + min(dp[i], dp[i+1]);
+    return dp[0];
+}
+```
+
+121. 买卖股票最佳时机，限制只能做一笔交易
+------
+
+```C
+int maxProfit(int* prices, int pricesSize) {
+    if (pricesSize < 2) return 0;
+    int profit = 0;
+    int min = prices[0];
+    // 从前到后依次遍历，如果有更好的收益更新，或者更新 min，限制条件是先出现最小值
+    for (int i = 0; i < pricesSize; i++) {
+        if (prices[i] > min) {
+            if (prices[i] - min > profit)
+                profit = prices[i] - min;
+        } else {
+            min = prices[i];
+        }
+    }
+    return profit;
+}
+```
+
+122. 买卖股票的最佳时机，可以做任意多比交易
+------
+
+有两种解法，一种是不断做交易，完全不考虑交易次数，这种做法不符合实际情况。
+另一种做法是模拟交易，这样会生成最少的交易次数，结果也是对的。
+
+
+
+
+```C
+// 2
+int maxProfit(int* prices, int pricesSize) {
+    if (!prices) return 0;
+    int profit = 0;bool buy = true;
+    int min = prices[0], max = prices[0];
+    for (int i = 0; i < pricesSize; i++) {
+        if (prices[i] < min && buy) {
+            min = prices[i];
+            max = prices[i];
+        }
+        if (prices[i] > min && buy)
+            buy = false;
+        if (prices[i] > max && !buy)
+            max = prices[i];
+        if ((prices[i] < max || i == pricesSize - 1) && !buy){
+            profit += max - min;
+            min = prices[i];
+            max = prices[i];
+            buy = true;
+        }
+            
+    }
+    return profit;
+    
+}
+```
+
+
+
+125. 给定一个字符串，只考虑字母和数字，忽略大小写，判断是否是回文字符串
+------
+
+太简单了，没啥可说的
+
+```C
+bool isPalindrome(char* s) {
+    int len = strlen(s);
+    if (len == 0) return true;
+    int left = 0, right = len - 1;
+    while (left < right) {
+        char l = s[left], r = s[right];
+        if (isalnum(l) && isalnum(r)) {
+            if (tolower(l) != tolower(r))
+                return false;
+            left++, right--;
+        } else {
+            if (!isalnum(l))
+                left++;
+            if (!isalnum(r))
+                right--;
+        } 
+    }
+    return true;
+}
+```
+
+
+
 134. 加油站
 ------
 
@@ -3168,6 +3366,102 @@ int rob(int* nums, int numsSize) {
 }
 ```
 
+208. 实现前缀树
+------
+
+```C++
+class TrieNode {
+public:
+    static const int branchCount = 26;
+    bool isWord;
+    TrieNode* next[branchCount];
+    // Initialize your data structure here.
+    TrieNode() : isWord(false) {
+        for (int i = 0; i < branchCount; i++)
+            next[i] = NULL;
+    }
+};
+
+class Trie {
+public:
+    Trie() {
+        root = new TrieNode();
+    }
+
+    // Inserts a word into the trie.
+    void insert(string word) {
+        TrieNode* location = root;
+        for (auto& c : word) {
+            if (!location->next[c - 'a'])
+                location->next[c - 'a'] = new TrieNode;
+            location = location->next[c - 'a'];
+        }
+        location->isWord = true;
+    }
+
+    // Returns if the word is in the trie.
+    bool search(string word) {
+        TrieNode* location = root;
+        for (auto& c : word) {
+            location = location->next[c - 'a'];
+            if (!location)
+                return false;
+        }
+        return location->isWord;
+    }
+
+    // Returns if there is any word in the trie
+    // that starts with the given prefix.
+    bool startsWith(string prefix) {
+        TrieNode* location = root;
+        for (auto& c : prefix) {
+            location = location->next[c - 'a'];
+            if (!location)
+                return false;
+        }
+        return true;
+    }
+
+private:
+    TrieNode* root;
+};
+
+// Your Trie object will be instantiated and called as such:
+// Trie trie;
+// trie.insert("somestring");
+// trie.search("key");
+```
+
+217. 包含重复数字
+------
+
+这道题太简单了，也没有什么精妙的解法，可以使用排序，Hash 等多种解法
+
+```C++
+bool containsDuplicate(vector<int>& nums) {
+    unordered_set<int> s;
+    for (auto& n : nums)
+        if (s.find(n) != s.end())
+            return true;
+        else
+            s.insert(n);
+    return false;
+}
+```
+
+226. 反转二叉树
+------
+
+```C
+struct TreeNode* invertTree(struct TreeNode* root) {
+    if (!root) return NULL;
+    struct TreeNode* temp = root->left;
+    root->left = invertTree(root->right);
+    root->right = invertTree(temp);
+    return root;
+}
+```
+
 231. 2的次方
 ------
 
@@ -3204,3 +3498,301 @@ int hIndex(int* cites, int n) {
 ```
 
 
+
+235. 二叉搜索树公共祖先
+------
+
+```C
+struct TreeNode* lowestCommonAncestor(struct TreeNode* root, struct TreeNode* p, struct TreeNode* q) {
+    while (root) {
+        if (root->val > p->val && root->val > q->val)
+            root = root->left;
+        else if (root->val < p->val && root->val < q->val)
+            root = root->right;
+        else
+            return root;
+    }
+}
+```
+
+236. 二叉树公共祖先
+------
+
+如果二叉树的根就是其中一个节点，那显然是这个。
+在两颗子树中分别查找，如果找到了，返回一个非 NULL 值，如果都找到了，则这个节点就是 LCA
+
+```C
+struct TreeNode* lowestCommonAncestor(struct TreeNode* root, struct TreeNode* p, struct TreeNode* q) {
+    if (!root || root == p || root == q)
+        return root;
+    struct TreeNode* left = lowestCommonAncestor(root->left, p, q);
+    struct TreeNode* right = lowestCommonAncestor(root->right, p, q);
+    
+    if (!left)
+        return right;
+    if (!right)
+        return left;
+    return root;
+}
+```
+
+237. 删除链表中的元素
+------
+
+```C
+void deleteNode(struct ListNode* node) {
+    if (!node || !node->next)
+        return;
+    struct ListNode* next = node->next;
+    node->val = next->val;
+    node->next = next->next;
+    free(next);
+}
+```
+
+238. 数组除了自己以外的乘积，规定不能用除法
+------
+
+首先从前往后乘，错开一位元素，这样每个元素都乘到了他之前的所有元素，最后一个元素已经是结果了。
+然后从后往前乘，同样错开一位，这样每个元素又把他之后的元素都得到了。
+
+```C++
+vector<int> productExceptSelf(vector<int>& nums) {
+    vector<int> result(nums.size());
+    int before = 1;
+    for (int i = 0; i < nums.size(); i++) {
+        result[i] = before;
+        before *= nums[i];
+    }
+    
+    int after = 1;
+    for (int i = 0; i < nums.size(); i++) {
+        result[i] *= after;
+        after *= nums[i];
+    }
+}
+```
+
+
+239. 滑动窗口最大值，给定一个滑动窗口，返回它移动过程中的最大值
+------
+
+这道题和 min stack 的思路完全一样，只不过换成了 deque
+
+```
+// 题目给定 k 一定是有效地
+vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+    vector<int> result;
+    if (nums.empty() || k <= 0)
+        return result;
+    deque<int> dq; // 存储的是索引，front 存储最大值，
+    for (int i = 0; i < nums.size(); i++) {
+        while (!dq.empty() && dq.front() < i - k + 1) // 弹出滑过的窗口
+            dq.pop_front();
+        while (!dq.empty() && nums[dq.back()] < nums[i]) // 弹出小的
+            dq.pop_back();
+        dq.push_back(i);
+        if (i >= k - 1)
+            result.push_back(nums[dq.front()]);
+    }
+    return result;
+}
+```
+
+240. 给定一个矩阵，每行从左到右都是增大的，每一列从上到下都是增大的，找出给定数字是否存在
+------
+
+我们考虑右上角的元素
+
+1.如果这个元素比 taget 大，那么整列都比 target 大，我们可以 c--
+2.如果这个元素比 target 小，那么正行都比 target 小，我们可以 r++
+
+```C
+bool searchMatrix(int** matrix, int row, int col, int target) {
+    int r = 0, c = col - 1;
+    while (r < row && c > -1)
+        if (matrix[r][c] == target)
+            return true;
+        else if (matrix[r][c] > target)
+            c--;
+        else
+            r++;
+    return false;
+}
+```
+
+242. 一个单词是否能由另一个变幻而来
+------
+
+还是，对于 ASCII 字符，直接用数组代替字典
+
+```C
+bool isAnagram(char* s, char* t) {
+    char ss[26] = {0};
+    char ts[26] = {0};
+    while (*s) {
+        ss[*s - 'a']++;
+        s++;
+        ts[*t - 'a']++;
+        t++;
+    }
+    if (*t) return false;
+    return memcmp(ss, ts, sizeof(ss)) == 0;
+}
+```
+
+243-256 Locked
+------
+
+257. 二叉树左右路径
+------
+
+典型的 DFS
+
+```C++
+vector<string> binaryTreePaths(TreeNode* root) {
+    vector<string> result;
+    if (!root) return result;
+    paths(result, "", root);
+    return result;
+}
+
+void paths(vector<string>& result, string path, TreeNode* root) {
+    if (path.empty()) path += to_string(root->val);
+    else path += "->" + to_string(root->val);
+    if (root->left)
+        paths(result, path, root->left);
+    if (root->right)
+        paths(result, path, root->right);
+    if (!root->left && !root->right)
+        result.push_back(path);
+}
+```  
+
+258. 把数字的每一位加起来，直到变成一个一位的数字
+------
+
+这完全是一道数学题，对于每个进制的数字都有规律 `(n - 1) % (x - 1) + 1`。实际上是把10进制的转化为9进制数字
+
+```
+int addDigits(int num) {
+    return (num - 1) % 9 + 1;
+}
+```
+
+260. 给定一个数组，每个数字都是重复的，只有两个数字不是，找出这两个数字
+------
+
+这道题很奇妙，依然可以使用 XOR 来解，首先遍历一遍，这时候由于有两个数字是不同的，那么一定结果不为0，那么其中一个 bit 位一定是一个数字有，另一个数字没有。
+在遍历一遍，同时把数字分两组，一组是有这个 bit 位，一组没有。就得出了结果。
+
+```C++
+vector<int> singleNumber(vector<int>& nums) {
+    int r = 0;
+    for (auto& n : nums) {
+        r ^= n;
+    }
+    int bit = r & -r;
+    vector<int> result = {0, 0};
+    for (auto& n : nums) {
+        if (n & bit)
+            result[0] ^= n;
+        else
+            result[1] ^= n;
+    }
+    return result;
+}
+```
+
+263. 丑陋的数字，质数因子只含有2,3,5的数字
+------
+
+按定义做就好了
+
+```C
+bool isUgly(int n) {
+    if (n <= 0)
+        return false;
+    if (n == 1)
+        return true;
+    while (n > 1)
+        if (n % 2 == 0)
+            n /= 2;
+        else if (n % 3 == 0)
+            n /= 3;
+        else if (n % 5 == 0)
+            n /= 5;
+        else
+            return false;
+    return true;
+}
+```
+
+264. 找出第 n 个丑陋数字
+------
+
+使用数列记录 n 个丑陋数字，每一个丑陋数字肯定是之前数字乘以235得到的，然后用三个指针分别指向上一个做乘法的数字，每次找出最小的一个
+
+```C
+#define MIN(a,b) ((a)<(b)?(a):(b))
+
+int nthUglyNumber(int n) {
+    if (n <= 0)
+        return -1;
+    if (n < 6)
+        return n;
+    int s2 = 0, s3 = 0, s5 = 0;
+    int* uglies = malloc(sizeof(int) * n);
+    uglies[0] = 1;
+    for (int i = 1; i < n; i++) {
+        int c2 = uglies[s2] * 2, c3 = uglies[s3] * 3, c5 = uglies[s5] * 5;
+        uglies[i] = MIN(c2, MIN(c3, c5));
+        if (uglies[i] == c2) s2++;
+        if (uglies[i] == c3) s3++;
+        if (uglies[i] == c5) s5++;
+    }
+    int u = uglies[n-1];
+    free(uglies);
+    return u;
+}
+```
+
+268. 丢失的数字，给定0...n，丢失了一个，然后放在长度为 n 的数组之中，找出这个数字
+------
+
+显然还是使用异或，注意 0 ^ x == x，所以直接把 0 忽略就行了。把每个数字都和 i 异或，丢失的数字就出来了
+
+```C
+int missingNumber(int* nums, int n) {
+    int result = 0;
+    for (int i = 0; i < n; i++)
+        result = result ^ (i + 1) ^ nums[i];
+    return result;
+}
+```
+
+287. 一个n+1的数组包含了1...n中的这些数字，证明一定存在重复，并找出这个重复
+------
+
+使用 Pigeon Hole Priciple 可以证明一定存在重复。据说高纳德解这个问题花了四个小时。
+
+我们把这个数组看做一个变幻方程 f(i) = A[i]，把一些数字变幻到另一些，那么存在一个 i != j s.t. f(i) == f(j).
+那么这个问题变成了链表求环的问题。对于链表，我们有 n = n->next 遍历列表，对于这个序列，则是 n = f(n) 
+
+```C
+int findDuplicate(int* nums, int n) {
+    int fast = n - 1, slow = n - 1;
+    do {
+        slow = nums[slow]  - 1;
+        fast = nums[nums[fast] - 1] - 1;
+    } while (slow != fast);
+    
+    fast = n - 1;
+    do {
+        slow = nums[slow] - 1;
+        fast = nums[fast] - 1;
+    } while (slow != fast);
+    
+    return slow + 1;
+}
+```
