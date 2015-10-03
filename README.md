@@ -12,7 +12,7 @@ LeetCode Complete
 
 Let the hack begin!
 
-1. 从数组中找出两个数字使得他们的和是给定的数字
+^1. 从数组中找出两个数字使得他们的和是给定的数字
 ------
 
 使用一个散列, 存储数字和他对应的索引。然后遍历数组, 如果另一半在散列当中, 那么返回
@@ -32,6 +32,24 @@ vector<int> twoSum(vector<int>& nums, int target) {
         hash[nums[i]] = i;
     }
     return result;
+}
+```
+
+如果数组是已经排序的呢？
+
+```C++
+sort(nums.begin(), nums.end()) // 假设已经排序，只有一个结果
+pair<int> twoSum(vector<int>& nums, int target) {
+    int left = 0, right = nums.size() - 1;
+    while (left < right) {
+        int s = nums[left] + nums[right];
+        if (s == target)
+            return make_pair(left, right);
+        else if (s < sum)
+            left++;
+        else
+            right--;
+    }
 }
 ```
 
@@ -1223,11 +1241,11 @@ double myPow(double x, int n) {
 52. N 皇后一共有多少个解
 ------
 
-53. 最大子序列和
+^53. 最大子序列和
 ------
 
 动态规划经典题目，遍历数组，如果已经当前子序列已经小于0了，抛弃并置 sum = 0
-如果比当前和更大，更新
+如果比当前和更大，更新。对于一个子序列，要么使得序列和增大，要么减小。
 
 `dp[n+1] = max(dp[n], dp[n] + A[n+1])`
 
@@ -1235,7 +1253,7 @@ double myPow(double x, int n) {
 int maxSubArray(int* nums, int numsSize) {
     int sum = 0;
     int m = INT_MIN;
-    
+
     for (int i =0; i< numsSize; i++) {
         sum += nums[i];
         if (sum > m)
@@ -3186,11 +3204,18 @@ int titleToNumber(char* s) {
 172. 阶乘中能有几个0
 ------
 
+显然先算出阶乘数字是会溢出的，而有0的话，就是需要10，也就是就需要2和5，
+显然2是比5多的。那么我们只要考虑5的个数就行了， 这时候需要注意，5/15等是算一个5，
+而25/75包含了两个5，所以我们计算的时候，数一遍包含5的（这时25等也被计算了），
+然后再数一遍包含25的就像当于数了两次了。
+
 ```C
 int trailingZeroes(int n) {
+    if (n < 0)
+        return -1;
     int fives = 0;
     while (n) {
-        fives += n / 5;
+        fives += n / 5; // num/5 .. num/25 .. num/125
         n /= 5;
     }
     return fives;
