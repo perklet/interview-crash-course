@@ -75,8 +75,6 @@ void replaceSpaces(char* s, int len) {
 }
 ```
 
-
-
 1.5 Pass
 ------
 
@@ -105,7 +103,81 @@ bool isRotation(string& s1, string& s2) {
 }
 ```
 
+2.1 移除未排序列表中的重复节点
+------
 
+因为是无序的，所以我们还是需要记录重复节点
+
+```C++
+// 显然第一个节点是不可能被移除的，所以不用返回新的头部
+void removeDuplicates(ListNode* head) {
+    unordered_set<int> vals;
+    ListNode dummy, *p = dummy;
+    dummy.next = head;
+    while (p->next) {
+        if (vals.find(p->next->val) != vals.end())
+            ListNode* next = p->next;
+            p->next = next->next;
+            free(next);
+        } else {
+            vals.insert(p->next->val);
+        }
+    }
+}
+```
+
+如果不允许使用额外空间，那么这个功能至少需要O(N^2)实现
+
+2.2 实现一个算法，找出链表中倒数第K个元素
+------
+
+LeetCode 19 注意K是非法的情况
+
+2.3 删除单向链表中的某个节点，假设你只有访问该节点的权限
+------
+
+LeetCode 237
+
+2.4 以给定的值x分割列表，使得小于x的元素都排在x的前面
+------
+
+LeetCode 83
+
+2.5 给定一个链表，每个链表节点存放一位数字，并且是反向存放的，求两个链表的和
+------
+
+LeetCode 2
+
+如果是正向存放的呢？
+
+先求出两个列表的长度，然后用零填充一个较短的链表，然后在从前往后相加。
+
+2.6 给定一个有环链表，找到环的开头
+------
+
+LeetCode 141 142
+
+2.7 判断链表是否是回文(Palindrome)
+------
+
+LeetCode 234
+
+3.1 如何用一个数组实现3个栈
+------
+
+如果是实现两个堆栈，可以把两头作为栈底，向中间生长。
+
+解法1: 固定分割，显然这样是不能让面试官满意的。。
+
+解法2: 弹性分割，并把数组看成是环状的！
+
+
+3.2 设计一个栈，支持min方法，返回栈中的最小值
+------
+
+LeetCode 155
+
+3.3 实现SetOfStacks，由多个栈组成
 
 11.1 合并两个有序数组
 ------

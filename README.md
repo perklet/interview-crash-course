@@ -2924,6 +2924,8 @@ bool wordBreak(string s, unordered_set<string>& wordDict) {
 141. 列表是否有环
 ------
 
+slow每次走一步，而fast每次走两步，因此在进入环之后，两者一定会相遇
+
 ```C
 bool hasCycle(struct ListNode *head) {
     struct ListNode* slow = head, * fast = head;
@@ -2940,27 +2942,29 @@ bool hasCycle(struct ListNode *head) {
 142. 列表是否有环？如果有找到环的开始
 ------
 
+从两者出发，到两者相遇，slow指针走了p步，而fast指针走了2p步，显然fast多走了一圈（或者多圈）。
+设 p = k + x, 2p = k + x + loop -> 2k + 2x = k + x + loop -> k + x = loop -> k = loop - x，剩下的长度正好也是k。
+假设入口处距离起点的距离是k，那么发生碰撞的点距离环的入口处距离也是k，所以两个指针分别从开始和碰撞点出发匀速一定会在环的入口相遇。
+
 ```C
 struct ListNode *detectCycle(struct ListNode *head) {
     struct ListNode* slow = head, * fast = head, *entry = NULL;
-    int counter = 0;
     bool found = false;
     while (!found && fast && fast->next && fast->next->next) {
         fast = fast->next->next;
         slow = slow->next;
-        counter++;
         if (slow == fast)
             found = true;
     }
-    
+
     if (!found) return NULL;
-    
+
     slow = head;
     while (slow != fast) {
         slow = slow->next;
         fast = fast->next;
     }
-    
+
     return slow;
 }
 ```
@@ -3522,7 +3526,48 @@ int hIndex(int* cites, int n) {
 }
 ```
 
+234. 判断一个链表是否是回文
+------
 
+解法1: 如果链表是可以改变的，不妨反转它的前半部分，然后再与后半部分比较
+
+解法2: 如果是只读的，复制一份也可以，但是不如使用堆栈
+
+```C++
+bool isPalindrome(ListNode* head) {
+    if (!head || !head->next)
+        return true;
+    int len = 0;
+    ListNode* temp = head;
+    while (temp) {
+        len++;
+        temp = temp->next;
+    }
+    
+    stack<int> stk;
+    temp = head;
+    int mid = len / 2;
+    while (mid--) {
+        stk.push(temp->val);
+        temp = temp->next;
+    }
+    
+    if (len & 0x01)
+        temp = temp->next;
+    
+    while (temp != NULL && !stk.empty()) {
+        int a = stk.top();
+        stk.pop();
+        int b = temp->val;
+        temp = temp->next;
+        if (a != b) {
+            return false;
+        }
+    }
+    
+    return true;
+}
+```
 
 235. 二叉搜索树公共祖先
 ------
@@ -3563,6 +3608,8 @@ struct TreeNode* lowestCommonAncestor(struct TreeNode* root, struct TreeNode* p,
 
 237. 删除链表中的元素
 ------
+
+直接将后继节点的值复制到当前节点
 
 ```C
 void deleteNode(struct ListNode* node) {
