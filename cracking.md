@@ -178,6 +178,159 @@ LeetCode 234
 LeetCode 155
 
 3.3 实现SetOfStacks，由多个栈组成
+------
+
+这实际上是一道OOD(面向对象设计)的题目
+
+3.4 汉诺塔
+------
+
+经典问题了，考虑 n＝2的时候，把上面1块放到中间，然后把下面一块移动完成。那么对于n，我们把n-1块移到中间即可
+
+```
+void moveDisks(int n, tower_t origin, tower_t dest, tower_t buffer) {
+    if (n <= 0) return;
+
+    moveDisks(n-1, origin, buffer, dest); // 先把上面的n-1块放到中间
+    moveBottom(origin, dest) // 把最底下的盘子直接放过去
+    moveDisks(n-1, buffer, dest, origin) // 把中间的再放到最后
+
+}
+```
+
+3.5 使用两个栈模拟一个队列
+------
+
+LeetCode 232
+
+3.6 对栈进行排序，额外的数据只能使用栈
+------
+
+使用简单插入排序，在一个新的栈中保存排序好的数据，从unsorted中弹出以后，不断弹出sorted为新元素找到正确位置
+
+```C
+stack<int> sortStack(const stack<int>& unsorted) {
+    stack<int> sorted;
+    while (!unsorted.empty()) {
+        int temp = unsorted.top(); // 待插入的新元素
+        unsorted.pop();
+        while (!sorted.empty() && sorted.top() > temp) { // 不断弹出，找到合适位置
+            int big = sorted.top(); sorted.pop();
+            unsorted.push(big);
+        }
+        sorted.push(temp); // 插入新元素
+    }
+    return sorted;
+}
+```
+
+3.7 题目咩看懂
+------
+
+4.1 检查二叉树是否平衡: 任意两个节点之间的高度差不超过1
+------
+
+LeetCode 110
+
+4.2 给定一个有向图，找出两个节点之间是否存在一条路径
+------
+
+> 碰到这类问题，有必要和面试官探讨一下DFS和BFS之间的利弊，例如，DFS实现起来比较简单，只需要简单的递归即可。BFS适合用来查找最短路径。
+> 而DFS在访问临近借点之前可能会深度便利其中一个临近节点
+
+4.3 给定一个有序数组，元素各不相同且按升序排列，创建一颗高度最小的二叉查找树
+------
+
+LeetCode 108
+
+4.4 给定一棵二叉树，创建层序访问的链表
+------
+
+LeetCode 102
+
+4.5 检查一棵二叉树是否为二叉查找树
+------
+
+LeetCode 98
+
+4.6 找到二叉查找树指定节点的下一个节点(中序后继)，假设每个节点都有指向父节点的指针
+------
+
+LeetCode 238, but locked
+
+按照中序遍历，左子树，当前节点，右子树，显然下一个节点应该在右边。也就是右子树中最左边的节点。
+考虑没有右子树的情况，如果当前节点是左子节点，下一个节点应该是父节点。如果是右节点，我们继续向上，如果到达了root，显然没有更多节点了。
+
+对于树这种可以分情况的最好先把各种情况想好了，在写代码。
+
+```C++
+TreeNode* inorderSucc(TreeNode* n) {
+    if (!n) return NULL;
+    if (n->right) {
+        TreeNode* right = n->right;
+        while (right->left)
+            right = right->left;
+        return right;
+    } else {
+        TreeNode* q = n, * parent = q.parent;
+        while (parent && parent->left != q) { // 找到当前节点可以作为左子节点的父节点
+            q = parent;
+            parent = parent->parent;
+        }
+        return parent;
+    }
+}
+```
+
+4.7 查找二叉树的公共祖先
+------
+
+LeetCode 236
+
+4.8 又两棵非常大的二叉树：T1 有几百万个节点，T2，有几百个节点。判断T2是否是T1的子树
+------
+
+这道题并没有标准解法。值得和面试官探讨，详见树上的讲解（161页）。
+
+4.9 打印节点数值总和为给定值的路径，路径可以从任意节点开始，任意节点结束
+------
+
+对于一个没有见过的问题，可以先简化，然后在推广。假设路径必须从root开始，那很简单。
+如果路径可以从任意节点开始，那么我们需要向上检查是否得到了相符的总和，而不能假定root是起点
+
+```C
+void findSum(TreeNode* root, int sum) {
+    int depth = depth(root);
+    vector<int> path(depth);
+    findSum(root, sum, path, 0);
+}
+
+void depth(TreeNode* root) {
+    if (!root) return 0;
+    return max(depth(root->left), depth(root->right)) + 1;
+}
+
+void findSum(TreeNode* root, int sum, vector<int> path, int level) {
+    if (!root)
+        return;
+
+    path[level] = root->val;
+    for (int i = level, t= 0; i >= 0; i--) {
+        t += path[i];
+        if (t == sum)
+            print(path, i ,level); // printing out path from i to level
+    }
+
+    findSum(root->left, sum, path, level + 1);
+    findSum(root->right, sum, path, level + 1);
+}
+```
+
+
+
+
+
+
 
 11.1 合并两个有序数组
 ------
@@ -239,7 +392,7 @@ void swap(int& a, int& b) {
 ```
 
 更巧妙的是，我们还可以使用异或 XOR 在解。假设 a = a0 ^ b0，那么 b = a ^ b0 = a0 ^ b0 ^ b0 = a0，然后 a = a ^ b = a0 ^ b0 ^ a0 = b0。完美解决！
-值得注意的是，因为使用异或不考虑变量的实际类型，只是粗暴地按 bit 位交换，因此适用于各种类型
+值得注意的是，因为使用异或不考虑变量的实际类型，只是粗暴地按 bit 位交换，因此适用于各种类型。不过值得注意的是千万不要用这种方法去交换变量的值，当x==y的时候会有灾难性后果。
 
 ```C++
 template<typename T>

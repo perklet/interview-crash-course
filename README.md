@@ -3025,8 +3025,9 @@ int findMin(int* A, int n) {
 155. 设计一个栈，在普通栈的基础上支持 getmin 操作
 ------
 
-题目的要求是在O(1)时间内实现 getmin，使用另一个栈存储每个元素对应的最小值即可。
-注意使用一个和原有栈大小相同的栈是浪费空间的，待更新！
+解法1: 使用额外的栈，每个值都记录一个当前最小值，浪费空间
+
+解法2: 也是使用额外的栈，但是惰性记录，只有当需要更新的时候才去记录
 
 ```C++
 class MinStack {
@@ -3035,12 +3036,14 @@ private:
     stack<int> m_min;
 public:
     void push(int x) {
-        m_min.push(m_stk.empty() ? x : min(x, m_min.top()));
+        if (x <= getMin())
+            m_min.push(x);
         m_stk.push(x);
     }
 
     void pop() {
-        m_min.pop();
+        if (m_stk.top() == getMin())
+            m_min.pop();
         m_stk.pop();
     }
 
@@ -3049,10 +3052,12 @@ public:
     }
 
     int getMin() {
-        return m_min.top();
+        return m_min.empty() ? INT_MAX : m_min.top();
     }
 };
 ```
+
+
 
 156-159 Locked
 ------
