@@ -326,10 +326,223 @@ void findSum(TreeNode* root, int sum, vector<int> path, int level) {
 }
 ```
 
+5.1 给定一个数n，和另一个数字m，然后给定区间(i, j)，区间保证可以大于m的二进制长度，把m的二进制表示插入到n的区间内
+------
 
+示例：n=100/000/00, m = 101, i = 2, j = 4 -> 100/101/00
 
+1. 把n中对应位置清零
+2. 把m移动到对应的位置
+3. 合并
 
+```C
+int merge(int n, int m, int i, int j) {
+    int left_mask = ~0 << (j+1);
+    int right_mask = (1 << i) - 1
+    int mask = left_mask | right_mask;
 
+    n &= mask;
+    m <<= i;
+
+    return n | m;
+}
+```
+
+5.2 给定一个0和1之间的实数，打印他的二进制表示，如果32位以内无法表示，打印error
+------
+
+我们知道 (0.101)2 = 1 * 2^-1 + 0 * 2^-2 + 1 * 2^-3，我们只要让这个数字不断的乘2，然后看它是否大于1，然后就可以得到第一位是不是1了
+
+```C++
+string printBinary(double num) {
+    if (num >= 1 || num <= 0)
+        return "error";
+
+    string result;
+    result += ".";
+    while (num > 0) {
+        if (result.size() >= 32)
+            return "error";
+        num *= 2;
+        if (num >= 1) {
+            result += "1";
+            num -= 1;
+        } else {
+            result += "0";
+        }
+    }
+
+    return result;
+}
+```
+
+5.3 先跳过
+------
+
+5.4 解释`n & (n-10) == 0`
+------
+
+LeetCode 231
+
+5.5 A和B之间有多少位不相同/需要改变多少位，才能把A变成B
+------
+
+使用XOR找出不同的位，然后统计1的个位数。需要注意的是不同的题目
+
+```C
+int bitSwapRequired(int a, int b) {
+    int diff = a ^ b, count = 0;
+    while (diff) {
+        diff &= diff - 1;
+        count++;
+    }
+    return count;
+}
+```
+
+5.6 交换一个整数的奇数位和偶数位
+------
+
+这道题很有趣，选取特殊的掩码即可
+
+```C
+// 考虑32bit int
+int32_t swapBits(int32_t x) {
+    int32_t odd_bits = x & 0xAAAAAAAA; // 0xAA as 10101010
+    int32_t even_bits = x & 0x55555555; // 0x55 as 01010101
+    return (odd_bits >> 1) | (even_bits << 1);
+}
+```
+
+5.7 没看懂题目
+------
+
+5.8 单色屏幕存贮在一维字节数组中，每个字节存储八个像素，屏幕宽度为w px，绘制从x1到达x2的水平线
+------
+
+显然可以逐bit设定，然而这样是拿不到offer的。更好的做法是逐字节设定。
+
+```C
+void drawHorizentalLine(uint8_t * screen, int width, int x1, int x2, int y) {
+
+    int start_offset = x1 % 8;
+    int start_full_byte = x1 / 8; // x1 所在字节
+    if (start_offset != 0)
+        start_full_byte++;
+
+    int end_offset = x2 % 8;
+    int end_full_byte = x2 / 8; // x2 所在字节
+    if (end_offset != 7)
+        end_full_byte--;
+
+    // 逐字节设定
+    for (int i = start_full_byte; i <= end_full_byte; i++)
+        screen[width / 8 * y + i] = (uint8_t)0xff;
+
+    uint8_t start_mask = (uint8_t) (0xff >> start_offset);
+    uint8_t end_mast = (uint8_t) ~(0xff >> end_offset + 1);
+
+    // to be continued
+
+```
+
+6.1 - 6.6 智力题
+------
+
+见OneNote笔记
+
+7.3 给定直角坐标系的两条线，确定他们会不会相交
+------
+
+我们知道在二维平面上两条线的关系不外乎：平行，相交，重合。问题是两条线重合算不算相交呢，需要问清楚。
+对于两条线如何表示，这又是面向对象设计的问题，需要讨论。
+
+```C++
+class Line {
+private:
+    static double EPSILON;
+    double m_slope; // 斜率
+    double m_y_intercept; // y轴交点
+
+public:
+    Line(double s, double y): m_slope(s), m_y_intercept(y) {};
+    // 重合视作相交
+    bool intersect(const Line& other) {
+        return abs(slope() - other.slope()) > EPSILON || // 斜率不同
+            abs(y_intercept() - other.y_intercept()) < EPSILON; // y轴交点相同
+    }
+    double slope() {return m_slope;}
+    double y_intercept() {return m_y_intercept;}
+};
+
+double Line::EPSILON = 0.00001;
+```
+
+遇到这类问题，务必：
+
+1. 多问，面试官可能故意模糊问题
+2. 仔细设计数据结构，权衡利弊，和面试官讨论
+3. 千万不要用＝＝判定浮点数
+
+7.4 只使用加号实现减法和乘除法
+------
+
+7.5 
+
+7.7 找出第k个丑数
+------
+
+LeetCode 264
+
+8.x OOD, see OneNote
+------
+
+9.1 小孩上楼梯，楼梯有n阶，小孩可以一次上1，2，3步，请问一共有多少种方法
+------
+
+ 注意如果只能1或2就是斐波那契数列。
+
+```C++
+// 递归
+int countSteps(int n) {
+    static vector<int> steps(1000, 1);
+    if (n < 0)
+        return 0;
+    if (n > 1 && steps[n] == 1)
+        steps[n] = countSteps(n -1) + countSteps(n - 2) + countSteps(n - 3);
+    return steps[n];
+}
+```
+
+```C
+// 迭代
+int countSteps(int n) {
+    int n3 = 1; // starts from n = 0
+    int n2 = 1; // starts from n = 1
+    int n1 = 2; // starts from n = 2
+
+    if (n < 0)
+        return 0;
+    if (n == 0 || n == 1)
+        return 1;
+    int steps = 0;
+    for (int i = 3; i <= n; i++) {
+        steps = n3 + n2 + n1;
+        n3 = n2;
+        n2 = n1;
+        n1 = steps;
+    }
+    return steps;
+}
+```
+
+9.2 设计一种算法，机器人只能👉👇移动，从(0, 0)移动到(x, y)有几种走法
+------
+
+LeetCode 62 63
+
+9.3 在有序数组A[0...n-1]中存在A[i] == i，找出该数字。如果存在重复值，又该如何做
+------
 
 
 11.1 合并两个有序数组
