@@ -520,6 +520,46 @@ vector<string> letterCombinations(string digits) {
 18. 4Sum
 ------
 
+```C++
+vector<vector<int>> fourSum(vector<int>& nums, int target) {
+    vector<vector<int>> result;
+    int n = nums.size();
+    
+    if (n < 4) return result;
+    
+    sort(nums.begin(), nums.end());
+    unordered_map<int, vector<pair<int, int>>> hash;
+    for(int i = 0; i < n; i++){
+        for(int j = i + 1; j < n; j++){
+            hash[nums[i]+nums[j]].push_back(make_pair(i,j));
+        }
+    }
+    
+    for (int i = 0; i < n; i++) {
+        if (i > 0 && nums[i] == nums[i-1])
+            continue;
+        for (int j = i+1; j < n; j++) {
+            if (j > i + 1 && nums[j] == nums[j-1])
+                continue;
+            int re = target - nums[i] - nums[j];
+            if (hash.find(re) != hash.end()) {
+                for (auto match : hash[re]) {
+                    int k = match.first, l = match.second;
+                    if (k > j) {
+                        if (!result.empty()
+                            && result.back()[0] == nums[i] && result.back()[1] == nums[j]
+                            && result.back()[2] == nums[k] && result.back()[3] == nums[l])
+                        continue;
+                        result.push_back({nums[i], nums[j], nums[k], nums[l]});
+                    }
+                }
+            }
+        }
+    }
+    return result;
+}
+```
+
 不会做
 
 E19. 删除链表中倒数第 k 的节点
@@ -546,6 +586,9 @@ struct ListNode* removeNthFromEnd(struct ListNode* head, int n) {
     return dummy.next;
 }
 ```
+
+19. 4Sum
+------
 
 E20. 判定给定的字符串是否是合法的括号序列, 可能包括大中小三类
 ------
@@ -1061,6 +1104,37 @@ bool isValidSudoku(char** board, int row, int col) {
 37. 求解数独
 ------
 
+```C++
+void solveSudoku(vector<vector<char>>& board) {
+        solve(board, 0);
+    }
+    bool solve(vector<vector<char>>& board, int ind){
+        if(ind==81) return true; 
+        int i=ind/9, j=ind%9;
+        if(board[i][j]!='.') 
+            return solve(board, ind+1);
+        else{
+            for(char f = '1'; f <= '9'; f++) {
+                if(isValidFill(board, i, j, f)) {
+                    board[i][j]= f;
+                    if(solve(board, ind+1)) return true;                
+                    board[i][j]='.';
+                }
+            }
+            return false;
+        }
+    }
+    bool isValidFill(vector<vector<char>>& board, int i, int j, char fill) {
+        for(int k=0; k<9; k++) {
+            if(board[i][k]==fill) return false; //check the row
+            if(board[k][j]==fill) return false; //check the column
+            int r= i/3*3+j/3;   //select the block
+            if(board[r/3*3+k/3][r%3*3+k%3]==fill) return false; //check the block
+        }            
+        return true;
+    }
+```
+
 38. 数数并说出来
 ------
 
@@ -1309,6 +1383,32 @@ void per(vector<vector<int>>& result, vector<int>& nums, int begin) {
         swap(nums[begin], nums[i]);
         per(result, nums, begin + 1);
         swap(nums[begin], nums[i]);
+    }
+}
+```
+
+47. Permutation，数组中有重复元素
+------
+
+```C++
+vector<vector<int>> permuteUnique(vector<int>& nums) {
+    sort(nums.begin(), nums.end());
+    vector<vector<int>> result;
+    dfs(result, nums, 0, nums.size());
+    return result;
+}
+
+void dfs(vector<vector<int>>& result, vector<int> nums, int start, int end) {
+    if (start == end - 1) {
+        result.push_back(nums);
+        return;
+    }
+    
+    for (int i = start; i < end; i++) {
+        if (start != i && nums[start] == nums[i])
+            continue;
+        swap(nums[start], nums[i]);
+        dfs(result, nums, start + 1, end);
     }
 }
 ```
@@ -1652,8 +1752,42 @@ int** generateMatrix(int n) {
 }
 ```
 
-60. 
+60. 给定n个数字，找出第k个Permutation
 ------
+
+```C++
+class Solution {
+public:
+    /*The logic is as follows: 
+    for n numbers the permutations can be divided to (n-1)! groups, 
+    thus k/(n-1)! indicates the index of current number, 
+    and k%(n-1)! denotes remaining sequence (to the right). 
+    We keep doing this until n reaches 0, then we get n numbers permutations that is kth. 
+    */
+    string getPermutation(int n, int k) {
+        int f = 1;
+        string s(n, '0');
+        for (int i = 1; i <= n; i++) {
+            f *= i;
+            s[i-1] = i + '0';
+        }
+        // 给定n,一共有n!个序列，f == n!
+        
+        k--;
+        for (int i = 0; i < n; i++) {
+            f /= n - i; // f /= n, f /= n - 1 ...
+            int j = i + k / f;
+            char c= s[j];
+            for (;j > i; j--) // shift space to put `c`, actually we could use swap
+                s[j] = s[j-1];
+            s[i] = c;
+            k %= f;
+        }
+        
+        return s;
+    }
+};
+```
 
 61. 把列表旋转到倒数第 k 位
 ------
@@ -1947,8 +2081,47 @@ string simplifyPath(string& path) {
 }
 ```
 
-72. 编辑距离
+72. 编辑距离，允许替换，删除，插入三种操作
 ------
+
+```C++
+/* 对于两个字符串比较，往往要使用二维的动态规划
+*/
+// 使用f[i][j]表示word1[1..i]和word2[1..j]之间的距离
+// 那么：
+// 1. 相等 f[i][j] = f[i-1][j-1];
+// 2. 不相等
+//     (a) if we replaced c with d: f[i][j] = f[i-1][j-1] + 1;
+//     (b) if we added d after c: f[i][j] = f[i][j-1] + 1;
+//     (c) if we deleted c: f[i][j] = f[i-1][j] + 1;
+// 另外使用一维数组表示二维数组还需要了解
+int minDistance(string word1, string word2) {
+    int l1 = word1.size(), l2 = word2.size();
+    vector<int> f(l2+1, 0);
+    
+    for (int i = 1; i <= l2; i++)
+        f[i] = i;
+        
+    for (int i = 1; i <= l1; i++) {
+        int prev = i;
+        for (int j = 1; j <= l2; j++) {
+            int cur;
+            if (word1[i-1] == word2[j-1])
+                cur = f[j-1];
+            else
+                cur = min(min(f[j-1], prev), f[j]) + 1;
+            
+            f[j-1] = prev;
+            prev = cur;
+        }
+        f[l2] = prev;
+    }
+    
+    return f[l2];
+}
+```
+
+
 
 73. 给定一个矩阵，如果某个元素为零，把所在的行和所在的列都设为零
 ------
@@ -2312,6 +2485,37 @@ struct ListNode* partition(struct ListNode* head, int x) {
     psmall->next = big.next;
     pbig->next = NULL;
     return small.next;
+}
+```
+
+87. 把字符串分区后，交换得到的字符串
+------
+
+```C++
+bool isScramble(string s1, string s2) {
+    if(s1==s2)
+        return true;
+
+    // 先判断字符是否一致
+    int len = s1.length();
+    int count[26] = {0};
+    for(int i=0; i<len; i++) {
+        count[s1[i]-'a']++;
+        count[s2[i]-'a']--;
+    }
+
+    for(int i=0; i<26; i++) {
+        if(count[i]!=0)
+            return false;
+    }
+
+    for(int i=1; i<=len-1; i++) {
+        if( isScramble(s1.substr(0,i), s2.substr(0,i)) && isScramble(s1.substr(i), s2.substr(i)))
+            return true;
+        if( isScramble(s1.substr(0,i), s2.substr(len-i)) && isScramble(s1.substr(i), s2.substr(0,len-i)))
+            return true;
+    }
+    return false;
 }
 ```
 
@@ -2944,26 +3148,46 @@ void flatten(TreeNode* root) {
 }
 ```
 
-115. 买卖股票最佳时机，只能交易一次
+115. 通过删掉一些字母得到子序列，问有多少种方法能够得到子序列呢
 ------
 
-```C
-int maxProfit(int* prices, int pricesSize) {
-    if (pricesSize < 2) return 0;
-    int profit = 0;
-    int min = prices[0];
-    // 从前到后依次遍历，如果有更好的收益更新，或者更新 min，限制条件是先出现最小值
-    for (int i = 0; i < pricesSize; i++) {
-        if (prices[i] > min) {
-            if (prices[i] - min > profit)
-                profit = prices[i] - min;
-        } else {
-            min = prices[i];
-        }
+使用DP，
+
+```C++
+/**
+ * Solution (DP):
+ * 我们扫描字符串s
+ * Path[i][j] 代表T.substr(1...i) 在 S(1...j)不同的子序列的数量
+ * 
+ * Path[i][j] = Path[i][j-1]            (discard S[j])
+ *              +     Path[i-1][j-1]    (S[j] == T[i] and we are going to use S[j])
+ *                 or 0                 (S[j] != T[i] so we could not use S[j])
+ * while Path[0][j] = 1 and Path[i][0] = 0.
+ */
+
+
+class Solution {
+public:
+    int numDistinct(string s, string t) {
+        int m = t.size();
+        int n = s.size();
+        
+        if (m > n)
+            return 0;
+        vector<vector<int>> path(m+1, vector<int>(n+1, 0));
+        
+        for (int i = 0; i <= n; i++)
+            path[0][i] = 1;
+        
+        for (int j = 1; j <= n; j++) // S
+            for (int i = 1; i <= m; i++) // T
+                path[i][j] = path[i][j-1] + (t[i-1] == s[j-1] ? path[i-1][j-1] : 0);
+        
+        return path[m][n];
     }
-    return profit;
-}
+};
 ```
+
 
 116. 完全二叉树中把每个节点指向他这一层的右面的节点
 ------
@@ -3072,6 +3296,27 @@ int minimumTotal(vector<vector<int>>& triangle) {
 }
 ```
 
+121. 买卖股票最佳时机，只能交易一次
+------
+
+```C
+int maxProfit(int* prices, int pricesSize) {
+    if (pricesSize < 2) return 0;
+    int profit = 0;
+    int min = prices[0];
+    // 从前到后依次遍历，如果有更好的收益更新，或者更新 min，限制条件是先出现最小值
+    for (int i = 0; i < pricesSize; i++) {
+        if (prices[i] > min) {
+            if (prices[i] - min > profit)
+                profit = prices[i] - min;
+        } else {
+            min = prices[i];
+        }
+    }
+    return profit;
+}
+```
+
 121. 买卖股票最佳时机，限制只能做一笔交易
 ------
 
@@ -3125,6 +3370,14 @@ int maxProfit(int* prices, int pricesSize) {
     return profit;
     
 }
+```
+
+123. 股票交易，限制只能交易两股
+------
+
+每次求解的是：卖出两股以后的最大值，刚刚买入第二股的最大值，卖出第一股时候的最大值，买入第一股时候的最大值。
+
+```C++
 ```
 
 124. 二叉树路径最大和，路径可以从任意一个节点开始到任意一个节点结束
@@ -3433,6 +3686,32 @@ int canCompleteCircuit(int* gas, int gasSize, int* cost, int costSize) {
     }
     
     return total >= 0 ? j + 1 : -1;
+}
+```
+
+135. 糖块，成绩高的需要比他身边成绩低的获得更多的糖
+------
+
+```C++
+int candy(vector<int>& ratings) {
+    int n = ratings.size();
+    if (n <= 1)
+        return n;
+    vector<int> candies(n, 1);
+    
+    for (int i =1; i < n; i++)
+        if (ratings[i] > ratings[i-1])
+            candies[i] = candies[i-1] + 1;
+    
+    for (int i = n - 1; i > 0; i--)
+        if (ratings[i-1] > ratings[i])
+            candies[i-1] = max(candies[i] + 1, candies[i-1]);
+    
+    int result = 0;
+    for (auto i : candies)
+        result += i;
+    
+    return result;
 }
 ```
 
@@ -3888,22 +4167,23 @@ void reverseWords(char *s) {
 }
 ```
 
-152. 在旋转数组中查找最小值，没有重复
+152. 最大子序列成绩
 ------
 
 ```C
-int findMin(int* A, int n) {
-    int left = 0; int right = n - 1;
-    while (left < right - 1) {
-        int mid = left + (right - left) / 2;
-        if (A[left] > A[mid])
-            right = mid;
-        else if (A[right] < A[mid])
-            left = mid;
-        else
-            right = mid;
+int maxProduct(vector<int>& A) {
+    int n = A.size();
+    int r = A[0];
+    for (int i = 1, imax = r, imin = r; i < n; i++) {
+        if (A[i] < 0)
+            swap(imax, imin);
+
+        imax = max(A[i], imax * A[i]);
+        imin = min(A[i], imin * A[i]);
+
+        r = max(r, imax);
     }
-    return A[left] < A[right] ? A[left] : A[right];
+    return r;
 }
 ```
 
@@ -4577,6 +4857,36 @@ struct ListNode* reverseList(struct ListNode* head) {
 }
 ```
 
+207. 标准的拓扑排序
+------
+
+```C++
+bool canFinish(int numCourses, vector<pair<int, int>>& prerequisites) {
+    vector<unordered_set<int>> graph(numCourses);
+    for (auto& p : prerequisites)
+        graph[p.second].insert(p.first); 
+        
+    vector<int> d(numCourses, 0);
+    
+    for (auto& node : graph)
+        for (auto i : node)
+            d[i]++;
+    
+    for (int j = 0; j < numCourses; j++) {
+        int i;
+        for (i = 0; i < numCourses && d[i] != 0; i++)
+            ;
+        if (i == numCourses)
+            return false;
+        d[i] = -1; // remove
+        for (auto n : graph[i])
+            d[n]--;
+    }
+    
+    return true;
+}
+```
+
 
 
 208. 实现前缀树
@@ -4643,6 +4953,24 @@ private:
 // Trie trie;
 // trie.insert("somestring");
 // trie.search("key");
+```
+
+209. 最短子数组使得和大于某个数
+------
+
+```C++
+int minSubArrayLen(int s, vector<int>& nums) {
+    int start = 0, sum = 0, len = INT_MAX;
+    for (int i = 0; i < nums.size(); i++) {
+        sum += nums[i];
+        while (sum >= s) {
+            len = min(len, i - start + 1);
+            sum -= nums[start++];
+        }
+    }
+    
+    return len == INT_MAX? 0 : len;
+}
 ```
 
 211. 添加和搜索字符串
@@ -4751,6 +5079,53 @@ public:
 // wordDictionary.search("pattern");
 ```
 
+212. 单词搜索
+------
+
+```C++
+class Solution {
+private:
+    Trie m_trie;
+public:
+    vector<string> findWords(vector<vector<char>>& board, vector<string>& words) {
+        for (auto& word : words)
+            m_trie.insert(word);
+        int row = board.size();
+        int col = board[0].size();
+        
+        unordered_set<string> result_set;
+        vector<vector<bool>> visited(row, vector<bool>(col, false));
+        for (int i = 0; i < row; i++)
+            for(int j = 0; j < col; j++)
+                find(result_set, board, visited, "", i, j);
+        vector<string> result;
+        for (auto& r : result_set)
+            result.push_back(r);
+        return result;
+    }
+    
+    void find(unordered_set<string>& r, vector<vector<char>>& board, vector<vector<bool>>& visited, string word, int i, int j)
+    {
+        if (i < 0 || i >= board.size() || j < 0 || j >= board[0].size() || visited[i][j])
+            return;
+        word += board[i][j];
+        if (!m_trie.startsWith(word))
+            return;
+        if (m_trie.search(word))
+            r.insert(word);
+        
+        visited[i][j] = true;
+        find(r, board, visited, word, i-1, j);
+        find(r, board, visited, word, i+1, j);
+        find(r, board, visited, word, i, j-1);
+        find(r, board, visited, word, i, j+1);
+        visited[i][j] = false;
+
+    }
+    
+};
+```
+
 213. 小偷偷环状数组
 ------
 
@@ -4777,6 +5152,11 @@ int rob(int* nums, int numsSize) {
     return max(robNonCyclic(nums, numsSize - 1), robNonCyclic(nums + 1, numsSize - 1));
 }
 ```
+
+214. 最短回文字符串，给指定的字符串添加字母获得回文
+------
+
+
 
 215. 数组中第k大的数字
 ------
@@ -4855,6 +5235,79 @@ bool containsDuplicate(vector<int>& nums) {
 }
 ```
 
+219. 包含重复数字，并且两个的坐标不超过k
+------
+
+```C++
+// 滑动窗口保存前k个值，如果有重复的就返回
+bool containsNearbyDuplicate(vector<int>& nums, int k) {
+    unordered_set<int> s;
+    if (k <= 0)
+        return false;
+    if (k >= nums.size())
+        k = nums.size() - 1;
+        
+    for (int i = 0; i < nums.size(); i++) {
+        if (i > k)
+            s.erase(nums[i - k - 1]);
+        if (s.find(nums[i]) != s.end())
+            return true;
+        s.insert(nums[i]);
+    }
+    
+    return false;
+}
+```
+
+220. 同上一题，同时保证两个数字之间小于t
+------
+
+保证两个数字之差小于t
+
+```C++
+bool containsNearbyAlmostDuplicate(vector<int>& nums, int k, int t) {
+    set<int> window;
+    for (int i = 0; i < nums.size(); i++) {
+        if (i > k)
+            window.erase(nums[i - k - 1]);
+        auto pos = window.lower_bound(nums[i] - t);
+        if (pos != window.end() && *pos - nums[i] <= t)
+            return true;
+        window.insert(nums[i]);
+    }
+    return false;
+}
+```
+
+221. 找到最大的正方形
+------
+
+使用动态规划https://leetcode.com/discuss/38489/easy-solution-with-detailed-explanations-8ms-time-and-space
+
+```C++
+int maximalSquare(vector<vector<char>>& matrix) {
+    if (matrix.empty()) return 0;
+    int m = matrix.size(), n = matrix[0].size();
+    vector<int> dp(m + 1, 0);
+    int maxsize = 0, pre = 0;
+    for (int j = 0; j < n; j++) {
+        for (int i = 1; i <= m; i++) {
+            int temp = dp[i];
+            if (matrix[i - 1][j] == '1') {
+                dp[i] = min(dp[i], min(dp[i - 1], pre)) + 1;
+                maxsize = max(maxsize, dp[i]);
+            }
+            else dp[i] = 0; 
+            pre = temp;
+        }
+    }
+    return maxsize * maxsize;
+}
+```
+
+
+
+
 222. 找到该节点作为根节点是完全树的节点的数量
 ------
 
@@ -4878,6 +5331,21 @@ int countNodes(struct TreeNode* root) {
         return (1 << left_height) - 1;
     
     return countNodes(root->left) + countNodes(root->right) + 1;
+}
+```
+
+223. 找出两个长方形覆盖的面积
+------
+
+```C
+int computeArea(int left1, int down1, int right1, int up1, int left2, int down2, int right2, int up2) {
+    int left = max(left1, left2);
+    int right = max(min(right1, right2), left);
+    
+    int down = max(down1, down2);
+    int up = max(min(up1, up2), down);
+    
+    return -((left1 - right1) * (up1 - down1) + (left2 - right2) * (up2 - down2) - (left - right) * (up - down));
 }
 ```
 
@@ -5011,6 +5479,68 @@ int calculate(string s) {
 }
 ```
 
+聚合区间，给定一排序数组，把相邻的数字用区间表示
+------
+
+```C++
+vector<string> summaryRanges(vector<int>& nums) {
+    int n = nums.size();
+    vector<string> result;
+    if (n == 0) return result;
+    
+    for (int i = 0; i < n; ) {
+        int start = i, end = i;
+        while (end + 1 < n && nums[end + 1] == nums[end] + 1)
+            end++;
+        if (end > start)
+            result.push_back(to_string(nums[start]) + "->" + to_string(nums[end]));
+        else
+            result.push_back(to_string(nums[start]));
+        i = end + 1;
+    }
+    
+    return result;
+}
+```
+
+229. 找出超过三分之一的元素
+------
+
+```C++
+vector<int> majorityElement(vector<int>& nums) {
+    
+    int count1 = 0, count2 = 0;
+    int a, b;
+    
+    for (auto n : nums) {
+        if (count1 == 0 || n == a) {
+            count1++;
+            a = n;
+        } else if (count2 == 0 || n == b) {
+            count2++;
+            b = n;
+        } else {
+            count1--;
+            count2--;
+        }
+    }
+    
+    count1 = count2 = 0;
+    for (int n : nums) {
+        if (n == a) count1++;
+        if (n == b) count2++;
+    }
+    
+    vector<int> result;
+    
+    if (count1 > nums.size() / 3)
+        result.push_back(a);
+    if (count2 > nums.size() / 3 && a != b)
+        result.push_back(b);
+    return result;
+}
+```
+
 230. 二叉树中第k小的数字
 ------
 
@@ -5111,6 +5641,20 @@ private:
     stack<int> in;
     stack<int> out;
 };
+```
+
+233. 数字1的个数
+------
+
+```C
+int countDigitOne(int n) {
+    int ones = 0;
+    for (long long m = 1; m <= n; m *= 10) {
+        int a = n/m, b = n%m;
+        ones += (a + 8) / 10 * m + (a % 10 == 1) * (b + 1);
+    }
+    return ones;
+}
 ```
 
 234. 判断一个链表是否是回文
@@ -5277,6 +5821,26 @@ bool searchMatrix(int** matrix, int row, int col, int target) {
         else
             r++;
     return false;
+}
+```
+
+241. 添加括号得到不同的结果
+------
+
+```C++
+vector<int> diffWaysToCompute(string input) {
+    vector<int> output;
+    for (int i = 0; i < input.size(); i++) {
+        char c = input[i];
+        if (ispunct(c))
+            for (int a : diffWaysToCompute(input.substr(0, i)))
+                for (int b : diffWaysToCompute(input.substr(i+1)))
+                    output.push_back(c == '+' ? a + b : c == '-'? a - b: a *b);
+    }
+    
+    if (output.empty())
+        output.push_back(stoi(input));
+    return output;
 }
 ```
 
@@ -5513,6 +6077,70 @@ int hIndex(int* citations, int citationsSize) {
 }
 ```
 
+278. 第一个坏版本
+------
+
+```C
+// 实际上是lower_bound函数
+int firstBadVersion(int n) {
+    int left = 0, right = n;
+    while (left < right) {
+        int mid = left + (right - left) / 2;
+        if (!isBadVersion(mid))
+            left = mid + 1;
+        else
+            right = mid;
+    }
+    return left;
+}
+```
+
+279. 分解为平方数的和
+------
+
+最多4个即可，尝试在三个以内是否可以。
+
+```C
+int numSquares(int n) {
+    int ub = sqrt(n);
+    for (int a=0; a<=ub; ++a) {
+        for (int b=a; b<=ub; ++b) {
+            int c = sqrt(n - a*a - b*b);
+            if (a*a + b*b + c*c == n)
+                return !!a + !!b + !!c;
+        }
+    }
+    return 4;
+}
+```
+
+282. 添加运算符使得算式成立
+------
+
+```C++
+vector<string> addOperators(string num, int target) {
+    vector<string> result;
+    if (num.size() == 0) 
+        return result;
+    dfs(num, target, result, num[0] - '0', num.substr(0, 1), 1, 1);
+    return result;
+}
+
+void dfs(string num, int target, vector<string> & v, long long last, string s, int idx, int left) {
+    if (idx == num.length()){
+        if (target == last*left)
+            v.push_back(s);
+        return;
+    } else {
+        if(last!=0) 
+            dfs(num, target, v, last * 10 + num[idx] - '0', s + num.substr(idx, 1), idx + 1, left);
+        dfs(num, target, v, num[idx] - '0', s + '*' + num.substr(idx, 1), idx + 1, last*left);
+        dfs(num, target - left*last, v, num[idx] - '0', s + '+' + num.substr(idx, 1), idx + 1, 1);
+        dfs(num, target - left*last, v, num[idx] - '0', s + '-' + num.substr(idx, 1), idx + 1, -1);
+    }
+}
+```
+
 283. 移动0
 ------
 
@@ -5599,3 +6227,35 @@ int findDuplicate(int* nums, int n) {
     return slow + 1;
 }
 ```
+
+289. Conway's Game of Life
+------
+
+哈哈，机智，使用没有使用的第二个位存储下一代
+
+```C
+int max(int a, int b) {return a > b ? a :b;}
+int min(int a, int b) {return a < b ? a :b;}
+void gameOfLife(int** board, int row, int col) {
+    for (int i = 0; i < row; i++) {
+        for (int j = 0; j < col; j++) {
+            int count = 0;
+            for (int m=max(i-1, 0); m<min(i+2, row); m++)
+                for (int n=max(j-1, 0); n<min(j+2, col); n++)
+                    count += (board[m][n] & 1);
+            if (count == 3 || count - board[i][j] == 3) // real algo here
+                board[i][j] |= 2;
+        }
+    }
+    for (int i = 0; i < row; i++)
+        for (int j = 0; j < col; j++)
+            board[i][j] >>= 1;
+}
+```
+
+290. 单词模式，给定一个模式abba等，判断单词是否是这个模式的。
+------
+
+```C++
+```
+
