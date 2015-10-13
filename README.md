@@ -90,8 +90,8 @@ int lengthOfLongestSubstring(char* s) {
     int indices[256];
     for (int i = 0; i < 256; i++) //init the array, memset can only be used for char
         indices[i] = -1;
-    int left = 0;
-    int longest = 0;
+    int left = 0; // 关键点
+    int longest = 0; // 关键点
 
     for (int i = 0; s[i] != '\0'; i++) {
         left = max(left, indices[s[i]] + 1);
@@ -4187,7 +4187,26 @@ int maxProduct(vector<int>& A) {
 }
 ```
 
-153. 在旋转数组中查找最小值，可能有重复
+*153. 在旋转数组中查找最小值
+------
+
+```C
+int findMin(int* A, int n) {
+    int left = 0; int right = n - 1;
+    while (left < right - 1) {
+        int mid = left + (right - left) / 2;
+        if (A[left] > A[mid])
+            right = mid;
+        else if (A[right] < A[mid])
+            left = mid;
+        else
+            right = mid;
+    }
+    return A[left] < A[right] ? A[left] : A[right];
+}
+```
+
+*154. 在旋转数组中查找最小值，可能有重复
 ------
 
 ```C
@@ -4294,6 +4313,13 @@ int findPeakElement(int* nums, int numsSize) {
 }
 ```
 
+163. Locked
+------
+
+164. 未排序数组中相差最大的两个数之间的差
+------
+
+
 165. 比较版本号大小
 ------
 
@@ -4309,7 +4335,8 @@ vector<int> ver(const string& version) {
             num = 0;
         }
     }
-    result.push_back(num);
+    // 对于所有这种分割符中读取数字的都需要注意最后一个
+    result.push_back(num); // notice here
     return result;
 }
 
@@ -4328,7 +4355,7 @@ int compareVersion(string version1, string version2) {
 }
 ```
 
-166. 分数生成小数
+＊166. 分数生成小数
 ------
 
 ```C++
@@ -4366,10 +4393,10 @@ string fractionToDecimal(long numerator, long denominator) {
 167. Locked
 ------
 
-168. 生成 Excel 表格标题
+＊168. 生成 Excel 表格标题
 ------
 
-注意 A 对应的是1而不是0
+注意 A 对应的是1而不是0，而且数字也是从1开始的
 
 ```C++
 string convertToTitle(int n) {
@@ -4390,22 +4417,19 @@ string convertToTitle(int n) {
 数字和他不一样，那么我们减一，当次数为0的时候，我们知道这个数字在已经便利过的数字
 中出现小于一半了，这时候我们换下一个数字，最后剩下的一定是超过一半的数字。
 
-```C
-int majorityElement(int* nums, int numsSize) {
-    int candidate = nums[0];
-    int times = 1;
-    for (int i = 1; i < numsSize; i++) {
-        if (times == 0) {
-            candidate = nums[i];
-            times++;
+```C++
+int majorityElement(vector<int>& nums) {
+    int candidate, count = 0;
+    for (auto i : nums) {
+        if (count == 0 || candidate == i) {
+            count++;
+            candidate = i;
         } else {
-            if (nums[i] == candidate)
-                times++;
-            else
-                times--;
+            count--;
         }
     }
     return candidate;
+}
 }
 ```
 
@@ -4491,18 +4515,19 @@ private:
 174. 地下城游戏
 ------
 
-王子在格子的左上角，需要到右下角去救公主，在过程中王子不能死掉
+王子在格子的左上角，需要到右下角去救公主，在过程中王子不能死掉，和机器人走路一样，使用动态规划
 
 ```C++
 int calculateMinimumHP(vector<vector<int>>& dungeon) {
     int row = dungeon.size();
     int col = dungeon[0].size();
     vector<vector<int>> bloods(row + 1, vector<int> (col + 1, INT_MAX));
-    bloods[row][col-1] = bloods[row-1][col] = 1;
+    bloods[row][col-1] = bloods[row-1][col] = 1; // 公主的两边
+    // 从公主那里逆向推
     for (int i = row-1; i >= 0; i--) {
         for (int j = col-1; j >= 0; j--) {
-             int need = min(bloods[i+1][j], bloods[i][j+1]) - dungeon[i][j];
-             bloods[i][j] = need > 0 ? need : 1;
+             int need = min(bloods[i+1][j], bloods[i][j+1]) - dungeon[i][j]; // 缺乏的血量 = 到达下一步最少的血量 - 这一步消耗的血量
+             bloods[i][j] = need > 0 ? need : 1; // 王子的血量至少为1
         }
     }
     return bloods[0][0];
@@ -4531,7 +4556,7 @@ string largestNumber(vector<int>& nums) {
         result += num_string;
     int start = result.find_first_not_of("0");
     if (start == string::npos) return "0";
-    return result.substr(start, result.size() - start);
+    return result.substr(start);
 }
 ```
 
@@ -4541,18 +4566,19 @@ string largestNumber(vector<int>& nums) {
 186 Locked
 ------
 
-187. 重复DNA序列
+187. 找到所有10个字母唱的重复DNA序列
 ------
 
 ```C++
-/ naive 的做法从前往后，记录字符串
+// naive 的做法从前往后，记录字符串
 // 观察 ATCG 四个字符的特征，并把他们编码为一个int
 // 十个字符正好编码在 32bit 的 int 中
 vector<string> findRepeatedDnaSequences(string s) {
     unordered_map<int, int> hash;
     vector<string> result;
     for (int t = 0, i = 0; i < s.size(); i++)
-        if (hash[t = t << 3 & 0x3FFFFFFF | s[i] & 0b111]++ == 1)
+        // 左移弹出老元素，求交为了只使用30bit，求或添加新元素。
+        if (hash[t = t << 3 & 0x3FFFFFFF | s[i] & 0b111]++ == 1) // 等于1为了避免重复
             result.push_back(s.substr(i - 9, 10));
     return result;
 }
@@ -4646,6 +4672,7 @@ int rob(int* nums, int numsSize) {
 ------
 
 ```C++
+// level order 遍历
 vector<int> rightSideView(TreeNode* root) {
     vector<int> result;
     if (!root)
@@ -4655,8 +4682,8 @@ vector<int> rightSideView(TreeNode* root) {
     
     while (!q.empty()) {
         TreeNode* node;
-        int len = q.size();
-        for (int i = 0; i < len; i++) { // tricky here, notice the cached len
+        int len = q.size(); // 保存为了获得最后一个元素
+        for (int i = 0; i < len; i++) { // 当前数组的最后一个元素就是最右边的元素
             node = q.front();
             q.pop();
             if (node->left)
@@ -4720,7 +4747,7 @@ public:
         if (grid.empty() || grid[0].empty())
             return 0;
         int r = grid.size(), c = grid[0].size();
-        UnionFind uf(r * c + 1);
+        UnionFind uf(r * c + 1); // extra element is for water
         for (int i = 0; i < r; i++) {
             for (int j = 0; j < c; j++) {
                 if (grid[i][j] == LAND) {
@@ -4756,7 +4783,7 @@ int rangeBitwiseAnd(int m, int n) {
 }
 ```
 
-202. 快乐数字，各位数字平方相加得到下一个数字
+202. 快乐数字，各位数字平方相加得到下一个数字，如果最后等于1
 ------
 
 没啥，一直算就可以了。。
@@ -4783,7 +4810,7 @@ struct ListNode* removeElements(struct ListNode* head, int val) {
     struct ListNode dummy, *p = &dummy;
     dummy.next = head;
     while (p) {
-        if (p->next && p->next->val == val) {
+        if (p->next && p->next->val == val) { // not forward here
             struct ListNode* next = p->next;
             p->next = next->next;
             free(next);
@@ -4799,14 +4826,16 @@ struct ListNode* removeElements(struct ListNode* head, int val) {
 204. 找出素数
 ------
 
+什么筛子，忘了
+
 ```C++
 int countPrimes(int n) {
     vector<bool> primes(n, true);
     primes[0] = primes[1] = false;
     
-    for (int i = 2; i * i < n; i++) 
+    for (int i = 2; i * i < n; i++) // 注意，只到sqrt(n)
         if (primes[i])
-            for (int j = i * i; j < n; j += i)
+            for (int j = i * i; j < n; j += i) // 从 i * i 开始，因为i* i--已经被杀过了
                 primes[j] = false;
                 
     int count = 0;
@@ -4817,22 +4846,21 @@ int countPrimes(int n) {
 }
 ```
 
-205. 同构字符串
+205. 同构字符串，可以看作word pattern的简化
 ------
 
 ```C
 bool isIsomorphic(char* s, char* t) {
-    char ss[256] = { '\0' };
-    char ts[256] = { '\0' };
-    while (*s) {
-        if (ss[*s] == 0 && ts[*t] == 0) {
-            ss[*s] = *t;
-            ts[*t] = *s;
-        } else if (ss[*s] != *t || ts[*t] != *s) {
+    int ss[256] = { 0 };
+    int ts[256] = { 0 };
+    if (strlen(s) != strlen(t))
+        return false;
+    int i = 0;
+    while (s[i]) {
+        if (ss[s[i]] != ts[t[i]])
             return false;
-        }
-        s++;
-        t++;
+        ss[s[i]] = ts[t[i]] = i + 1;
+        i++;
     }
     return true;
 }
@@ -4845,42 +4873,48 @@ bool isIsomorphic(char* s, char* t) {
 struct ListNode* reverseList(struct ListNode* head) {
     if (!head || !head->next)
         return head;
-    struct ListNode *p = NULL, *cur = head;
+    struct ListNode *p = NULL, *cur = head, *next;
     
     while (cur) {
-        struct ListNode* next = cur->next;
-        cur->next = p;
-        p = cur;
+        next = cur->next; // cache
+        cur->next = p; // reverse pointing
+        p = cur; // moves forwards
         cur = next;
     }
     return p;
 }
 ```
 
-207. 标准的拓扑排序
+```C
+// recursive
+```
+
+*207. 标准的拓扑排序
 ------
 
+给定边这种方法表示图也是醉了
+
 ```C++
-bool canFinish(int numCourses, vector<pair<int, int>>& prerequisites) {
-    vector<unordered_set<int>> graph(numCourses);
+bool canFinish(int numCourses, vector<pair<int, int>>& prerequisites) { // next -> before
+    vector<unordered_set<int>> graph(numCourses); // 每条边和他的下一步，临接表
     for (auto& p : prerequisites)
         graph[p.second].insert(p.first); 
         
-    vector<int> d(numCourses, 0);
+    vector<int> d(numCourses, 0); // in degree
     
-    for (auto& node : graph)
-        for (auto i : node)
-            d[i]++;
+    for (auto& nexts : graph)
+        for (auto next : nexts)
+            d[next]++;
     
-    for (int j = 0; j < numCourses; j++) {
-        int i;
-        for (i = 0; i < numCourses && d[i] != 0; i++)
+    for (int i = 0; i < numCourses; i++) {
+        int nondep; // in degree == 0
+        for (nondep = 0; nondep < numCourses && d[nondep] != 0; nondep++)
             ;
-        if (i == numCourses)
+        if (nondep == numCourses)
             return false;
-        d[i] = -1; // remove
-        for (auto n : graph[i])
-            d[n]--;
+        d[nondep] = -1; // remove
+        for (auto next : graph[nondep]) // 所有下一步都 －1 
+            d[next]--;
     }
     
     return true;
@@ -4958,6 +4992,8 @@ private:
 209. 最短子数组使得和大于某个数
 ------
 
+双指针，超过和之后再尝试从开始处减去元素
+
 ```C++
 int minSubArrayLen(int s, vector<int>& nums) {
     int start = 0, sum = 0, len = INT_MAX;
@@ -4971,6 +5007,50 @@ int minSubArrayLen(int s, vector<int>& nums) {
     
     return len == INT_MAX? 0 : len;
 }
+```
+
+210. Course Schedule II
+------
+
+BFS
+
+```C++
+class Solution {
+public:
+    vector<int> findOrder(int numCourses, vector<pair<int, int>>& prerequisites) {
+        vector<unordered_set<int>> graph = make_graph(numCourses, prerequisites);
+        vector<int> degrees = compute_indegree(graph);
+        queue<int> zeros;
+        for (int i = 0; i < numCourses; i++)
+            if (!degrees[i]) zeros.push(i);
+        vector<int> toposort;
+        for (int i = 0; i < numCourses; i++) {
+            if (zeros.empty()) return {};
+            int zero = zeros.front();
+            zeros.pop();
+            toposort.push_back(zero);
+            for (int neigh : graph[zero]) {
+                if (!--degrees[neigh])
+                    zeros.push(neigh);
+            }
+        }
+        return toposort;
+    }
+private:
+    vector<unordered_set<int>> make_graph(int numCourses, vector<pair<int, int>>& prerequisites) {
+        vector<unordered_set<int>> graph(numCourses);
+        for (auto pre : prerequisites)
+            graph[pre.second].insert(pre.first);
+        return graph; 
+    }
+    vector<int> compute_indegree(vector<unordered_set<int>>& graph) {
+        vector<int> degrees(graph.size(), 0);
+        for (auto neighbors : graph)
+            for (int neigh : neighbors)
+                degrees[neigh]++;
+        return degrees;
+    }
+};
 ```
 
 211. 添加和搜索字符串
@@ -5060,6 +5140,8 @@ public:
             if (run && word[i] != '.')
                 run = run->next[word[i] - 'a'];
             else if (run && word[i] == '.') { 
+
+                // skip checking this char
                 TrieNode* tmp = run;
                 for (int j = 0; j < 26; j++) {
                     run = tmp->next[j];
@@ -5081,6 +5163,8 @@ public:
 
 212. 单词搜索
 ------
+
+Trie结构见前面，注意要记录visited，还有边界的问题，另外集合的使用
 
 ```C++
 class Solution {
@@ -5153,13 +5237,33 @@ int rob(int* nums, int numsSize) {
 }
 ```
 
-214. 最短回文字符串，给指定的字符串添加字母获得回文
+*214. 最短回文字符串，给指定的字符串添加字母获得回文
 ------
 
+```C++
+// based on kmp next array
+string shortestPalindrome(string s) {
+    string rev_s = s;
+    reverse(rev_s.begin(), rev_s.end());
+    string l = s + "#" + rev_s;
+
+    vector<int> p(l.size(), 0);
+    for (int i = 1; i < l.size(); i++) {
+        int j = p[i - 1];
+        while (j > 0 && l[i] != l[j])
+            j = p[j - 1];
+        p[i] = (j += l[i] == l[j]);
+    }
+
+    return rev_s.substr(0, s.size() - p[l.size() - 1]) + s;
+}
+```
 
 
 215. 数组中第k大的数字
 ------
+
+更多解法参见Beauty
 
 ```C
 int swap(int* a, int* b) {
@@ -5192,7 +5296,7 @@ int findKthLargest(int* nums, int numsSize, int k) {
 }
 ```
 
-216. 找到k个数字，使得他们的和是n
+216. 找到k个数字[1...9]，使得他们的和是n
 ------
 
 ```C++
@@ -5208,7 +5312,7 @@ void dfs(vector<vector<int>>& result, vector<int> combination, int n, int k) {
             result.push_back(combination);
         return;
     }
-    int i = combination.empty() ? 1 : combination.back() + 1;
+    int i = combination.empty() ? 1 : combination.back() + 1; // 保证不重复切实递增序列
     while (i <= n && i < 10) {
         combination.push_back(i);
         dfs(result, combination, n-i, k);
@@ -5235,42 +5339,77 @@ bool containsDuplicate(vector<int>& nums) {
 }
 ```
 
+*218. 获得矩形重合部分的拐点
+------
+
+```C++
+vector<pair<int, int>> getSkyline(vector<vector<int>>& buildings) {
+    vector<pair<int, int>> res;
+    int cur=0, cur_X, cur_H =-1,  len = buildings.size();
+    priority_queue< pair<int, int>> liveBlg; // first: height, second, end time
+    while(cur<len || !liveBlg.empty()) { // if either some new building is not processed or live building queue is not empty
+        cur_X = liveBlg.empty()? buildings[cur][0]:liveBlg.top().second; // next timing point to process
+
+        if(cur>=len || buildings[cur][0] > cur_X) { //first check if the current tallest building will end before the next timing point
+              // pop up the processed buildings, i.e. those  have height no larger than cur_H and end before the top one
+            while(!liveBlg.empty() && ( liveBlg.top().second <= cur_X) ) liveBlg.pop();
+        } else { // if the next new building starts before the top one ends, process the new building in the vector
+            cur_X = buildings[cur][0];
+            while(cur<len && buildings[cur][0]== cur_X)  // go through all the new buildings that starts at the same point
+            {  // just push them in the queue
+                liveBlg.push(make_pair(buildings[cur][2], buildings[cur][1]));
+                cur++;
+            }
+        }
+        cur_H = liveBlg.empty()?0:liveBlg.top().first; // outut the top one
+        if(res.empty() || (res.back().second != cur_H) ) res.push_back(make_pair(cur_X, cur_H));
+    }
+    return res;
+}
+```
+
+
 219. 包含重复数字，并且两个的坐标不超过k
 ------
 
 ```C++
 // 滑动窗口保存前k个值，如果有重复的就返回
+// num[i-k] num[i-1]，如果滑过了，就删除该元素
 bool containsNearbyDuplicate(vector<int>& nums, int k) {
     unordered_set<int> s;
     if (k <= 0)
         return false;
-    if (k >= nums.size())
+    if (k >= nums.size()) // notice here
         k = nums.size() - 1;
         
     for (int i = 0; i < nums.size(); i++) {
         if (i > k)
-            s.erase(nums[i - k - 1]);
+            s.erase(nums[i - k - 1]); // delete first note
         if (s.find(nums[i]) != s.end())
             return true;
-        s.insert(nums[i]);
+        s.insert(nums[i]); // insert
     }
     
     return false;
 }
 ```
 
-220. 同上一题，同时保证两个数字之间小于t
+*220. 同上一题，同时保证两个数字之间小于t
 ------
 
 保证两个数字之差小于t
 
 ```C++
 bool containsNearbyAlmostDuplicate(vector<int>& nums, int k, int t) {
-    set<int> window;
+    set<int> window; // 注意不能使用unordered
+    if (k <= 0)
+        return false;
+    if (k >= nums.size()) // notice here
+        k = nums.size() - 1;
     for (int i = 0; i < nums.size(); i++) {
         if (i > k)
             window.erase(nums[i - k - 1]);
-        auto pos = window.lower_bound(nums[i] - t);
+        auto pos = window.lower_bound(nums[i] - t); // notice set.lower_bound
         if (pos != window.end() && *pos - nums[i] <= t)
             return true;
         window.insert(nums[i]);
@@ -5279,10 +5418,10 @@ bool containsNearbyAlmostDuplicate(vector<int>& nums, int k, int t) {
 }
 ```
 
-221. 找到最大的正方形
+＊221. 找到最大的正方形
 ------
 
-使用动态规划https://leetcode.com/discuss/38489/easy-solution-with-detailed-explanations-8ms-time-and-space
+使用动态规划 https://leetcode.com/discuss/38489/easy-solution-with-detailed-explanations-8ms-time-and-space
 
 ```C++
 int maximalSquare(vector<vector<char>>& matrix) {
@@ -5290,8 +5429,8 @@ int maximalSquare(vector<vector<char>>& matrix) {
     int m = matrix.size(), n = matrix[0].size();
     vector<int> dp(m + 1, 0);
     int maxsize = 0, pre = 0;
-    for (int j = 0; j < n; j++) {
-        for (int i = 1; i <= m; i++) {
+    for (int j = 0; j < n; j++) { // 每一列
+        for (int i = 1; i <= m; i++) { // notice i range
             int temp = dp[i];
             if (matrix[i - 1][j] == '1') {
                 dp[i] = min(dp[i], min(dp[i - 1], pre)) + 1;
@@ -5308,7 +5447,7 @@ int maximalSquare(vector<vector<char>>& matrix) {
 
 
 
-222. 找到该节点作为根节点是完全树的节点的数量
+222. 给定一个完全树，计算节点的数量。
 ------
 
 ```C++
@@ -5327,7 +5466,7 @@ int countNodes(struct TreeNode* root) {
         right_height++;
     }
     
-    if (left_height == right_height)
+    if (left_height == right_height) // 满树 2^h - 1
         return (1 << left_height) - 1;
     
     return countNodes(root->left) + countNodes(root->right) + 1;
@@ -5339,18 +5478,21 @@ int countNodes(struct TreeNode* root) {
 
 ```C
 int computeArea(int left1, int down1, int right1, int up1, int left2, int down2, int right2, int up2) {
-    int left = max(left1, left2);
-    int right = max(min(right1, right2), left);
+    int left = max(left1, left2); //靠右的
+    int right = max(min(right1, right2), left);// 靠左的，但是比左边大
     
     int down = max(down1, down2);
     int up = max(min(up1, up2), down);
     
+    // 不小心写反了。。
     return -((left1 - right1) * (up1 - down1) + (left2 - right2) * (up2 - down2) - (left - right) * (up - down));
 }
 ```
 
 224. 给定一个字符串，包含加减和括号，计算值
 ------
+
+难点是对括号的处理，注意每次都要和signs.top()相乘
 
 ```C++
 int calculate(string s) {
@@ -5367,8 +5509,8 @@ int calculate(string s) {
             result += signs.top() * sign * num;
             num = 0;
             sign = c == '+' ? 1 : -1;
-        } else if (c == '(') {
-            signs.push(sign * signs.top());
+        } else if (c == '(') { 
+            signs.push(sign * signs.top()); // tricky
             sign = 1;
         } else if (c == ')') {
             result += signs.top() * sign * num;
@@ -5378,7 +5520,7 @@ int calculate(string s) {
         }
     }
 
-    result += signs.top() * sign * num;
+    result += signs.top() * sign * num; // tricky
     
     return result;
 }
@@ -5386,6 +5528,9 @@ int calculate(string s) {
 
 225. 使用队列模拟栈
 ------
+
+其实有两种做法，一种是在push的时候，把队列清空，把x放到最底下。
+另一种是在pop的时候，把队列清空到1，然后弹出。应当询问面试官究竟是push居多还是pop居多
 
 ```C++
 class Stack {
@@ -5441,13 +5586,14 @@ struct TreeNode* invertTree(struct TreeNode* root) {
 
 ```C++
 int calculate(string s) {
-    vector<int> stk;
+    vector<int> stk; // 使用vector便于统计最后的值
     char token = '+';
     int num = 0;
     for (int i = 0; i < s.size(); i++) {
         if (isdigit(s[i]))
             num = num * 10 + s[i] - '0';
-        if (s[i] == '+' || s[i] == '-' || s[i] == '*' || s[i] == '/' || i == s.size() - 1) {
+        // 这里不是else if
+        if (s[i] == '+' || s[i] == '-' || s[i] == '*' || s[i] == '/' || i == s.size() - 1) { // 注意最后一步还需要把最后的值计算
             int a;
             switch (token) {
             case '+':
@@ -5533,18 +5679,19 @@ vector<int> majorityElement(vector<int>& nums) {
     
     vector<int> result;
     
-    if (count1 > nums.size() / 3)
+    if (count1 > nums.size() / 3) // verify a
         result.push_back(a);
-    if (count2 > nums.size() / 3 && a != b)
+    if (count2 > nums.size() / 3 && a != b) // verify b
         result.push_back(b);
     return result;
 }
 ```
 
-230. 二叉树中第k小的数字
+＊230. 二叉树中第k小的数字
 ------
 
 ```C
+// 传递指针
 void inorder(struct TreeNode* root, int* k, int* number) {
     if (!root)
         return;
@@ -5558,7 +5705,7 @@ void inorder(struct TreeNode* root, int* k, int* number) {
 }
 int kthSmallest(struct TreeNode* root, int k) {
     int number;
-    inorder(root, &k, &number);
+    inorder(root, &k, &number); 
     return number;
 }
 ```
@@ -5573,30 +5720,7 @@ bool isPowerOfTwo(int n) {
 }
 ```
 
-H-Index
-------
 
-```
-int hIndex(int* cites, int n) {
-    int* hs = malloc(sizeof(int) * n + 1);
-    for (int i = 0; i < n + 1; i++)
-        hs[i] = 0;
-    for (int i = 0; i < n; i++) {
-        if (cites[i] > n)
-            hs[n]++;
-        else
-            hs[cites[i]]++;
-    }
-    
-    for (int i = n, papers = 0; i >= 0; i--) {
-        papers += hs[i];
-        if (papers >= i)
-            return i;
-    }
-    
-    return 0;
-}
-```
 
 232. 使用栈模拟队列
 ------
@@ -5643,15 +5767,15 @@ private:
 };
 ```
 
-233. 数字1的个数
+*233. 数字1的个数
 ------
 
 ```C
 int countDigitOne(int n) {
     int ones = 0;
     for (long long m = 1; m <= n; m *= 10) {
-        int a = n/m, b = n%m;
-        ones += (a + 8) / 10 * m + (a % 10 == 1) * (b + 1);
+        int a = n/m, b = n%m; // a is left half, b is right half
+        ones += (a + 8) / 10 * m + (a % 10 == 1) * (b + 1); // a + 8 distincts 0,1 / 2...    a % 10 == 1 is 1 case
     }
     return ones;
 }
@@ -5663,6 +5787,8 @@ int countDigitOne(int n) {
 解法1: 如果链表是可以改变的，不妨反转它的前半部分，然后再与后半部分比较
 
 解法2: 如果是只读的，复制一份也可以，但是不如使用堆栈
+
+注意对奇数偶数的处理
 
 ```C++
 bool isPalindrome(ListNode* head) {
@@ -5716,7 +5842,7 @@ struct TreeNode* lowestCommonAncestor(struct TreeNode* root, struct TreeNode* p,
 }
 ```
 
-236. 二叉树公共祖先
+*236. 二叉树公共祖先
 ------
 
 如果二叉树的根就是其中一个节点，那显然是这个。
@@ -5729,11 +5855,11 @@ struct TreeNode* lowestCommonAncestor(struct TreeNode* root, struct TreeNode* p,
     struct TreeNode* left = lowestCommonAncestor(root->left, p, q);
     struct TreeNode* right = lowestCommonAncestor(root->right, p, q);
     
-    if (!left)
+    if (!left) // not in left subtree
         return right;
     if (!right)
         return left;
-    return root;
+    return root; // both left and right are found!
 }
 ```
 
@@ -5760,20 +5886,7 @@ void deleteNode(struct ListNode* node) {
 然后从后往前乘，同样错开一位，这样每个元素又把他之后的元素都得到了。
 
 ```C++
-vector<int> productExceptSelf(vector<int>& nums) {
-    vector<int> result(nums.size());
-    int before = 1;
-    for (int i = 0; i < nums.size(); i++) {
-        result[i] = before;
-        before *= nums[i];
-    }
     
-    int after = 1;
-    for (int i = 0; i < nums.size(); i++) {
-        result[i] *= after;
-        after *= nums[i];
-    }
-}
 ```
 
 
@@ -5782,13 +5895,13 @@ vector<int> productExceptSelf(vector<int>& nums) {
 
 这道题和 min stack 的思路完全一样，只不过换成了 deque
 
-```
+```C++
 // 题目给定 k 一定是有效地
 vector<int> maxSlidingWindow(vector<int>& nums, int k) {
     vector<int> result;
     if (nums.empty() || k <= 0)
         return result;
-    deque<int> dq; // 存储的是索引，front 存储最大值，
+    deque<int> dq; // 存储的是索引，front 存储最大值，保证递减
     for (int i = 0; i < nums.size(); i++) {
         while (!dq.empty() && dq.front() < i - k + 1) // 弹出滑过的窗口
             dq.pop_front();
@@ -5812,8 +5925,8 @@ vector<int> maxSlidingWindow(vector<int>& nums, int k) {
 
 ```C
 bool searchMatrix(int** matrix, int row, int col, int target) {
-    int r = 0, c = col - 1;
-    while (r < row && c > -1)
+    int r = 0, c = col - 1; // 右上角
+    while (r < row && c > -1) // 向左下角
         if (matrix[r][c] == target)
             return true;
         else if (matrix[r][c] > target)
@@ -5827,15 +5940,17 @@ bool searchMatrix(int** matrix, int row, int col, int target) {
 241. 添加括号得到不同的结果
 ------
 
+对每一个符号，在他的两边添加括号的好的不同结果再计算。
+
 ```C++
 vector<int> diffWaysToCompute(string input) {
     vector<int> output;
     for (int i = 0; i < input.size(); i++) {
-        char c = input[i];
-        if (ispunct(c))
-            for (int a : diffWaysToCompute(input.substr(0, i)))
-                for (int b : diffWaysToCompute(input.substr(i+1)))
-                    output.push_back(c == '+' ? a + b : c == '-'? a - b: a *b);
+        char token = input[i];
+        if (!isdigit(token)) // not digit
+            for (int a : diffWaysToCompute(input.substr(0, i))) // 左半部分
+                for (int b : diffWaysToCompute(input.substr(i+1))) // 右半部分
+                    output.push_back(token == '+' ? a + b : token == '-'? a - b: a *b); // 两半部分之和
     }
     
     if (output.empty())
@@ -5870,7 +5985,7 @@ bool isAnagram(char* s, char* t) {
 257. 二叉树左右路径
 ------
 
-典型的 DFS
+典型的 DFS，发挥所有从根节点到叶节点的路径
 
 ```C++
 vector<string> binaryTreePaths(TreeNode* root) {
@@ -5881,8 +5996,10 @@ vector<string> binaryTreePaths(TreeNode* root) {
 }
 
 void paths(vector<string>& result, string path, TreeNode* root) {
-    if (path.empty()) path += to_string(root->val);
-    else path += "->" + to_string(root->val);
+    if (path.empty()) 
+        path += to_string(root->val);
+    else 
+        path += "->" + to_string(root->val);
     if (root->left)
         paths(result, path, root->left);
     if (root->right)
@@ -5915,22 +6032,21 @@ int addDigits(int num) {
 ```C++
 vector<int> singleNumber(vector<int>& nums) {
     int r = 0;
-    for (auto& n : nums) {
-        r ^= n;
-    }
-    int bit = r & -r;
+    for (auto& n : nums)
+        r ^= n; 
+    int bit = r & -r; // last sig bit
+
     vector<int> result = {0, 0};
-    for (auto& n : nums) {
+    for (auto& n : nums)
         if (n & bit)
             result[0] ^= n;
         else
             result[1] ^= n;
-    }
     return result;
 }
 ```
 
-262 Locked
+261. 262 Locked
 ------
 
 263. 丑陋的数字，质数因子只含有2,3,5的数字
@@ -5968,10 +6084,10 @@ bool isUgly(int n) {
 int nthUglyNumber(int n) {
     if (n <= 0)
         return -1;
-    if (n < 6)
+    if (n < 6) // 1..6 恰好都是
         return n;
     int s2 = 0, s3 = 0, s5 = 0;
-    int* uglies = malloc(sizeof(int) * n);
+    int* uglies[n];
     uglies[0] = 1;
     for (int i = 1; i < n; i++) {
         int c2 = uglies[s2] * 2, c3 = uglies[s3] * 3, c5 = uglies[s5] * 5;
@@ -5980,9 +6096,7 @@ int nthUglyNumber(int n) {
         if (uglies[i] == c3) s3++;
         if (uglies[i] == c5) s5++;
     }
-    int u = uglies[n-1];
-    free(uglies);
-    return u;
+    return uglies[n-1];
 }
 ```
 
@@ -6000,6 +6114,9 @@ int missingNumber(int* nums, int n) {
 }
 ```
 
+269-272 Locked
+------
+
 273. 数字转换为英语单词
 ------
 
@@ -6008,7 +6125,7 @@ class Solution {
 public:
     vector<string> digits = {"", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"};
     vector<string> tens = {"", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"};
-    vector<string> seps = {"", " Thousand ", " Million ", " Billion "}; 
+    vector<string> seps = {"", " Thousand ", " Million ", " Billion "}; // notice the trailing spaces
     
     string numberToWords(int num) {
         if (num == 0)
@@ -6058,24 +6175,56 @@ public:
 };
 ```
 
-275. H-index II
+274. H-Index
+------
+
+H-Index的定义：一个科学家的N篇论文h个至少有h个引用，而且剩下的N-h篇论文都没有超过h个引用。
+
+```
+int hIndex(int* cites, int n) {
+    int hs[n+1]; // Hindex不可能大于N
+
+    for (int i = 0; i <= n; i++)
+        hs[i] = 0;
+
+    for (int i = 0; i < n; i++) {
+        if (cites[i] > n)
+            hs[n]++;
+        else
+            hs[cites[i]]++;
+    }
+    
+    for (int i = n, papers = 0; i >= 0; i--) { // 从后往前，如果有符合条件的，那么就是Hindex
+        papers += hs[i];
+        if (papers >= i)
+            return i;
+    }
+    
+    return 0;
+}
+```
+
+275. H-index II，论文已经按照引用数量排序
 ------
 
 ```C
-int hIndex(int* citations, int citationsSize) {
-    int left = 0, right = citationsSize - 1;
-    while (left <= right) {
+int hIndex(int* citations, int n) {
+    int left = 0, right = n - 1;
+    while (left <= right) { // 二分查找是小于等于
         int mid = left + (right - left) / 2;
-        if (citations[mid] == citationsSize - mid)
+        if (citations[mid] == n - mid)
             return citations[mid];
-        else if (citations[mid] < citationsSize - mid)
+        else if (citations[mid] < n - mid)
             left = mid + 1;
         else
             right = mid - 1;
     }
-    return citationsSize - right - 1;
+    return n - right - 1;
 }
 ```
+
+276-277 Locked
+------
 
 278. 第一个坏版本
 ------
@@ -6083,8 +6232,8 @@ int hIndex(int* citations, int citationsSize) {
 ```C
 // 实际上是lower_bound函数
 int firstBadVersion(int n) {
-    int left = 0, right = n;
-    while (left < right) {
+    int left = 0, right = n; // 记住lower_bound的right是n
+    while (left < right) {   // 使用小于号
         int mid = left + (right - left) / 2;
         if (!isBadVersion(mid))
             left = mid + 1;
@@ -6133,8 +6282,8 @@ void dfs(string num, int target, vector<string> & v, long long last, string s, i
         return;
     } else {
         if(last!=0) 
-            dfs(num, target, v, last * 10 + num[idx] - '0', s + num.substr(idx, 1), idx + 1, left);
-        dfs(num, target, v, num[idx] - '0', s + '*' + num.substr(idx, 1), idx + 1, last*left);
+            dfs(num, target,         v, last * 10 + num[idx] - '0', s + num.substr(idx, 1), idx + 1, left); // 尝试拼成10
+        dfs(num, target,             v, num[idx] - '0', s + '*' + num.substr(idx, 1), idx + 1, last*left);
         dfs(num, target - left*last, v, num[idx] - '0', s + '+' + num.substr(idx, 1), idx + 1, 1);
         dfs(num, target - left*last, v, num[idx] - '0', s + '-' + num.substr(idx, 1), idx + 1, -1);
     }
@@ -6202,7 +6351,10 @@ public:
 };
 ```
 
-287. 一个n+1的数组包含了1...n中的这些数字，证明一定存在重复，并找出这个重复
+285. 286 Locked
+------
+
+287. 一个n的数组包含了1...n-1中的这些数字，证明一定存在重复，并找出这个重复
 ------
 
 使用 Pigeon Hole Priciple 可以证明一定存在重复。据说高纳德解这个问题花了四个小时。
@@ -6212,9 +6364,10 @@ public:
 
 ```C
 int findDuplicate(int* nums, int n) {
+    // 从 n-1 开始
     int fast = n - 1, slow = n - 1;
     do {
-        slow = nums[slow]  - 1;
+        slow = nums[slow] - 1; // 减一是为了转化为坐标
         fast = nums[nums[fast] - 1] - 1;
     } while (slow != fast);
     
@@ -6224,9 +6377,12 @@ int findDuplicate(int* nums, int n) {
         fast = nums[fast] - 1;
     } while (slow != fast);
     
-    return slow + 1;
+    return slow + 1; // 从坐标到数字
 }
 ```
+
+288 Locked
+------
 
 289. Conway's Game of Life
 ------
@@ -6240,10 +6396,10 @@ void gameOfLife(int** board, int row, int col) {
     for (int i = 0; i < row; i++) {
         for (int j = 0; j < col; j++) {
             int count = 0;
-            for (int m=max(i-1, 0); m<min(i+2, row); m++)
+            for (int m=max(i-1, 0); m<min(i+2, row); m++) // 这里的min，max使用的太屌了
                 for (int n=max(j-1, 0); n<min(j+2, col); n++)
                     count += (board[m][n] & 1);
-            if (count == 3 || count - board[i][j] == 3) // real algo here
+            if (count == 3 || count - board[i][j] == 3) // 当前为0，周围为3；or 当前为1，周围为2/3 here
                 board[i][j] |= 2;
         }
     }
@@ -6257,5 +6413,32 @@ void gameOfLife(int** board, int row, int col) {
 ------
 
 ```C++
+bool wordPattern(string pattern, string str) {
+    map<char, int> chars;  // 使用两个map纪录
+    map<string, int> words;
+    istringstream in(str);
+    int i = 0, n = pattern.size(); // `i` is word count      
+    for (string word; in >> word; i++) {
+        if (i == n || chars[pattern[i]] != words[word]) // 检查是否相等
+            return false;
+        chars[pattern[i]] = words[word] = i + 1; // distinct non zero 
+    }
+    
+    return i == n; // 检查长度是否相等
+}
+```
+
+291. Locked
+------
+
+292. Nim游戏，每个人可以选择丢掉1，2，3，最后一个操作者获胜
+------
+
+显然，当我们遇到4的时候会输，其他情况都可以赢。
+
+```C
+bool canWinNim(int n) {
+    return n % 4 != 0;
+}
 ```
 
