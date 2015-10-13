@@ -321,7 +321,7 @@ bool isMatch(char* s, char* p) {
 }
 ```
 
-11. Contaier with most water
+11. Container with most water
 ------
 
 从左右向中间逼近，如果有更大的就更新
@@ -587,8 +587,6 @@ struct ListNode* removeNthFromEnd(struct ListNode* head, int n) {
 }
 ```
 
-19. 4Sum
-------
 
 E20. 判定给定的字符串是否是合法的括号序列, 可能包括大中小三类
 ------
@@ -916,7 +914,7 @@ int divide(int dividend, int divisor) {
 30. 没读懂题目 = =
 ------
 
-31. 给定一个数组, 生成下一个字典序的组合, 如果已经是最大, 返回最小的组合
+31. 全排列，下一个
 ------
 
 首先, 对于所有的组合, 最小的一个一定是按照升序排序的, 最大的一定是倒过来, 因此
@@ -961,7 +959,7 @@ void nextPermutation(vector<int>& nums) {
 int longestValidParentheses(char* s) {
     int len = strlen(s);
     // 遍历到当前位置时的最长序列
-    int* dp = malloc(sizeof(int) * len);
+    int dp[len];
     for (int i = 0; i < len; i++)
         dp[i] = 0;
     int longest = 0;
@@ -977,7 +975,6 @@ int longestValidParentheses(char* s) {
         }
         longest = longest > dp[i] ? longest : dp[i];
     }
-    free(dp);
     return longest;
 }
 ```
@@ -1363,7 +1360,7 @@ int jump(int* nums, int numsSize) {
 }
 ```
 
-46. 生成Permutation
+46. 生成全排列
 ------
 
 ```C++
@@ -1632,8 +1629,7 @@ bool canJump(int* nums, int numsSize) {
     int i;
     int reach = 0;
     for (i = 0; i < numsSize && i <= reach; i++)
-        if (nums[i] + i > reach)
-            reach = nums[i] + i;
+            reach = max(reach, nums[i] + i);
     return i == numsSize;
 }
 ```
@@ -2170,7 +2166,7 @@ bool searchMatrix(int** matrix, int row, int col, int target) {
 }
 ```
 
-75. 颜色排序，每个物体有颜色属性，把他们按照RGB的顺序排序
+75. 颜色排序，每个物体有颜色属性，把他们按照RGB的顺序排序(🇳🇱国旗问题)
 ------
 
 一种方法是简单地2 pass解法，遍历一遍计数再输出。另一种方法是把红色往前交换，蓝色往后交换
@@ -2379,7 +2375,7 @@ struct ListNode* deleteDuplicates(struct ListNode* head) {
 
 ```C
 struct ListNode* deleteDuplicates(struct ListNode* head) {
-    struct ListNode dummy, *p = &dummy; dummy.next = head;
+    struct ListNode dummy, *p = &dummy; dummy.next = head; dummy.val = head->val + 1;
     while (p && p->next) {
         if (p->val == p->next->val) {
             int dup = p->val;
@@ -3307,29 +3303,7 @@ int maxProfit(int* prices, int pricesSize) {
     // 从前到后依次遍历，如果有更好的收益更新，或者更新 min，限制条件是先出现最小值
     for (int i = 0; i < pricesSize; i++) {
         if (prices[i] > min) {
-            if (prices[i] - min > profit)
-                profit = prices[i] - min;
-        } else {
-            min = prices[i];
-        }
-    }
-    return profit;
-}
-```
-
-121. 买卖股票最佳时机，限制只能做一笔交易
-------
-
-```C
-int maxProfit(int* prices, int pricesSize) {
-    if (pricesSize < 2) return 0;
-    int profit = 0;
-    int min = prices[0];
-    // 从前到后依次遍历，如果有更好的收益更新，或者更新 min，限制条件是先出现最小值
-    for (int i = 0; i < pricesSize; i++) {
-        if (prices[i] > min) {
-            if (prices[i] - min > profit)
-                profit = prices[i] - min;
+                profit = max(profit, prices[i] - min);
         } else {
             min = prices[i];
         }
@@ -3343,6 +3317,18 @@ int maxProfit(int* prices, int pricesSize) {
 
 有两种解法，一种是不断做交易，完全不考虑交易次数，这种做法不符合实际情况。
 另一种做法是模拟交易，这样会生成最少的交易次数，结果也是对的。
+
+```C
+// 1
+int maxProfit(int* prices, int pricesSize)
+    int total = 0;
+    for (int i=0; i< pricesSize-1; i++)
+        if (prices[i+1]>prices[i]) 
+            total += prices[i+1]-prices[i];
+
+    return total;
+}
+```
 
 ```C
 // 2
@@ -3378,6 +3364,19 @@ int maxProfit(int* prices, int pricesSize) {
 每次求解的是：卖出两股以后的最大值，刚刚买入第二股的最大值，卖出第一股时候的最大值，买入第一股时候的最大值。
 
 ```C++
+int maxProfit(vector<int>& prices) {
+    int hold1 = INT_MIN, hold2 = INT_MIN;
+    int release1 = 0, release2 = 0;
+    
+    for (auto i : prices) {
+        release2 = max(release2, hold2 + i);
+        hold2 = max(hold2, release1 - i);
+        release1 = max(release1, hold1 + i);
+        hold1 = max(hold1, -i);
+    }
+    
+    return release2;
+}
 ```
 
 124. 二叉树路径最大和，路径可以从任意一个节点开始到任意一个节点结束
