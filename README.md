@@ -4053,26 +4053,26 @@ struct ListNode* sortList(struct ListNode* head) {
 int maxPoints(vector<Point>& points) {
     if (points.size() < 2) return points.size();
     int result = 0;
-    
+
+    // 对于每一个点
     for (int i = 0; i < points.size(); i++) {
+        // 经过该点的直线，使用分数作为斜率，避免使用浮点数
         map<pair<int, int>, int> lines;
-        int localMax = 0, overlap = 0, verticle = 0;
-        for (int j = i + 1; j < points.size(); j++) {
+        int localMax = 0, overlap = 0;
+        for (int j = i + 1; j < points.size(); j++) { // 避免重复计算
             if (points[j].x == points[i].x && points[j].y == points[i].y) {
-                overlap++;
+                overlap++; // 同一个点
                 continue;
-            } else if (points[j].x == points[i].x) {
-                verticle++;
             } else {
                 int x = points[j].x - points[i].x;
                 int y = points[j].y - points[i].y;
                 int g = gcd(x, y);
-                x /= g, y /= g;
+                x /= g, y /= g; // verticle case: x == 0 -> (0, 1)
                 lines[make_pair(x, y)]++;
                 localMax = max(localMax, lines[make_pair(x, y)]);
             }
-            localMax = max(verticle, localMax);
         }
+        // overlap算在任意条线上
         result = max(result, localMax + overlap + 1);
     }
     return result;
