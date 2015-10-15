@@ -486,7 +486,7 @@ int threeSumClosest(int* nums, int numsSize, int target) {
 }
 ```
 
- E17. 生成电话键盘按键数字对应的所有可能的字符串, 不限制返回结果的顺序
+E17. 生成电话键盘按键数字对应的所有可能的字符串, 不限制返回结果的顺序
 ------
 
 ![键盘](http://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Telephone-keypad2.svg/200px-Telephone-keypad2.svg.png)
@@ -498,6 +498,7 @@ int threeSumClosest(int* nums, int numsSize, int target) {
 然后把新获得的数组作为下一轮的初始数组。最开始时, 使用空数组开始。
 
 ```C++
+// iterative
 vector<string> letterCombinations(string digits) {
     if (digits.size() == 0) return vector<string> {};
     string mapping[] = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
@@ -516,6 +517,17 @@ vector<string> letterCombinations(string digits) {
     return combinations;
 }
 ```
+
+还可以使用深度优先的搜索方法
+
+```C++
+// recursive
+```
+
+追问：如何通过用户按的数字来查找是否有对应的单词呢
+
+1. 通过把所有的单词计算出来，然后查询哪个是合法的，查询可以使用Trie
+2. 通过把已经有的单词字典转换为数字字典，然后通过数字序列查询可能的单词组合。
 
 18. 4Sum
 ------
@@ -2081,23 +2093,24 @@ string simplifyPath(string& path) {
 ------
 
 ```C++
-/* 对于两个字符串比较，往往要使用二维的动态规划
-*/
+/* 对于两个字符串比较，往往要使用二维的动态规划 */
 // 使用f[i][j]表示word1[1..i]和word2[1..j]之间的距离
 // 那么：
 // 1. 相等 f[i][j] = f[i-1][j-1];
 // 2. 不相等
-//     (a) if we replaced c with d: f[i][j] = f[i-1][j-1] + 1;
-//     (b) if we added d after c: f[i][j] = f[i][j-1] + 1;
-//     (c) if we deleted c: f[i][j] = f[i-1][j] + 1;
+//     (a) 替换: f[i][j] = f[i-1][j-1] + 1;  都向前一步
+//     (b) 添加: f[i][j] = f[i][j-1] + 1; word2向前一步
+//     (c) 删除: f[i][j] = f[i-1][j] + 1; word1向前一步
 // 另外使用一维数组表示二维数组还需要了解
+
 int minDistance(string word1, string word2) {
     int l1 = word1.size(), l2 = word2.size();
     vector<int> f(l2+1, 0);
-    
+
+    // 把剩余的字符删掉的距离
     for (int i = 1; i <= l2; i++)
         f[i] = i;
-        
+
     for (int i = 1; i <= l1; i++) {
         int prev = i;
         for (int j = 1; j <= l2; j++) {
@@ -2106,13 +2119,13 @@ int minDistance(string word1, string word2) {
                 cur = f[j-1];
             else
                 cur = min(min(f[j-1], prev), f[j]) + 1;
-            
+
             f[j-1] = prev;
             prev = cur;
         }
         f[l2] = prev;
     }
-    
+
     return f[l2];
 }
 ```
@@ -4120,6 +4133,13 @@ int evalRPN(vector<string>& tokens) {
 151. 反转句子中的单词顺序
 ------
 
+一般面试的时候会假定没有多余字符的，解法是
+
+```C
+```
+
+LeetCode需要处理多余空格：
+
 ```C
 void swap(char *a, char *b) {
     char tmp = *a; *a = *b; *b = tmp;
@@ -5262,7 +5282,13 @@ string shortestPalindrome(string s) {
 215. 数组中第k大的数字
 ------
 
-更多解法参见Beauty
+首先，设计到数组排序的问题一定向面试官要问清楚数据量的大小，这影响到接下来的实现，
+同时和面试官探讨数据量大小对实现的影响，有助于更好的把握局面。
+
+我们先假设数据量是比较小的，也就是能够放到内存中。
+
+0. 使用排序就实在是naive了，不过面试官非要问的话，当然是使用选择排序更好了。
+1. 使用快排中的partition算法，时间复杂度O(n*logk)
 
 ```C
 int swap(int* a, int* b) {
@@ -5294,6 +5320,9 @@ int findKthLargest(int* nums, int numsSize, int k) {
     }
 }
 ```
+
+2. 如果数字的范围有限，比如在1...100，使用计数排序 
+
 
 216. 找到k个数字[1...9]，使得他们的和是n
 ------
