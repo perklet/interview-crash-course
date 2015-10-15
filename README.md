@@ -2092,45 +2092,66 @@ string simplifyPath(string& path) {
 72. 编辑距离，允许替换，删除，插入三种操作
 ------
 
+对于两个字符串比较，往往要使用二维的动态规划。
+使用f[i][j]表示word1[1..i]和word2[1..j]之间的距离。
+see [here](https://leetcode.com/discuss/43398/20ms-detailed-explained-c-solutions-o-n-space)
+
+那么：
+
+1. 相等 f[i][j] = f[i-1][j-1];
+2. 不相等
+    (a) 替换: f[i][j] = f[i-1][j-1] + 1;  都向前一步
+    (b) 添加: f[i][j] = f[i][j-1] + 1; word2向前一步
+    (c) 删除: f[i][j] = f[i-1][j] + 1; word1向前一步
+
+另外使用一维数组表示二维数组还需要了解
 ```C++
-/* 对于两个字符串比较，往往要使用二维的动态规划 */
-// 使用f[i][j]表示word1[1..i]和word2[1..j]之间的距离
-// 那么：
-// 1. 相等 f[i][j] = f[i-1][j-1];
-// 2. 不相等
-//     (a) 替换: f[i][j] = f[i-1][j-1] + 1;  都向前一步
-//     (b) 添加: f[i][j] = f[i][j-1] + 1; word2向前一步
-//     (c) 删除: f[i][j] = f[i-1][j] + 1; word1向前一步
-// 另外使用一维数组表示二维数组还需要了解
 
-int minDistance(string word1, string word2) {
-    int l1 = word1.size(), l2 = word2.size();
-    vector<int> f(l2+1, 0);
-
-    // 把剩余的字符删掉的距离
-    for (int i = 1; i <= l2; i++)
-        f[i] = i;
-
-    for (int i = 1; i <= l1; i++) {
-        int prev = i;
-        for (int j = 1; j <= l2; j++) {
-            int cur;
-            if (word1[i-1] == word2[j-1])
-                cur = f[j-1];
-            else
-                cur = min(min(f[j-1], prev), f[j]) + 1;
-
-            f[j-1] = prev;
-            prev = cur;
+// unoptimized code
+int minDistance(string word1, string word2) { 
+    int m = word1.length(), n = word2.length();
+    vector<vector<int> > dp(m + 1, vector<int> (n + 1, 0));
+    for (int i = 1; i <= m; i++)
+        dp[i][0] = i;
+    for (int j = 1; j <= n; j++)
+        dp[0][j] = j;  
+    for (int i = 1; i <= m; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (word1[i - 1] == word2[j - 1]) 
+                dp[i][j] = dp[i - 1][j - 1];
+            else dp[i][j] = min(dp[i - 1][j - 1] + 1, min(dp[i][j - 1] + 1, dp[i - 1][j] + 1));
         }
-        f[l2] = prev;
     }
-
-    return f[l2];
+    return dp[m][n];
 }
 ```
 
+```C++
+// optimized
+int minDistance(string word1, string word2) {
+    int m = word1.length(), n = word2.length();
+    vector<int> cur(m + 1, 0);
+    // 把剩余的字符删掉的距离
+    for (int i = 1; i <= m; i++)
+        cur[i] = i;
+    for (int j = 1; j <= n; j++) {
+        int pre = cur[0];
+        cur[0] = j;
+        for (int i = 1; i <= m; i++) {
+            int temp = cur[i];
+            if (word1[i - 1] == word2[j - 1])
+                cur[i] = pre;
+            else cur[i] = min(pre + 1, min(cur[i] + 1, cur[i - 1] + 1));
+            pre = temp;
+        }
+    }
+    return cur[m]; 
+}
+```
 
+```C
+// recursive code
+```
 
 73. 给定一个矩阵，如果某个元素为零，把所在的行和所在的列都设为零
 ------
