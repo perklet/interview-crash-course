@@ -1375,6 +1375,17 @@ int jump(int* nums, int numsSize) {
 46. 生成全排列
 ------
 
+Cracking上给出了一种解法，通过不断的添加下一个元素到上一组元素的不同位置来生成全排列，这样固然可以，但是大规模的拼接数组或者字符串是很耗费资源的。
+
+在已经有了字符串（或者数组）的初始排列以后，可以通过不断交换的方法生成每一组全排列。
+比如对于xyz，我们有全排列为
+
+    x + per(yx)
+    y + per(xz)
+    z + per(xy)
+
+那么我们通过把每个元素交换到第一个位置，就把问题规模缩小了，知道把问题规模缩小为1.
+
 ```C++
 vector<vector<int>> permute(vector<int>& nums) {
     vector<vector<int>> result;
@@ -1388,36 +1399,38 @@ void per(vector<vector<int>>& result, vector<int>& nums, int begin) {
         return;
     }
     
-    for (int i = begin; i < nums.size(); i++) {
+    for (int i = begin; i < nums.size(); i++) { // 注意是从begin开始，这样未改变的才能加入进来
         swap(nums[begin], nums[i]);
         per(result, nums, begin + 1);
-        swap(nums[begin], nums[i]);
+        swap(nums[begin], nums[i]); // 注意因为参数中是传引用，这里需要复原
     }
 }
 ```
 
-47. Permutation，数组中有重复元素
+47. 全排列，数组中有重复元素
 ------
+
+和上一题基本是一样的，注意跳过重复元素就好了
 
 ```C++
 vector<vector<int>> permuteUnique(vector<int>& nums) {
     sort(nums.begin(), nums.end());
     vector<vector<int>> result;
-    dfs(result, nums, 0, nums.size());
+    per(result, nums, 0);
     return result;
 }
 
-void dfs(vector<vector<int>>& result, vector<int> nums, int start, int end) {
-    if (start == end - 1) {
+void per(vector<vector<int>>& result, vector<int> nums, int start) {
+    if (start >= nums.size()) {
         result.push_back(nums);
         return;
     }
     
-    for (int i = start; i < end; i++) {
+    for (int i = start; i < nums.size(); i++) {
         if (start != i && nums[start] == nums[i])
             continue;
         swap(nums[start], nums[i]);
-        dfs(result, nums, start + 1, end);
+        per(result, nums, start + 1); // 事实证明，传引用反倒会超时
     }
 }
 ```
