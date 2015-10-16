@@ -1495,6 +1495,8 @@ double myPow(double x, int n) {
 51. N 皇后问题
 ------
 
+需要大幅度修改
+
 ```C++
 // N皇后问题，皇后不能再一条直线，一条竖线，一条斜线上
     
@@ -1513,6 +1515,8 @@ vector<vector<string>> solveNQueens(int n) {
 void dfs(int t, vector<int>& x, int n) {
     // 当新添加一个 Q 到当前解的时候
     if (t >= n) {
+        // result.push_back(make_solution(x));
+        // return;
         vector<string> solution;
         for (int i = 0; i < n; i++) {
             string line(n, '.');
@@ -1876,13 +1880,11 @@ int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
 依然是动态规划
 
 ```C++
-inline int min(int a, int b) {
-    return a < b ? a : b;
-}
 int minPathSum(vector<vector<int>>& grid) {
     // if modifying the grid is disallowed, copy it 
-    for (int i = 0; i < grid.size(); i++)
-        for (int j = 0; j < grid[0].size(); j++)
+    int m = grid.size(), n = grid[0].size();
+    for (int i = 0; i < m; i++)
+        for (int j = 0; j < n; j++)
             if (i == 0 && j == 0)
                 continue;
             else if (i == 0 && j != 0)
@@ -1891,7 +1893,7 @@ int minPathSum(vector<vector<int>>& grid) {
                 grid[i][j] += grid[i-1][j];
             else
                 grid[i][j] += min(grid[i-1][j], grid[i][j-1]);
-    return grid[grid.size()-1][grid[0].size()-1];
+    return grid[m-1][n-1];
 }
 ```
 
@@ -1973,6 +1975,7 @@ vector<int> plusOne(vector<int>& digits) {
         }
     }
     // real trick here, we know that the number is 999...999
+    // 改成insert
     digits[0] = 1;
     digits.push_back(0);
     return digits;
@@ -2100,9 +2103,10 @@ see [here](https://leetcode.com/discuss/43398/20ms-detailed-explained-c-solution
 
 1. 相等 f[i][j] = f[i-1][j-1];
 2. 不相等
-    (a) 替换: f[i][j] = f[i-1][j-1] + 1;  都向前一步
-    (b) 添加: f[i][j] = f[i][j-1] + 1; word2向前一步
-    (c) 删除: f[i][j] = f[i-1][j] + 1; word1向前一步
+
+    1. 替换: f[i][j] = f[i-1][j-1] + 1;  都向前一步
+    2. 添加: f[i][j] = f[i][j-1] + 1; word2向前一步
+    3. 删除: f[i][j] = f[i-1][j] + 1; word1向前一步
 
 另外使用一维数组表示二维数组还需要了解
 ```C++
@@ -2149,8 +2153,29 @@ int minDistance(string word1, string word2) {
 }
 ```
 
-```C
-// recursive code
+```C++
+// recursive code from beauty of programming
+// TLE on LeetCode
+int minDistance(string word1, string word2) {
+    return minDistance(&word1.front(), &word1.back(), &word2.front(), &word2.back())
+}
+
+int minDistance(char* start1, char* end1, char* start2, char* end2) {
+    if (start1 > end1) 
+        return start2 > end2 ? 0 : end2 - start2 + 1;
+
+    if (start2 > end2)
+        return start1 > end1 ? 0 : end1 - start1 + 1;
+
+    if (*start1 == *start2)
+        return minDistance(start1 + 1, end1, start2 + 1, end2);
+    else {
+        int t1 = minDistance(start1 + 1, end1, start2 + 1, end2);
+        int t2 = minDistance(start1 + 1, end1, start2, end2);
+        int t3 = minDistance(start1, end1, start2 + 1, end2);
+        return min(t1, min(t2, t3)) + 1;
+    }
+}
 ```
 
 73. 给定一个矩阵，如果某个元素为零，把所在的行和所在的列都设为零
@@ -2262,7 +2287,11 @@ void combine(vector<vector<int>>& result, vector<int>& temp, int start, int coun
 78. 给定一个集合，找到它的所有子集
 ------
 
-我们知道对于 n 个元素的集合，有2^n个子集，通过每个元素在不在子集中构造一个状态空间树
+这道题至少有3种解法：
+
+1. DFS，我们知道对于 n 个元素的集合，有2^n个子集，通过每个元素在不在子集中构造一个状态空间树
+2. 类似于电话键盘生成字母，迭代
+3. 巧妙的利用1..2^n对应
 
 ```C++
 // use backtracking and do a dfs search
@@ -2287,6 +2316,47 @@ void subsets(vector<int>& nums, vector<vector<int>>& result, vector<int> temp, i
     subsets(nums, result, temp, i + 1);
     temp.push_back(nums[i]);
     subsets(nums, result, temp, i + 1);
+}
+```
+
+```C++
+// iterative
+vector<vector<int>> subsets(vector<int>& nums) {
+    vector<vector<int>> result;
+    result.push_back({});
+    if (nums.empty())
+        return result;
+    result.push_back(vector<int>(1, nums[0]));
+    for (int i = 1; i < nums.size(); i++) {
+        int size = result.size(); // notice the cached size
+        for (int j = 0; j < size; j++) {
+            auto new_subset = result[j];
+            new_subset.push_back(nums[i]);
+            sort(new_subset.begin(), new_subset.end());
+            result.push_back(new_subset);
+        }
+    }
+    return result;
+}
+```
+
+```C++
+// tricky
+vector<vector<int>> subsets(vector<int>& nums) {
+    vector<vector<int>> result;
+    int size = (1 << nums.size());
+    for (int i = 0; i < size; i++) {
+        vector<int> subset;
+        int k = i;
+        for (int j = 0; j < nums.size(); j++) {
+            if (k & 0x1)
+                subset.push_back(nums[j]);
+            k >>= 1;
+        }
+        sort(subset.begin(), subset.end());
+        result.push_back(subset);
+    }
+    return result;
 }
 ```
 
@@ -2354,6 +2424,7 @@ int removeDuplicates(int* nums, int numsSize) {
 经典题目，还是一个二分查找问题，只是要分很多种情况
 
 ```C
+// 重写一下
 bool search(int A[], int n, int key) {
     int l = 0, r = n - 1;
     while (l <= r) {
