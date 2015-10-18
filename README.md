@@ -572,8 +572,6 @@ vector<vector<int>> fourSum(vector<int>& nums, int target) {
 }
 ```
 
-不会做
-
 E19. 删除链表中倒数第 k 的节点
 ------
 
@@ -666,7 +664,7 @@ struct ListNode* mergeTwoLists(struct ListNode* l1, struct ListNode* l2) {
 22. 给定数字n, 生成所有合法的 n 个括号组成的序列
 ------
 
-Cracking 上还提供了另一种
+Cracking 上还提供了另一种复杂的思路
 
 ```C++
 vector<string> generateParenthesis(int n) {
@@ -702,8 +700,7 @@ struct ListNode* mergeTwoLists(struct ListNode* l1, struct ListNode* l2) {
 struct ListNode* mergeKLists(struct ListNode** lists, int listsSize) {
     if (!lists || listsSize < 1)
         return NULL;
-    if (listsSize == 1)
-        return lists[0];
+
     while (listsSize > 1) {
         // listsize is halfed
         for (int i = 0; i < listsSize / 2; i++)
@@ -783,13 +780,12 @@ PS：这个基础题竟然做了半个小时才做对, ⊙﹏⊙b汗, 要加强�
 
 ```C
 int removeDuplicates(int* nums, int numsSize) {
-    if (!nums || numsSize <= 1) return numsSize;
+    if (numsSize <= 1) return numsSize;
     int len = 0;
-    for (int i = 1; i < numsSize; i++) {
-        if (nums[i] != nums[len])
-            nums[++len] = nums[i];
-    }
-    return len + 1;
+    for (int i = 0; i < numsSize; i++)
+        if (i == 0 || nums[i] != nums[len - 1])
+            nums[len++] = nums[i];
+    return len;
 }
 ```
 
