@@ -156,8 +156,8 @@ double findMedianSortedArrays(int* A, int m, int* B, int n) {
 char* longestPalindrome(char* s) {
     if (!s) return NULL;
 
-    int p_length = 0; // length of the longest palindromic string
-    int p_start = -1; // start of the lonest palidromic string
+    int length = 0; // length of the longest palindromic string
+    int start = -1; // start of the lonest palidromic string
 
     int len = strlen(s);
     for (int i = 0; i < len; i++) {
@@ -166,9 +166,9 @@ char* longestPalindrome(char* s) {
         for (int j = 0; (i - j >= 0) && (i + j < len); j++) { 
             if (s[i - j] != s[i + j])
                 break;
-            if (j * 2 + 1 > p_length) {
-                p_length = j * 2 + 1;
-                p_start = i - j;
+            if (j * 2 + 1 > length) {
+                length = j * 2 + 1;
+                start = i - j;
             }
         }
 
@@ -176,16 +176,16 @@ char* longestPalindrome(char* s) {
         for (int j = 0; (i - j >= 0) && (i + j + 1 < len); j++) {
             if (s[i - j] != s[i + j + 1])
                 break;
-            if (j * 2 + 2 > p_length) {
-                p_length = j * 2 + 2;
-                p_start = i - j;
+            if (j * 2 + 2 > length) {
+                length = j * 2 + 2;
+                start = i - j;
             }
         }
     }
 
-    char* result = malloc(sizeof(char) * p_length + 1);
-    strncpy(result, s + p_start, p_length);
-    result[p_length] = 0;
+    char* result = malloc(sizeof(char) * length + 1);
+    strncpy(result, s + start, length);
+    result[length] = 0;
 
     return result;
 }
@@ -2674,13 +2674,13 @@ vector<int> grayCode(int n) {
 90. 由给定元素生成子集，可能包含重复元素
 ------
 
-使用了和手机键盘生成字符串号码类似的迭代算法，注意其中对重复元素的处理
+使用了和手机键盘生成字符串号码类似的迭代算法，注意其中对重复元素的处理，当然也可以用DFS来做
 
 ```C++
 vector<vector<int>> subsetsWithDup(vector<int>& nums) {
     vector<vector<int>> sets;
     sets.push_back({});
-    sort(nums.begin(), nums.end());
+    sort(nums.begin(), nums.end()); // 处理包含重复元素的一半需要预排序
     for (int i = 0; i < nums.size(); ) {
         int count = 0; // dup count
         while (count + i < nums.size() && nums[count+i] == nums[i])
