@@ -663,28 +663,28 @@ struct ListNode* mergeTwoLists(struct ListNode* l1, struct ListNode* l2) {
 }
 ```
 
-H22. 给定数字n, 生成所有合法的 n 个括号组成的序列
+22. 给定数字n, 生成所有合法的 n 个括号组成的序列
 ------
 
-解释暂时说不清粗
+Cracking 上还提供了另一种
 
 ```C++
-vector<string> result;
 vector<string> generateParenthesis(int n) {
-    gen("", n, n);
+    vector<string> result;
+    gen(result, "", n, n);
     return result;
 }
 
 // left 剩下的左括号，right 剩下的右括号
-void gen(string s, int left, int right) {
+void gen(vector<string>& result, string s, int left, int right) {
     if (left == 0 && right == 0) {
         result.push_back(s);
         return;
     }
     if (left != 0)
-        gen(s + '(', left - 1, right);
+        gen(result, s + '(', left - 1, right);
     if (left < right)
-        gen(s + ')', left, right - 1);
+        gen(result, s + ')', left, right - 1);
 }
 ```
 
@@ -2431,30 +2431,30 @@ int removeDuplicates(int* nums, int numsSize) {
 }
 ```
 
-81. 在被翻转的数组中查找元素
+81. 在被翻转的数组中查找元素，可能包含重复元素
 ------
 
 经典题目，还是一个二分查找问题，只是要分很多种情况
 
 ```C
-// 重写一下
 bool search(int A[], int n, int key) {
-    int l = 0, r = n - 1;
-    while (l <= r) {
-        int m = l + (r - l)/2;
-        if (A[m] == key) return true; //return m in Search in Rotated Array I
-        if (A[l] < A[m]) { //left half is sorted
-            if (A[l] <= key && key < A[m])
-                r = m - 1;
+    int left = 0, right = n - 1;
+    while (left <= right) {
+        int mid = left + (right - left)/2;
+        if (A[mid] == key) 
+            return true; //return m in Search in Rotated Array I
+        if (A[left] < A[mid]) { //left half is sorted
+            if (A[left] <= key && key < A[mid])
+                right = mid - 1;
             else
-                l = m + 1;
-        } else if (A[l] > A[m]) { //right half is sorted
-            if (A[m] < key && key <= A[r])
-                l = m + 1;
+                left = mid + 1;
+        } else if (A[left] > A[mid]) { //right half is sorted
+            if (A[mid] < key && key <= A[right])
+                left = mid + 1;
             else
-                r = m - 1;
-        } else {
-            l++;
+                right = mid - 1;
+        } else { // A[left] == A[mid]
+            left++;
         }
     }
     return false;
@@ -4443,6 +4443,9 @@ int findPeakElement(int* nums, int numsSize) {
 164. 未排序数组中相差最大的两个数之间的差
 ------
 
+根据抽屉原理，最大差不可能小于(max - min) / (n - 1)。证明：如果小于，那么整个数组的大小就会小于max - min。
+因此我们把
+
 
 165. 比较版本号大小
 ------
@@ -4587,10 +4590,8 @@ int trailingZeroes(int n) {
     if (n < 0)
         return -1;
     int fives = 0;
-    while (n) {
-        fives += n / 5; // num/5 .. num/25 .. num/125
-        n /= 5;
-    }
+    for (int i = 5; n / i > 0; i *= 5)
+        fives += n / i;
     return fives;
 }
 ```
@@ -4764,6 +4765,46 @@ int hammingWeight(uint32_t n) {
         count++;
     }
     return count;
+}
+```
+
+还可以采用查表法，对于表我们可以预先构造，活着利用上一个方法生成，对于长度过大的，我们可以分块查表。
+
+```
+#include <stdio.h>
+#include <stdlib.h>
+
+int counts[16];
+
+int _get_count(n) {
+    int count = 0;
+    while (n) {
+        n &= n-1;
+        count++;
+    }
+    return count;
+}
+
+int init_counts() {
+    for (int i = 0; i < 16; i++)
+        counts[i] = _get_count(i);
+};
+
+int get_count(n) {
+    int count = 0;
+    while (n) {
+        int index = n & 0xF;
+        count += counts[index];
+        n >>= 4;
+    }
+    return count;
+}
+
+int main() {
+    init_counts();
+    for (int i = 0; i < 100; i++)
+        printf("%d: %d\n", _get_count(i), get_count(i));
+    return 0;
 }
 ```
 
@@ -5384,16 +5425,25 @@ string shortestPalindrome(string s) {
 ```
 
 
-215. 数组中第k大的数字
+*215. 数组中第k大的数字
 ------
 
+实际上这道题更可能的题目是找到前k大的所有数字。
 首先，设计到数组排序的问题一定向面试官要问清楚数据量的大小，这影响到接下来的实现，
 同时和面试官探讨数据量大小对实现的影响，有助于更好的把握局面。
 
 我们先假设数据量是比较小的，也就是能够放到内存中。
 
 0. 使用排序就实在是naive了，不过面试官非要问的话，当然是使用选择排序更好了。
-1. 使用快排中的partition算法，时间复杂度O(n*logk)
+1. 使用快排中的partition算法，时间复杂度O(n*logk)。
+2. 使用size为k的堆，时间复杂度也是O(n*logk)，不管数字多大，都只需要遍历一遍。
+3. 使用类似插入排序的方法，保持数组大小不变，这样的时间复杂度是O(n*k)。
+4. 数据的范围有限时候，使用计数排序。
+
+当数据过大的时候，我们可以想通过哈希取模之后把文件分组，找出每个文件中最大的k个数字
+
+如果数字中有重复呢？使用计数排序，计数强制按一算
+如果既有重复又是浮点数呢？
 
 ```C
 int swap(int* a, int* b) {
@@ -5425,9 +5475,6 @@ int findKthLargest(int* nums, int numsSize, int k) {
     }
 }
 ```
-
-2. 如果数字的范围有限，比如在1...100，使用计数排序 
-
 
 216. 找到k个数字[1...9]，使得他们的和是n
 ------
@@ -5900,19 +5947,55 @@ private:
 };
 ```
 
-*233. 数字1的个数
+*233. 小于n的数字中1的个数
 ------
+
+对于每一位，有三种情况：
+
+1. 当是数字0的时候，可能出先1的情况完全由高位出现决定，因为这一位不能贡献1
+2. 当是数字1的时候，同上，但是这一位和低位一起可以贡献一个1
+3. 当时数字2-9的时候，相当于这一位的1可以任意出现，因此高位＋1
 
 ```C
 int countDigitOne(int n) {
     int ones = 0;
-    for (long long m = 1; m <= n; m *= 10) {
-        int a = n/m, b = n%m; // a is left half, b is right half
-        ones += (a + 8) / 10 * m + (a % 10 == 1) * (b + 1); // a + 8 distincts 0,1 / 2...    a % 10 == 1 is 1 case
+    for (int m = 1; m <= n; m *= 10) { // m is the factor
+        int a = n/m, b = n%m;  // a is left half, b is right half
+        if (a % 10 >= 2)
+            ones += (a / 10 + 1) * m;    
+        if (a % 10 == 1)
+            ones += (a / 10) * m + b + 1;
+        if (a % 10 == 0)
+            ones += (a / 10) * m;
     }
     return ones;
 }
 ```
+
+二进制呢
+
+```C
+int countDigitOneBinary(int n) {
+    int ones = 0;
+    for (int m = 1; m <= n; m <<= 1) {
+        int a = n / m, b = n % m;
+        if (a & 0x01)
+            ones += (a >> 1) * m + b + 1;
+        else
+            ones += (a >> 1) * m;
+    }
+}
+```
+
+求最大的countDigitOne(n) == n
+
+    9    1
+    99   20
+    999  300
+    ...
+    99999999  10000000
+
+即｀f(10^n-1) ＝ n * 10^(n-1)｀，找到之后递减找最大的即可
 
 234. 判断一个链表是否是回文
 ------

@@ -75,8 +75,10 @@ void replaceSpaces(char* s, int len) {
 }
 ```
 
-1.5 Pass
+1.5 压缩字符串 `aabcccccaaa -> a2b1c5a3`如果压缩后变短，返回压缩后的字符串
 ------
+
+首先要计算出新的长度，然后比较是否变短，如果变短，则执行压缩，否则返回
 
 1.6 给定一幅由N＊N矩阵表示的图像，顺时针旋转90度
 ------
@@ -238,6 +240,28 @@ LeetCode 110
 > 碰到这类问题，有必要和面试官探讨一下DFS和BFS之间的利弊，例如，DFS实现起来比较简单，只需要简单的递归即可。BFS适合用来查找最短路径。
 > 而DFS在访问临近借点之前可能会深度便利其中一个临近节点
 
+🌲的遍历一定要注意visited数组或者集合，因为树中可能有几个节点指向同一个节点
+
+```C++
+bool search(Graph* graph, Node* start, Node* end) {
+    queue<Node*> q;
+    unordered_set<Node*> visited;
+
+    q.push(start);
+    while(!q.empty()) {
+        auto node = q.pop();
+
+        for (auto adj : q.adjs())
+            if (visited.find(adj) == visited.end())
+                if (adj == end)
+                   return true;
+                else
+                    q.push(adj);
+    }
+
+    return false;
+}
+
 4.3 给定一个有序数组，元素各不相同且按升序排列，创建一颗高度最小的二叉查找树
 ------
 
@@ -376,8 +400,48 @@ string printBinary(double num) {
 }
 ```
 
-5.3 先跳过
+5.3 给定一个正整数，找出和其二进制表示中一的数字相同的数字，并且最接近，一共两个
 ------
+
+我们需要把某个0反转为1，把某个1反转为0。
+0 -> 1在1->0 左边，数字变大，在右边数字变小。
+如果想变大，反转的0需要在1的左边。
+
+把p位置1；把0到p之间请0；在添加ending1 - 1个1。
+
+```C
+int getNext(int n) {
+    int c = n, ending0 = 0, ending1 = 0;
+    while ((c & 1 == 0) && c != 0) {
+        ending0++;
+        c >>= 1;
+    }
+
+    while (c & 1) {
+        ending1++;
+        c >>= 1;
+    }
+
+    return n + (1 << ending0) + (1 << (ending1 - 1)) - 1;
+}
+```
+
+把位p值0；把位p右边的位值1，再把0到ending0-1置0
+```C
+int getPrev(int n) {
+    int c = n, ending0 = 0, ending1 = 0;
+    while (c & 1) {
+        ending1++;
+        c >>= 1;
+    }
+    if (c == 0) return -1;
+    while ((c & 1) == 0 && c != 0) {
+        ending0++;
+        c >>= 1;
+    }
+    return n - (1 << ending1) - (1 << (ending0 - 1)) + 1;
+}
+```
 
 5.4 解释`n & (n-10) == 0`
 ------
@@ -442,7 +506,19 @@ void drawHorizentalLine(uint8_t * screen, int width, int x1, int x2, int y) {
     uint8_t start_mask = (uint8_t) (0xff >> start_offset);
     uint8_t end_mast = (uint8_t) ~(0xff >> end_offset + 1);
 
-    // to be continued
+    if ((x1 / 8) == (x2 / 8)) {
+        uint8_t mask = (uint8_t)(start_mask & end_mask);
+        screen[(width / 8) * y + x1 / 8] |= mask;
+    } else {
+        if (start_offset != 0) {
+            int byte_number = (width / 8) * y + start_full_byte - 1;
+            screen[byte_number] |= start_mask;
+        }
+        if (end_offset != 7) {
+            int byte_number = (width / 8) * y + end_full_byte + 1;
+            screen[byte_number] |= end_mask;
+        }
+    }
 
 ```
 
@@ -487,7 +563,39 @@ double Line::EPSILON = 0.00001;
 7.4 只使用加号实现减法和乘除法
 ------
 
-7.5 
+```C
+int neg(int a) {
+    int result = 0;
+    int d = a < 0 ? 1 : -1;
+    while (a) {
+        result += d;
+        a += d;
+    }
+    return result;
+}
+
+int abs(int a) {
+    return a > 0 ? a : neg(a);
+}
+
+int minus(int a, int b) {
+    return a + neg(b);
+}
+
+int multiply(int a, int b) {
+    int sign = (a > 0) == (b > 0) ? 1 : -1;
+    a = abs(a);
+    b = abs(b);
+    int result = 0;
+    while (b--)
+        result += a;
+    return sign == 1 ? result : neg(result);
+}
+
+int devide(int a, int b) {
+    // see leetcode
+}
+```
 
 7.7 找出第k个丑数
 ------
@@ -536,7 +644,7 @@ int countSteps(int n) {
 }
 ```
 
-9.2 设计一种算法，机器人只能👉👇移动，从(0, 0)移动到(x, y)有几种走法
+9.2 设计一种算法，机器人只能向右向下移动，从(0, 0)移动到(x, y)有几种走法
 ------
 
 LeetCode 62 63
@@ -544,11 +652,102 @@ LeetCode 62 63
 9.3 在有序数组A[0...n-1]中存在A[i] == i，找出该数字。如果存在重复值，又该如何做
 ------
 
+```C
+int magic(int* A, n) {
+    int left = 0; right = n - 1;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (A[mid] == mid)
+            return mid;
+        else if (A[mid] < mid)
+            left = mid + 1;
+        else
+            right = mid - 1;
+    }
+    return -1;
+}
+```
+
 9.4 返回一个集合的所有子集
 ------
 
 LeetCode 78
 
+9.5 全排列
+------
+
+LeetCode
+
+9.6 生成n对括号的全部有效集合
+------
+
+LeetCode
+
+9.7 实现填充颜色功能
+------
+
+```C++
+void paintFill(vector<vector<int>> screen, int x, int y, int color) {
+    if (screen[y][x] == color)
+        return;
+    paintFill(screen, int x, int y, screen[y][x], int color);
+}
+
+void paintFill(vector<vector<int>> screen, int x, int y, int start, int color) {
+    if (x < 0 || x >= screen[0].size() || y < 0 || y >= screen.size())
+        return;
+    if (screen[y][x] == start) {
+        screen[y][x] == color;
+        paintFill(screen, int x-1, int y, start, color);
+        paintFill(screen, x+1, y, start, color);
+        paintFill(screen, x, y+1, start, color);
+        paintFill(screen, x, y-1, start, color);
+    }
+}
+```
+
+9.8 给定数量不限的硬币，编写代码计算有几种表示方法
+------
+
+```C
+vector<int> makeChange(vector<int> coins, int target) {
+    vector<vector<int>> result;
+    vector<int> solution(coins.size(), 0)
+    make(result, coins, solution, 0, target);
+    return result; 
+}
+
+void make(vector<vector<int>>& result, vector<int>& coins, vector<int> solution, int start, int target) {
+    if (target <= 0 || start >= coins.size()) {
+        if (target == 0)
+            result.push_back(solution);
+        return;
+    }
+    for (int i = 0; i *coins[start] < target ; i++) {
+        solution[start] = i;
+        make(result, coins, solution, start + 1, target - i * coins[start]);
+}
+}
+
+```
+
+9.9 N-Queen问题
+------
+
+LeetCode
+
+9.10 给你一堆箱子，上面的箱子的长宽高要求小于下面的箱子，实现一个方法，搭出最高的箱子
+------
+
+注意缓存结果
+
+9.11 添加括号，使得结果成立
+------
+
+LeetCode
+
+10.x 系统设计题
+------
 
 11.1 合并两个有序数组
 ------
@@ -572,6 +771,8 @@ LeetCode 81
 
 11.5 
 
+12.x 测试
+
 13.1 使用 C++ 写个方法，打印输入文件的最后 K 行
 ------
 
@@ -593,7 +794,36 @@ void printLastKLines(char* filename) {
     for (int i = 0; i < count; i++) 
         cout << lines[(start + i) % K] << endl;
 }
-`
+```
+
+13.9 编写malloc_aligned
+
+13.10 malloc2d函数，分配二维数组，返回int**可以通过a[i][j]访问，并且尽量少调用malloc
+------
+    
+前面rows大小的区域用作存储指针，后面存储数据。
+
+    hhh|ddddd|ddddd|ddddd
+
+```C
+void** malloc2d(int rows, int cols) {
+    int header = rows * sizeof(void*);
+    void** ptr = (void**)malloc(header + rows * cols);
+    if (!ptr)
+        return NULL;
+    void* buf = (void*)(rawptr + rows);
+    for (int i = 0; i < rows; i++)
+         ptr[i] = buf + i * cols;
+    return ptr;
+}
+
+void free2d(void** ptr) {
+    void* p = void* p;
+    free(p);
+}
+
+13.x C++ 14.x JAVA 15.x SQL
+------
 
 17.1 不用中间变量，直接交换两个数字
 ------
@@ -743,4 +973,8 @@ struct tree_node* convert(struct tree_node* root) {
 }
 ```
 
+18.4 小于 n 的数字中出现2的个数
+------
+
+LeetCode 
 
