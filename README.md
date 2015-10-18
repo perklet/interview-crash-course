@@ -2582,7 +2582,7 @@ int maximalRectangle(char** matrix, int row, int col) {
 
 ```C
 struct ListNode* partition(struct ListNode* head, int x) {
-    struct ListNode small, *psmall = &small;
+    struct ListNode small, *psmall = &small; // double dummy head
     struct ListNode big, *pbig = &big;
     psmall->next = pbig->next = NULL;
     
@@ -2611,19 +2611,18 @@ bool isScramble(string s1, string s2) {
         return true;
 
     // 先判断字符是否一致
-    int len = s1.length();
+    int len = s1.size();
     int count[26] = {0};
     for(int i=0; i<len; i++) {
         count[s1[i]-'a']++;
         count[s2[i]-'a']--;
     }
 
-    for(int i=0; i<26; i++) {
+    for(int i = 0; i < 26; i++)
         if(count[i]!=0)
             return false;
-    }
 
-    for(int i=1; i<=len-1; i++) {
+    for(int i = 1; i < len; i++) {
         if( isScramble(s1.substr(0,i), s2.substr(0,i)) && isScramble(s1.substr(i), s2.substr(i)))
             return true;
         if( isScramble(s1.substr(0,i), s2.substr(len-i)) && isScramble(s1.substr(i), s2.substr(0,len-i)))
