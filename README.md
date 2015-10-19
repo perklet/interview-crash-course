@@ -959,7 +959,7 @@ vector<int> findSubstring(string s, vector<string>& words) {
 
 ```C++
 void nextPermutation(vector<int>& nums) {
-    int k = -1;
+    int k = -1; // 升序排列的最后一个数字
     for (int i = nums.size() - 2; i >= 0; i--) {
         if (nums[i] < nums[i + 1]) {
             k = i;
@@ -971,15 +971,15 @@ void nextPermutation(vector<int>& nums) {
         reverse(nums.begin(), nums.end());
         return;
     }
-    int l = -1;
+    int l = -1; // 逆序数字中比 k 大的最小的数字
     for (int i = nums.size() - 1; i > k; i--) {
         if (nums[i] > nums[k]) {
             l = i;
             break;
         } 
     } 
-    swap(nums[k], nums[l]);
-    reverse(nums.begin() + k + 1, nums.end()); 
+    swap(nums[k], nums[l]); // 保证变大
+    reverse(nums.begin() + k + 1, nums.end()); // 保证是下一个
 }
 ```
 
@@ -1001,10 +1001,10 @@ int longestValidParentheses(char* s) {
     // 从倒数第二个位置开始遍历
     for (int i = len - 2; i >= 0; i--) {
         // 尝试把上一个序列包围住
-        int match = i + dp[i+1] + 1;
+        int match = i + dp[i+1] + 1; // 向右查找配对括号
         if (s[i] == '(' && match < len && s[match] == ')') {
             dp[i] = dp[i+1] + 2;
-            // 拼接合法序列，注意 match + 1
+            // 拼接合法序列，注意 match + 1 表示 match 右侧相邻的合法序列
             if (match + 1 < len)
                 dp[i] += dp[match + 1];
         }
@@ -1041,7 +1041,7 @@ int search(int* nums, int numsSize, int target) {
                 right = mid - 1;
             else
                 left = mid + 1;
-            // right half is sorted
+        // right half is sorted
         } else {
             if (nums[mid] < target && target <= nums[right])
                 left = mid + 1;
@@ -1103,7 +1103,9 @@ int searchInsert(int* nums, int numsSize, int target) {
     int left = 0, right = numsSize - 1;
     while (left <= right) {
         int mid = left + (right - left) / 2;
-        if (nums[mid] < target)
+        if (nums[mid] == target)
+            return mid;
+        else if (nums[mid] < target)
             left = mid + 1;
         else
             right = mid - 1;
@@ -1210,16 +1212,16 @@ void dfs(vector<vector<int>>& result, vector<int>& candidates, vector<int> comb,
     }
     
     for (auto c : candidates) {
-        if (target - c < 0) continue; // 数字太大了
-        if (!comb.empty() && c < comb.back()) continue; // 保证不重复
+        if (c > target) continue; // 数字太大了
+        if (!comb.empty() && c < comb.back()) continue; // 保证不重复且升序
         comb.push_back(c);
         dfs(result, candidates, comb, target - c);
-        comb.pop_back();
+        comb.pop_back(); // 注意此处还需要弹出，因为需要循环
     }
 }
 ```
 
-40. 同上提一样，但是集合中的数字只能使用一次，但是集合中有重复数字
+40. 同上题一样，但是集合中的数字只能使用一次，并且集合中有重复数字
 ------
 
 ```C++
@@ -6595,10 +6597,10 @@ public:
 287. 一个n的数组包含了1...n-1中的这些数字，证明一定存在重复，并找出这个重复
 ------
 
-使用 Pigeon Hole Priciple 可以证明一定存在重复。据说高纳德解这个问题花了四个小时。
+使用抽屉原理可以证明一定存在重复。据说高纳德解这个问题花了四个小时。
 
-我们把这个数组看做一个变幻方程 f(i) = A[i]，把一些数字变幻到另一些，那么存在一个 i != j s.t. f(i) == f(j).
-那么这个问题变成了链表求环的问题。对于链表，我们有 n = n->next 遍历列表，对于这个序列，则是 n = f(n) 
+我们把这个数组看做一个变幻方程 `f(i) = A[i]`，把一些数字变幻到另一些，那么存在一个 `i != j s.t. f(i) == f(j)`.
+那么这个问题变成了链表求环的问题。对于链表，我们有 n = n->next 遍历列表，对于这个序列，则是` n = f(n)` 
 
 ```C
 int findDuplicate(int* nums, int n) {

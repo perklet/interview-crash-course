@@ -1,12 +1,43 @@
 Beauty of Programming
 ======
 
-2.1 LeetCode
-2.2 LeetCode
-2.3 LeetCode 1/4 如何解？
-2.4 LeetCode
-*2.5 看下讲解
-2.6 LeetCode
+1.2 中国象棋将帅问题
+------
+
+```C
+struct {
+	unsigned char a:4;
+	unsigned char b:4;
+};
+
+for (i.a = 1; i.a <= 9; i.a++)
+    for (i.b = 1; i.b <= 9; i.b++)
+        if (i.a % 3 != i.b % 3)
+            printf("%u:%u", i.a, i.b);
+```
+
+1.14 连连看
+------
+
+```C
+Grid* preClick = NULL, * curClick = NULL;
+while(true) {
+	// listen user event
+	if (点击格子 xy 非空) {
+	    preClick = curClick;
+	    curClick.pos = x, y;
+	}
+
+	if (preClick && curClick && findPath(preClick, curClick)) {
+		显示路径
+		消去
+		preClick = curClick = NULL;
+	}
+}
+```
+
+2.1 - 2.6 LeetCode
+------
 
 2.7 最大公约数
 ------
@@ -67,6 +98,7 @@ int gcd(int x, int y) {
 
 
 2.8 看下讲解
+------
 
 
 2.9 斐波那契数列
@@ -106,23 +138,20 @@ Matrix matrixPow(Matrix m, int n) {
 }
 ```
 
-拓展问题，如果是前三项相加的数列呢
+拓展问题，如果是前三项相加的数列呢，依然可以求出转移矩阵
 
-
-
-
-
-
-2.10 稍微看下
 2.11 最近点对问题
 ------
 
 
-2.12 LeetCode
-2.13 LeetCode
-2.14 LeetCode
-2.15 看下讲解
-2.16 LeetCode？
+2.12-2.14 LeetCode 2.15 Cracking 2.16 2.17 LeetCode
+------
+
+2.18 数组分割
+------
+
+2.19 LeetCode
+------
 
 3.1 有时间可以尝试写一下
 ------
@@ -236,3 +265,102 @@ result_t get_max(tree_node_t* root) {
 ------
 
 对于询问知识点，要答得*正确*，*有条理*。最后写出来的程序已定要是*没有严重错误*，*完整*，并尝试用一些测试用例。
+
+4.1 金刚
+------
+
+询问李博士
+
+4.2 瓷砖覆盖地板
+------
+
+斐波那契额数列
+
+1x2覆盖8x8？从小到大，先找出2x2有多少种，再找出4x4有多少种，再找出8x8有多少种。还有考虑好多种，注意不要有重复
+pxq覆盖mxn？
+
+4.3  Catalan数
+------
+
+4.4 点是否在三角形内部
+------
+
+给定 ABC，逆时针顺序，判断 D 是否在 ABC 内部
+
+```
+// 利用面积，如果 D 和 ABC 分别构成的三角形的面积小于 ABC 的面积，那么 D 在三角形内部
+double area(Point A, Point B, Point, C) {
+	double a, b, c;
+	b = distance(A, C);
+	a = distance(B, C);
+	c = distance(A, B);
+
+	double p = (a + b + c) / 2;
+	return sqrt((p-a) * (p-b) * (p-c) * p);
+}
+
+bool isInTriangle(A, B, C, D) {
+	return area(A, B, D) + area(A, C, D) + area(B, C, D) <= area(A, B, C);
+} 
+```
+
+```
+// 根据角度考虑，如果两个向量叉积为正，那么 P3 在P1P2的左边，如果一个点同时在 AB，BC，CA 的左边
+double cross(Point A, Point B, Point X) {
+	return (B.x - A.x) * (X.y - A.y) - (X.x - A.x) * (B.y - A.y);
+}
+
+bool isInTriangle(A, B, C, D) {
+	return cross(A, B, D) >= 0 && cross(B, C, D) >= 0 && cross(C, A, D) >= 0;
+}
+```
+
+4.5 磁带文件存储优化
+------
+
+只考虑长度，按照文件长度由短到长存放。
+只考虑访问频率，按照访问频率由高到低存放。
+综合考虑，按照频率/长度由高到低
+
+4.6 桶中取黑白球
+------
+
+相当于使用 XOR，可以解任意问题
+
+4.7 蚂蚁爬杆
+------
+
+相当于穿越
+
+4.8 三角形测试用例
+------
+
+`int isTriangle(int a, int b, int c);`
+
+1. 用一个字节编码各种情况。
+
+用不同的位表示不同的结果，注意要正交
+
+2. 测试用例
+
+	1. 合法输入，各种三角形的形状，以及不是三角形的，还需要考虑交换不同边的顺序；
+
+	2. 非法输入，负数，0，类型错误等等；
+
+	3. 边界值，一般程序可能在`< <= > >=`上犯错误；
+
+	4. 很大的数，很小的数，等等。
+
+一般需要给出15-20个用例
+
+4.10 数字哑谜
+------
+
+列出方程，使用深度优先搜索，注意剪枝
+
+4.11 扫雷游戏的概率
+------
+
+
+
+

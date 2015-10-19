@@ -973,6 +973,46 @@ struct tree_node* convert(struct tree_node* root) {
 }
 ```
 
+18.1 实现加法
+------
+
+显然是使用位运算。
+
+```
+int add(int a, int b) {
+    while (b) {
+        int sum = a ^ b;
+        int carry = (a & b) << 1;
+        a = sum, b = carry;
+    }
+    return a;
+}
+```
+
+18.2 完美洗牌，使得一副牌中任意一种排列出现的概率都相等
+------
+
+显然全排列是n!个，那么我们保证每一个全排列都可能出现就好了。
+
+```C
+void shuffle(int* A, int n) {
+    for (int i = 0; i < n; i++) {
+        int k = rand(i);
+        swap(A[k], A[i]);
+    }
+}
+```
+
+18.3 从n个数组中选出m个，要求被选中概率一样
+------
+
+```C
+vector<int> pink_k(vector<int> nums, int k) {
+    vector<int> result(k);
+
+}
+```
+
 18.4 小于 n 的数字中出现2的个数
 ------
 
