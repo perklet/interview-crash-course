@@ -1517,6 +1517,7 @@ vector<vector<string>> groupAnagrams(vector<string>& strs) {
 显然不能直接阶乘过去，分治法
 
 ```C
+// recursive
 double myPow(double x, int n) {
     if (n == INT_MIN) return myPow(x, n - 1) * x;
     if (n < 0) return 1 / myPow(x, -n);
@@ -1527,6 +1528,22 @@ double myPow(double x, int n) {
         return y * y * x;
     else
         return y * y;
+}
+```
+
+```
+// iteratively
+double myPow(double x, long p) {
+    double result = 1;
+    if (p < 0)
+         return 1 / myPow(x, -p);
+    while (p) {
+        if (p & 1)
+            result *= x;
+        x *= x;
+        p /= 2;
+    }
+    return result;
 }
 ```
 
