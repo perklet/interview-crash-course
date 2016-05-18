@@ -6696,12 +6696,34 @@ bool canWinNim(int n) {
     return n % 4 != 0;
 }
 ```
+
+344. 翻转字符串
+------
+
+```C
+char* reverseString(char* s) {
+    char* start = s;
+    char* e = s;
+    while (*e) ++e;
+    e--;
+    char t;
+    while (s < e) {
+        t = *s;
+        *s = *e;
+        *e = t;
+        s++; 
+        e--;
+    }
+    return start;
+}
+```
+
 349. 两个数组中都出现的元素
 ------
 
 先排序，降低复杂度
 
-```
+```C
 static int compare(const void* a, const void* b) {
     return *(int*)a - *(int*)b;
 }
