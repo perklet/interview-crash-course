@@ -6696,4 +6696,36 @@ bool canWinNim(int n) {
     return n % 4 != 0;
 }
 ```
+349. 两个数组中都出现的元素
+------
 
+先排序，降低复杂度
+
+```
+static int compare(const void* a, const void* b) {
+    return *(int*)a - *(int*)b;
+}
+int* intersection(int* A, int m, int* B, int n, int* k) {
+    qsort(A, m, sizeof(int), compare);
+    qsort(B, n, sizeof(int), compare);
+    int* C = malloc((m + n) * sizeof(int));
+    *k = 0;
+    int i = 0;
+    int j = 0;
+    while (i < m && j < n) {
+        if (A[i] == B[j]) {
+            if (*k == 0)
+                C[(*k)++] = A[i];
+            else if (C[*k - 1] != A[i])
+                C[(*k)++] = A[i];
+            i++;
+            j++;
+        } else if (A[i] < B[j]) {
+            i++;
+        } else {
+            j++;
+        }
+    }
+    return C;
+}
+```
