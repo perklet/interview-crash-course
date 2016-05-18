@@ -4,13 +4,13 @@ LeetCode Complete
 0. 说明
 ------
 
-* 欢迎 Star/Fork/Pull request，不理解的也可以加我QQ：860220736（仅限学妹）。
+* 欢迎 Star/Fork/Pull request，不理解的也可以加我QQ：860220736。
 * 原则上使用 C 做, 如果需要用到 Hash, Stack, Queue, 或者返回值特别复杂, 或者需要大量拼接字符串时, 使用 C++。
 * 这份文档的目的是复习用的，并不是教如何解题的，因此只有简略介绍，适合面试前查漏补缺复习。
 
 Let the hack begin!
 
-^1. 从数组中找出两个数字使得他们的和是给定的数字
+1. 从数组中找出两个数字使得他们的和是给定的数字
 ------
 
 使用一个散列, 存储数字和他对应的索引。然后遍历数组, 如果另一半在散列当中, 那么返回
@@ -33,7 +33,7 @@ vector<int> twoSum(vector<int>& nums, int target) {
 }
 ```
 
-如果数组是已经排序的呢？
+Follow up: 如果数组是已经排序的呢？
 
 ```C++
 sort(nums.begin(), nums.end()) // 假设已经排序，只有一个结果
@@ -105,7 +105,7 @@ int lengthOfLongestSubstring(char* s) {
 4. 找到两个排序数组的中位数
 ------
 
-解法在[这里](https://leetcode.com/discuss/15790/share-my-o-log-min-m-n-solution-with-explanation)
+解法参见[这里](https://leetcode.com/discuss/15790/share-my-o-log-min-m-n-solution-with-explanation)
 把 AB 分成两份，比如 A[0..i], B[0..j] 和 A[i, m], B[j, n]，这样我们只需要下面两个条件就可以了
 
 1. i+j = m-i + n-j
@@ -246,7 +246,7 @@ int reverse(int x) {
 
 1. 首先过滤空格
 2. 判定符号, 符号只能出现一次
-3. 是否溢出, 溢出返回 INT_MAX 或者 INT_MIN
+3. 是否溢出, 溢出返回 `INT_MAX` 或者 `INT_MIN`
 
 ```C
 int myAtoi(char* str) {
@@ -394,8 +394,7 @@ int romanToInt(char* s) {
 14. 最长公共前缀
 ------
 
-横向遍历, 从头到尾, 如果, 不一致, 返回当前子串即可。如果约定不能更改当前字符串的化, 最好用
-C++做, 不然操作字符串太复杂了, 没必要出错。
+横向遍历, 从头到尾, 如果, 不一致, 返回当前子串即可。如果约定不能更改当前字符串的化, 最好用C++做, 不然操作字符串太复杂了, 没必要出错。
 
 ```c
 char* longestCommonPrefix(char** strs, int strsSize) {
@@ -486,7 +485,7 @@ int threeSumClosest(int* nums, int numsSize, int target) {
 }
 ```
 
-E17. 生成电话键盘按键数字对应的所有可能的字符串, 不限制返回结果的顺序
+17. 生成电话键盘按键数字对应的所有可能的字符串, 不限制返回结果的顺序
 ------
 
 ![键盘](http://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Telephone-keypad2.svg/200px-Telephone-keypad2.svg.png)
@@ -572,7 +571,7 @@ vector<vector<int>> fourSum(vector<int>& nums, int target) {
 }
 ```
 
-E19. 删除链表中倒数第 k 的节点
+19. 删除链表中倒数第 k 的节点
 ------
 
 双指针经典题目, 一个快指针先走 k 步, 另一个慢指针再出发, 注意链表长度小于 k 时。
@@ -598,7 +597,7 @@ struct ListNode* removeNthFromEnd(struct ListNode* head, int n) {
 ```
 
 
-E20. 判定给定的字符串是否是合法的括号序列, 可能包括大中小三类
+20. 判定给定的字符串是否是合法的括号序列, 可能包括大中小三类
 ------
 
 使用栈的基础题，注意逻辑简化
@@ -627,7 +626,7 @@ bool isValid(string s) {
 }
 ```
 
-E21. 合并两个已经排序的链表
+21. 合并两个已经排序的链表
 ------
 
 考察链表的基本操作, 很简单
@@ -686,11 +685,11 @@ void gen(vector<string>& result, string s, int left, int right) {
 }
 ```
 
-M23. 合并 k 个已经排序的列表
+23. 合并 k 个已经排序的列表
 ------
 
 把列表看做一个队列, 每次拿出两个列表, 合并他们后放回到列表中, 每次遍历列表的一半, 这样每次遍历完一遍, 
-    列表的长度都会减半, 直到列表的长度为1,  合并函数使用21题中的合并两个列表的函数
+列表的长度都会减半, 直到列表的长度为1,  合并函数使用21题中的合并两个列表的函数
 
 ```C
 struct ListNode* mergeTwoLists(struct ListNode* l1, struct ListNode* l2) {
@@ -737,8 +736,7 @@ struct ListNode* swapPairs(struct ListNode* head) {
 25. 给定一个链表, 把相邻的 k 个节点反转
 ------
 
-和上题一样, 同样禁止改变节点的值。比较简单地解法是浪费一点空间, 使用
-Stack, 实现逆转 k 个节点, 注意如果 k 较大的话, 这种方法是不合适的。
+和上题一样, 同样禁止改变节点的值。比较简单地解法是浪费一点空间, 使用 Stack, 实现逆转 k 个节点, 注意如果 k 较大的话, 这种方法是不合适的。
 
 ```C++
 ListNode* reverseKGroup(ListNode* head, int k) {
@@ -1140,33 +1138,33 @@ bool isValidSudoku(char** board, int row, int col) {
 
 ```C++
 void solveSudoku(vector<vector<char>>& board) {
-        solve(board, 0);
-    }
-    bool solve(vector<vector<char>>& board, int ind){
-        if(ind==81) return true; 
-        int i=ind/9, j=ind%9;
-        if(board[i][j]!='.') 
-            return solve(board, ind+1);
-        else{
-            for(char f = '1'; f <= '9'; f++) {
-                if(isValidFill(board, i, j, f)) {
-                    board[i][j]= f;
-                    if(solve(board, ind+1)) return true;                
-                    board[i][j]='.';
-                }
+    solve(board, 0);
+}
+bool solve(vector<vector<char>>& board, int ind){
+    if(ind==81) return true; 
+    int i=ind/9, j=ind%9;
+    if(board[i][j]!='.') 
+        return solve(board, ind+1);
+    else{
+        for(char f = '1'; f <= '9'; f++) {
+            if(isValidFill(board, i, j, f)) {
+                board[i][j]= f;
+                if(solve(board, ind+1)) return true;                
+                board[i][j]='.';
             }
-            return false;
         }
+        return false;
     }
-    bool isValidFill(vector<vector<char>>& board, int i, int j, char fill) {
-        for(int k=0; k<9; k++) {
-            if(board[i][k]==fill) return false; //check the row
-            if(board[k][j]==fill) return false; //check the column
-            int r= i/3*3+j/3;   //select the block
-            if(board[r/3*3+k/3][r%3*3+k%3]==fill) return false; //check the block
-        }            
-        return true;
-    }
+}
+bool isValidFill(vector<vector<char>>& board, int i, int j, char fill) {
+    for(int k=0; k<9; k++) {
+        if(board[i][k]==fill) return false; //check the row
+        if(board[k][j]==fill) return false; //check the column
+        int r= i/3*3+j/3;   //select the block
+        if(board[r/3*3+k/3][r%3*3+k%3]==fill) return false; //check the block
+    }            
+    return true;
+}
 ```
 
 38. 数数并说出来
@@ -1509,7 +1507,6 @@ vector<vector<string>> groupAnagrams(vector<string>& strs) {
 }
 ```
 
-回头再写
 
 50. 实现pow(x, n)
 ------
@@ -1633,7 +1630,7 @@ public:
 };
 ```
 
-^53. 最大子序列和
+53. 最大子序列和
 ------
 
 动态规划经典题目，遍历数组，如果已经当前子序列已经小于0了，抛弃并置 sum = 0
@@ -2774,7 +2771,7 @@ int numDecodings(char* s) {
 92. 在给定区间上翻转数组
 ------
 
-同样是数组草错细节题
+同样是数组操作细节题
 
 ```C
 struct ListNode* reverseBetween(struct ListNode* head, int m, int n) {
@@ -2821,9 +2818,8 @@ void restore(vector<string>& result, string& s, string restored, int start, int 
         if (part[0] == '0' && part.size() > 1 || i == 3 && stoi(part) > 255)
             continue;
         restore(result, s, restored + part + (dots==3 ? "" : "."), start + i, dots + 1);
-        
-    }
 
+    }
 }
 ```
 
@@ -2853,7 +2849,7 @@ vector<int> inorderTraversal(TreeNode* root) {
 }
 ```
 
-95. 生成二叉树，同下体一样
+95. 生成二叉树，同下题一样
 ------
 
 ```C＋＋
@@ -2881,7 +2877,6 @@ vector<TreeNode*> gen(int start, int end) {
         }
     }
     return result;
-    
 }
 ```
 
@@ -3727,7 +3722,7 @@ public:
         if (n == 0) return;
         int m = board[0].size();
         UnionFind uf(n*m+1);
-        
+
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
                 if ((i == 0 || j == 0 || i == n-1 || j == m-1) && board[i][j] == 'O')
@@ -3744,7 +3739,7 @@ public:
                 }
             }
         }
-        
+
         for (int i = 0; i < n; i++)
             for (int j = 0; j < m; j++)
                 if (uf.find(i*m+j) != uf.find(n*m))
@@ -4332,7 +4327,7 @@ void reverseWords(char *s) {
 }
 ```
 
-152. 最大子序列成绩
+152. 最大子序列乘积
 ------
 
 ```C
@@ -4352,7 +4347,7 @@ int maxProduct(vector<int>& A) {
 }
 ```
 
-*153. 在旋转数组中查找最小值
+153. 在旋转数组中查找最小值
 ------
 
 ```C
@@ -4371,7 +4366,7 @@ int findMin(int* A, int n) {
 }
 ```
 
-*154. 在旋转数组中查找最小值，可能有重复
+154. 在旋转数组中查找最小值，可能有重复
 ------
 
 ```C
@@ -4523,7 +4518,7 @@ int compareVersion(string version1, string version2) {
 }
 ```
 
-＊166. 分数生成小数
+166. 分数生成小数
 ------
 
 ```C++
@@ -4561,7 +4556,7 @@ string fractionToDecimal(long numerator, long denominator) {
 167. Locked
 ------
 
-＊168. 生成 Excel 表格标题
+168. 生成 Excel 表格标题
 ------
 
 注意 A 对应的是1而不是0，而且数字也是从1开始的
@@ -4809,7 +4804,7 @@ int hammingWeight(uint32_t n) {
 }
 ```
 
-还可以采用查表法，对于表我们可以预先构造，活着利用上一个方法生成，对于长度过大的，我们可以分块查表。
+还可以采用查表法，对于表我们可以预先构造，或者利用上一个方法生成，对于长度过大的，我们可以分块查表。
 
 ```
 #include <stdio.h>
@@ -4905,6 +4900,8 @@ vector<int> rightSideView(TreeNode* root) {
 
 200. 找出小岛的数量
 ------
+
+采用并查集，找到最后集合的数量
 
 ```C++
 class UnionFind {
@@ -5095,7 +5092,7 @@ struct ListNode* reverseList(struct ListNode* head) {
 // recursive
 ```
 
-*207. 标准的拓扑排序
+207. 标准的拓扑排序
 ------
 
 给定边这种方法表示图也是醉了
@@ -5394,8 +5391,7 @@ public:
         return result;
     }
     
-    void find(unordered_set<string>& r, vector<vector<char>>& board, vector<vector<bool>>& visited, string word, int i, int j)
-    {
+    void find(unordered_set<string>& r, vector<vector<char>>& board, vector<vector<bool>>& visited, string word, int i, int j) {
         if (i < 0 || i >= board.size() || j < 0 || j >= board[0].size() || visited[i][j])
             return;
         word += board[i][j];
@@ -5443,7 +5439,7 @@ int rob(int* nums, int numsSize) {
 }
 ```
 
-*214. 最短回文字符串，给指定的字符串添加字母获得回文
+214. 最短回文字符串，给指定的字符串添加字母获得回文
 ------
 
 ```C++
@@ -5466,7 +5462,7 @@ string shortestPalindrome(string s) {
 ```
 
 
-*215. 数组中第k大的数字
+215. 数组中第k大的数字
 ------
 
 实际上这道题更可能的题目是找到前k大的所有数字。
@@ -5560,8 +5556,10 @@ bool containsDuplicate(vector<int>& nums) {
 }
 ```
 
-*218. 获得矩形重合部分的拐点
+218. 获得矩形重合部分的拐点
 ------
+
+抄过来的，还没仔细研究
 
 ```C++
 vector<pair<int, int>> getSkyline(vector<vector<int>>& buildings) {
