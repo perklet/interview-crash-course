@@ -6751,3 +6751,34 @@ int* intersection(int* A, int m, int* B, int n, int* k) {
     return C;
 }
 ```
+
+371. 两个数之和
+------
+
+这道题要求不用+和-来计算出两个数之和，显然应该使用位运算，使用异或计算每一位的值，在使用或计算是否需要进位
+
+```C
+int getSum(int a, int b) {
+    int rv = 0;
+    int carry = 0;
+
+    for (int i = 0; i < 32; i++) {
+        int last_bit_of_a = a & 1;
+        int last_bit_of_b = b & 1;
+
+        rv |= (last_bit_of_a
+                ^ last_bit_of_b ^ carry) << i;
+        carry = (carry
+                & last_bit_of_a)
+            | (carry
+                    & last_bit_of_b)
+            | (last_bit_of_a
+                    & last_bit_of_b);
+
+        a >>= 1;
+        b >>= 1;
+    }
+
+    return rv;
+}
+```
