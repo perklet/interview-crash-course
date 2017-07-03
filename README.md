@@ -4078,17 +4078,17 @@ public:
 typedef unordered_map<int, pair<int, list<int>::iterator>> cache_t; // k: v, iter
 
     LRUCache(int capacity) : m_capacity(capacity) {
-        
+
     }
-    
-    int get(int key) {
+
+int get(int key) {
         auto it = m_cache.find(key);
         if (it == m_cache.end())
              return -1;
         touch(it);
         return it->second.first;
     }
-    
+
     void set(int key, int value) {
         auto it = m_cache.find(key);
         if (it != m_cache.end()) {
@@ -6718,6 +6718,52 @@ char* reverseString(char* s) {
 }
 ```
 
+347. 出现最多的几个数字
+------
+
+C 实在缺乏相关的基础数据结构，这道题用 JS 做了
+
+```JavaScript
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number[]}
+ */
+let topKFrequent = function(nums, k) {
+    let counter = {};
+    for (let num of nums) {
+        if (num in counter) {
+            counter[num]++;
+        } else {
+            counter[num] = 0;
+        }
+    }
+
+    let bucket = [];
+    for (let num in counter) {
+        let rev_freq = nums.length - counter[num] + 1;
+        if (rev_freq in bucket) {
+            bucket[rev_freq].push(num);
+        } else {
+            bucket[rev_freq] = [num];
+        }
+    }
+
+    let rv = [];
+    for (let bc of bucket) {
+        if (! Array.isArray(bc)) continue;
+        for (let num of bc) {
+            if (rv.length == k)
+                return rv;
+            else
+                rv.push(parseInt(num))
+        }
+    }
+
+    return rv;
+};
+```
+
 349. 两个数组中都出现的元素
 ------
 
@@ -6782,3 +6828,5 @@ int getSum(int a, int b) {
     return rv;
 }
 ```
+
+
