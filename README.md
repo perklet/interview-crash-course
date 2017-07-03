@@ -140,7 +140,7 @@ double findMedianSortedArrays(int* A, int m, int* B, int n) {
         num2 = B[j];
     else if (j == n)
         num2 = A[i];
-    else 
+    else
         num2 = min(A[i], B[j]); // 普通情况
     return (num1 + num2) / 2.0; // 注意整数除法
 }
@@ -152,7 +152,7 @@ double findMedianSortedArrays(int* A, int m, int* B, int n) {
 1. 以某个元素为中心, 向两边展开, 注意处理奇数和偶数两种情况
 2. Manacher 算法, 参见http://taop.marchtea.com/01.05.html
 
-````C
+```C
 char* longestPalindrome(char* s) {
     if (!s) return NULL;
 
@@ -163,7 +163,7 @@ char* longestPalindrome(char* s) {
     for (int i = 0; i < len; i++) {
 
         // length is odd
-        for (int j = 0; (i - j >= 0) && (i + j < len); j++) { 
+        for (int j = 0; (i - j >= 0) && (i + j < len); j++) {
             if (s[i - j] != s[i + j])
                 break;
             if (j * 2 + 1 > length) {
@@ -256,7 +256,7 @@ int myAtoi(char* str) {
 
     // discarding spaces
     while (isspace(*str))
-        str++; 
+        str++;
 
     // determining sign
     if (*str == '-' || *str == '+') {
@@ -461,7 +461,7 @@ int cmp(int* a, int* b) {
 }
 
 int threeSumClosest(int* nums, int numsSize, int target) {
-    if (numsSize <= 3) 
+    if (numsSize <= 3)
         return nums[0] + nums[1] + nums[2];
     qsort(nums, numsSize, sizeof(int), cmp);
 
@@ -535,9 +535,9 @@ vector<string> letterCombinations(string digits) {
 vector<vector<int>> fourSum(vector<int>& nums, int target) {
     vector<vector<int>> result;
     int n = nums.size();
-    
+
     if (n < 4) return result;
-    
+
     sort(nums.begin(), nums.end());
     unordered_map<int, vector<pair<int, int>>> hash;
     for(int i = 0; i < n; i++){
@@ -545,7 +545,7 @@ vector<vector<int>> fourSum(vector<int>& nums, int target) {
             hash[nums[i]+nums[j]].push_back(make_pair(i,j));
         }
     }
-    
+
     for (int i = 0; i < n; i++) {
         if (i > 0 && nums[i] == nums[i-1])
             continue;
@@ -688,7 +688,7 @@ void gen(vector<string>& result, string s, int left, int right) {
 23. 合并 k 个已经排序的列表
 ------
 
-把列表看做一个队列, 每次拿出两个列表, 合并他们后放回到列表中, 每次遍历列表的一半, 这样每次遍历完一遍, 
+把列表看做一个队列, 每次拿出两个列表, 合并他们后放回到列表中, 每次遍历列表的一半, 这样每次遍历完一遍,
 列表的长度都会减半, 直到列表的长度为1,  合并函数使用21题中的合并两个列表的函数
 
 ```C
@@ -895,7 +895,7 @@ int kmp(char* needle, char* haystack) {
 ```c
 int divide(int dividend, int divisor) {
     // abs(INT_MIN) == INT_MAX + 1
-    if (divisor == 0 || (dividend == INT_MIN && divisor == -1)) 
+    if (divisor == 0 || (dividend == INT_MIN && divisor == -1))
         return INT_MAX;
     int sign = (dividend > 0) == (divisor > 0) ? 1 : -1;
     long long n = labs(dividend);
@@ -940,7 +940,7 @@ vector<int> findSubstring(string s, vector<string>& words) {
                break;
             }
         }
-        if (j == num) 
+        if (j == num)
             indexes.push_back(i);
     }
     return indexes;
@@ -974,8 +974,8 @@ void nextPermutation(vector<int>& nums) {
         if (nums[i] > nums[k]) {
             l = i;
             break;
-        } 
-    } 
+        }
+    }
     swap(nums[k], nums[l]); // 保证变大
     reverse(nums.begin() + k + 1, nums.end()); // 保证是下一个
 }
@@ -1018,7 +1018,7 @@ int longestValidParentheses(char* s) {
 既然是部分有序的,自然还是使用二分搜索了,注意终止条件.
 不同于普通二分搜索的两种情况, 我们有了四种情况:
 
-1. 前半部分有序, 并且在前半部分当中, 
+1. 前半部分有序, 并且在前半部分当中,
 2. 前半部分有序, 但是不在前半部分
 3. 后半部分有序, 并且在后半部分
 4. 后半部分有序, 但是不在后半部分
@@ -1055,12 +1055,12 @@ int search(int* nums, int numsSize, int target) {
 34. 查找数组中一个重复出现数字的下界和上界, 数组已排序
 ------
 
-在 C++的标准库中包含了这两个函数, 分别是`std::lower_bound`和`std::upper_bound`. 
+在 C++的标准库中包含了这两个函数, 分别是`std::lower_bound`和`std::upper_bound`.
 
 
 ```C++
 vector<int> searchRange(vector<int>& nums, int target) {
-    return vector<int> {lower(nums, target), upper(nums, target)}; 
+    return vector<int> {lower(nums, target), upper(nums, target)};
 }
 
 int lower(vector<int>& nums, int target) {
@@ -1141,15 +1141,15 @@ void solveSudoku(vector<vector<char>>& board) {
     solve(board, 0);
 }
 bool solve(vector<vector<char>>& board, int ind){
-    if(ind==81) return true; 
+    if(ind==81) return true;
     int i=ind/9, j=ind%9;
-    if(board[i][j]!='.') 
+    if(board[i][j]!='.')
         return solve(board, ind+1);
     else{
         for(char f = '1'; f <= '9'; f++) {
             if(isValidFill(board, i, j, f)) {
                 board[i][j]= f;
-                if(solve(board, ind+1)) return true;                
+                if(solve(board, ind+1)) return true;
                 board[i][j]='.';
             }
         }
@@ -1162,7 +1162,7 @@ bool isValidFill(vector<vector<char>>& board, int i, int j, char fill) {
         if(board[k][j]==fill) return false; //check the column
         int r= i/3*3+j/3;   //select the block
         if(board[r/3*3+k/3][r%3*3+k%3]==fill) return false; //check the block
-    }            
+    }
     return true;
 }
 ```
@@ -1208,7 +1208,7 @@ void dfs(vector<vector<int>>& result, vector<int>& candidates, vector<int> comb,
         result.push_back(comb);
         return;
     }
-    
+
     for (auto c : candidates) {
         if (c > target) continue; // 数字太大了
         if (!comb.empty() && c < comb.back()) continue; // 保证不重复且升序
@@ -1235,7 +1235,7 @@ void dfs(vector<vector<int>>& result, vector<int>& candidates, vector<int> comb,
         result.push_back(comb);
         return;
     }
-    
+
     for (int i = start; i < candidates.size(); i++) {
         if (candidates[i] > target)
             break;
@@ -1264,11 +1264,11 @@ int firstMissingPositive(int* nums, int numsSize) {
         // 注意此处的 while
         while (nums[i] > 0 && nums[i] <= numsSize && nums[i] != nums[nums[i] - 1])
             swap(&nums[i], &nums[nums[i] - 1]);
-    
+
     for (int i = 0; i < numsSize; i++)
         if (nums[i] != i + 1)
             return i + 1;
-    
+
     return numsSize + 1;
 }
 ```
@@ -1283,7 +1283,7 @@ int trap(int* height, int heightSize) {
     int left = 0, right = heightSize - 1;
     int water = 0;
     int max_left = 0, max_right = 0;
-    
+
     // 从两侧向中间缩小, 可以算作是两个指针吧
     while (left <= right) {
         if (height[left] <= height[right]) {
@@ -1332,11 +1332,11 @@ char* multiply(char* num1, char* num2) {
         }
         result[i] += carry;
     }
-    
+
     for (int i = 0; i < len; i++)
         if (result[i] != '0')
             return result+i;
-    
+
     return "0";
 }
 ```
@@ -1356,18 +1356,18 @@ bool isMatch(char* s, char* p) {
             s++, p++;
         else if (*p == '*')
             star = p++, revert = s;
-        else if (star) 
+        else if (star)
             p = star + 1, s = ++revert;
         else
             return false;
     }
-    
+
     // 如果剩下了 p, 那应该全都是*才对
     while (*p) {
         if (*p++ != '*')
             return false;
     }
-    
+
     return true;
 }
 ```
@@ -1382,7 +1382,7 @@ int jump(int* nums, int numsSize) {
     int steps = 0;
     int last = 0; // last range
     int cur = 0; // current range
-    
+
     for (int i = 0; i < numsSize; i++) {
         // beyond range, make another jump
         if (i > last)
@@ -1421,7 +1421,7 @@ void per(vector<vector<int>>& result, vector<int>& nums, int begin) {
         result.push_back(nums);
         return;
     }
-    
+
     for (int i = begin; i < nums.size(); i++) { // 注意是从begin开始，这样未改变的才能加入进来
         swap(nums[begin], nums[i]);
         per(result, nums, begin + 1);
@@ -1448,7 +1448,7 @@ void per(vector<vector<int>>& result, vector<int> nums, int start) {
         result.push_back(nums);
         return;
     }
-    
+
     for (int i = start; i < nums.size(); i++) {
         if (start != i && nums[start] == nums[i])
             continue;
@@ -1521,7 +1521,7 @@ double myPow(double x, int n) {
     if (n == 0) return 1;
     if (n == 1) return x;
     double y = myPow(x, n / 2);
-    if (n & 0x1) 
+    if (n & 0x1)
         return y * y * x;
     else
         return y * y;
@@ -1551,7 +1551,7 @@ double myPow(double x, long p) {
 
 ```C++
 // N皇后问题，皇后不能再一条直线，一条竖线，一条斜线上
-    
+
 // 使用深度优先求解，对于 dfs 问题，我们首先把算法的框架写下来，然后确定这个问题的限制条件
 // 对于这个问题，限制条件当前行的元素不能在以前的列中出现过，也不能在对角线中出现过
 vector<vector<string>> result;
@@ -1561,7 +1561,7 @@ vector<vector<string>> solveNQueens(int n) {
     vector<int> x(n);
     dfs(0, x, n);
     return result;
-    
+
 }
 
 void dfs(int t, vector<int>& x, int n) {
@@ -1605,14 +1605,14 @@ public:
     int totalNQueens(int n) {
         return total(0, 0, n);
     }
-    
+
     int total(int row, int count, int n) {
         for (int col = 0; col < n; col++) {
             if (cols.find(col) != cols.end()
                 || digs1.find(row - col) != digs1.end()
                 || digs2.find(row + col) != digs2.end())
             continue;
-            
+
             if (row == n-1)
                 count++;
             else {
@@ -1671,17 +1671,17 @@ int* spiralOrder(int** matrix, int row, int col) {
         top++; //
         for (int i = top; i <= down; i++)
             result[index++] = matrix[i][right];
-        right--; // 
+        right--; //
         // 注意这个 if 语句
         if (top <= down)
             for (int i = right; i >= left; i--)
                 result[index++] = matrix[down][i];
-        down--; // 
+        down--; //
         // 注意这个 if 语句
         if (left <= right)
             for (int i = down; i >= top; i--)
                 result[index++] = matrix[i][left];
-        left++; // 
+        left++; //
     }
     return result;
 }
@@ -1792,7 +1792,7 @@ int** generateMatrix(int n) {
     int** matrix = malloc(sizeof(int*) * n);
     for (int i = 0; i < n; i++)
         matrix[i] = malloc(sizeof(int) * n);
-        
+
     int top = 0, left = 0, down = n - 1, right = n - 1;
     int a = 1;
     while (top <= down && left <= right) {
@@ -1822,11 +1822,11 @@ int** generateMatrix(int n) {
 ```C++
 class Solution {
 public:
-    /*The logic is as follows: 
-    for n numbers the permutations can be divided to (n-1)! groups, 
-    thus k/(n-1)! indicates the index of current number, 
-    and k%(n-1)! denotes remaining sequence (to the right). 
-    We keep doing this until n reaches 0, then we get n numbers permutations that is kth. 
+    /*The logic is as follows:
+    for n numbers the permutations can be divided to (n-1)! groups,
+    thus k/(n-1)! indicates the index of current number,
+    and k%(n-1)! denotes remaining sequence (to the right).
+    We keep doing this until n reaches 0, then we get n numbers permutations that is kth.
     */
     string getPermutation(int n, int k) {
         int f = 1;
@@ -1836,7 +1836,7 @@ public:
             s[i-1] = i + '0';
         }
         // 给定n,一共有n!个序列，f == n!
-        
+
         k--;
         for (int i = 0; i < n; i++) {
             f /= n - i; // f /= n, f /= n - 1 ...
@@ -1847,7 +1847,7 @@ public:
             s[i] = c;
             k %= f;
         }
-        
+
         return s;
     }
 };
@@ -1861,7 +1861,7 @@ public:
 ```C
 struct ListNode* rotateRight(struct ListNode* head, int k) {
     if (!head || k <= 0) return head;
-    
+
     int l = 1;
     struct ListNode* n = head;
     while (n->next) {
@@ -1869,20 +1869,20 @@ struct ListNode* rotateRight(struct ListNode* head, int k) {
         l++;
     }
     // n is now the tail!
-    
+
     if (k >= l) k %= l;
     if (k == 0) return head;
-    
+
     struct ListNode dummy, *p = &dummy;
     dummy.next = head;
     int i = l - k;
     while (i--)
         p = p->next;
-    
+
     dummy.next = p->next;
     p->next = NULL;
     n->next = head;
-    
+
     return dummy.next;
 }
 ```
@@ -1922,7 +1922,7 @@ int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
                 pathes[i][j] = 0;
             else
                 pathes[i][j] = pathes[i-1][j] + pathes[i][j-1];
-    return pathes[m][n]; 
+    return pathes[m][n];
 }
 ```
 
@@ -1933,7 +1933,7 @@ int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
 
 ```C++
 int minPathSum(vector<vector<int>>& grid) {
-    // if modifying the grid is disallowed, copy it 
+    // if modifying the grid is disallowed, copy it
     int m = grid.size(), n = grid[0].size();
     for (int i = 0; i < m; i++)
         for (int j = 0; j < n; j++)
@@ -2096,7 +2096,7 @@ int mySqrt(int x) {
     while (fabs(y * y - x) > EPS) {
         y = (y + x / y) / 2;
     }
-     
+
     long z = (long) y;
     while (z * z > x) z--;
     return z;
@@ -2164,16 +2164,16 @@ see [here](https://leetcode.com/discuss/43398/20ms-detailed-explained-c-solution
 ```C++
 
 // unoptimized code
-int minDistance(string word1, string word2) { 
+int minDistance(string word1, string word2) {
     int m = word1.length(), n = word2.length();
     vector<vector<int> > dp(m + 1, vector<int> (n + 1, 0));
     for (int i = 1; i <= m; i++)
         dp[i][0] = i;
     for (int j = 1; j <= n; j++)
-        dp[0][j] = j;  
+        dp[0][j] = j;
     for (int i = 1; i <= m; i++) {
         for (int j = 1; j <= n; j++) {
-            if (word1[i - 1] == word2[j - 1]) 
+            if (word1[i - 1] == word2[j - 1])
                 dp[i][j] = dp[i - 1][j - 1];
             else dp[i][j] = min(dp[i - 1][j - 1] + 1, min(dp[i][j - 1] + 1, dp[i - 1][j] + 1));
         }
@@ -2201,7 +2201,7 @@ int minDistance(string word1, string word2) {
             pre = temp;
         }
     }
-    return cur[m]; 
+    return cur[m];
 }
 ```
 
@@ -2213,7 +2213,7 @@ int minDistance(string word1, string word2) {
 }
 
 int minDistance(char* start1, char* end1, char* start2, char* end2) {
-    if (start1 > end1) 
+    if (start1 > end1)
         return start2 > end2 ? 0 : end2 - start2 + 1;
 
     if (start2 > end2)
@@ -2241,14 +2241,14 @@ void setZeroes(vector<vector<int>>& matrix) {
     if (m == 0) return;
     int n = matrix[0].size();
     if (n == 0) return;
-    
+
     vector<bool> row(m), column(n);
-    
+
     for (int i = 0; i < m; ++i)
         for (int j = 0; j < n; ++j)
             if (matrix[i][j] == 0)
                 row[i] = true, column[j] = true;
-    
+
     for (int i = 0; i < m; ++i)
         for (int j = 0; j < n; ++j)
             if (row[i] || column[j])
@@ -2347,7 +2347,7 @@ void combine(vector<vector<int>>& result, vector<int>& temp, int start, int coun
 
 ```C++
 // use backtracking and do a dfs search
-    
+
 vector<vector<int>> subsets(vector<int>& nums) {
     vector<vector<int>> result;
     if (nums.empty()) return result;
@@ -2363,7 +2363,7 @@ void subsets(vector<int>& nums, vector<vector<int>>& result, vector<int> temp, i
         result.push_back(temp);
         return;
     }
-    
+
     vector<int> t = temp;
     subsets(nums, result, temp, i + 1);
     temp.push_back(nums[i]);
@@ -2422,7 +2422,7 @@ bool exist(vector<vector<char>>& board, string word) {
     int row = board.size();
     int col = board[0].size();
     vector<vector<bool>> visited(row, vector<bool> (col, false));
-    
+
     bool found = false;
     for (int i = 0; i < row; i++) {
         for (int j = 0; j < col; j++) {
@@ -2436,14 +2436,14 @@ bool exist(vector<vector<char>>& board, string word) {
 }
 
 bool findNext(vector<vector<char>>& board, string& word, vector<vector<bool>>& visited, int m, int n, int i) {
-    
+
     if (i == word.size())
         return true;
     if (m >= board.size() || n >= board[0].size() || m < 0 || n < 0|| visited[m][n] || board[m][n] != word[i])
         return false;
     char temp = board[m][n];
     board[m][n] = -1;
-     
+
     bool exist = findNext(board, word, visited, m + 1, n, i+1) ||
         findNext(board, word, visited, m - 1, n, i+1) ||
         findNext(board, word, visited, m, n+1, i+1) ||
@@ -2480,7 +2480,7 @@ bool search(int A[], int n, int key) {
     int left = 0, right = n - 1;
     while (left <= right) {
         int mid = left + (right - left)/2;
-        if (A[mid] == key) 
+        if (A[mid] == key)
             return true; //return m in Search in Rotated Array I
         if (A[left] < A[mid]) { //left half is sorted
             if (A[left] <= key && key < A[mid])
@@ -2609,7 +2609,7 @@ int maximalRectangle(char** matrix, int row, int col) {
         for (int j = 0; j < col; j++)
             area = max(area, (right[j] - left[j]) * height[j]);
     }
-    
+
     return area;
 }
 ```
@@ -2624,7 +2624,7 @@ struct ListNode* partition(struct ListNode* head, int x) {
     struct ListNode small, *psmall = &small; // double dummy head
     struct ListNode big, *pbig = &big;
     psmall->next = pbig->next = NULL;
-    
+
     while (head != NULL) {
         if (head->val < x) {
             psmall->next = head;
@@ -2691,7 +2691,7 @@ void merge(int* nums1, int m, int* nums2, int n) {
         nums1[n] = nums2[n];
         n--;
     }
-    
+
 }
 ```
 
@@ -2734,7 +2734,7 @@ vector<vector<int>> subsetsWithDup(vector<int>& nums) {
             }
         }
         i += count;
-        
+
     }
     return sets;
 }
@@ -2755,13 +2755,13 @@ int numDecodings(char* s) {
         if (*s == '0')
              r1 = 0; // 0 不能单独构成字母
         if (*p == '1' || *p == '2' && *s < '7') { // 形成两种可能
-            int t = r1; 
-            r1 = r2 + r1; 
+            int t = r1;
+            r1 = r2 + r1;
             r2 = t;
         } else {
             r2 = r1; // 新加入的数字只能单独构成字母
         }
-        
+
         p = s++;
     }
     return r1;
@@ -2779,7 +2779,7 @@ struct ListNode* reverseBetween(struct ListNode* head, int m, int n) {
     struct ListNode dummy, *p = &dummy, * small_node, * big_node; // actually the prev ones
     dummy.next = head;
     n -= m;
-    
+
     while (--m) // m starts from 1, so not m--
         p = p->next;
     struct ListNode* start = p->next;
@@ -2789,7 +2789,7 @@ struct ListNode* reverseBetween(struct ListNode* head, int m, int n) {
         next->next = p->next;
         p->next = next;
     }
-    
+
     return dummy.next;
 }
 ```
@@ -2810,7 +2810,7 @@ void restore(vector<string>& result, string& s, string restored, int start, int 
     if (dots > 4) return;
     if (dots == 4 && start == s.size())
         result.push_back(restored);
-    
+
     for (int i = 1; i < 4; i++) {
         if (start + i > s.size())
             break;
@@ -2833,7 +2833,7 @@ vector<int> inorderTraversal(TreeNode* root) {
     vector<int> result;
     stack<TreeNode*> stk;
     TreeNode* current = root;
-    
+
     while (!stk.empty() || current) {
         if (current) {
             stk.push(current);
@@ -2863,7 +2863,7 @@ vector<TreeNode*> gen(int start, int end) {
         result.push_back(NULL);
         return result;
     }
-    
+
     for (int i = start; i <= end; i++) {
         auto leftTrees = gen(start, i - 1);
         auto rightTrees = gen(i + 1, end);
@@ -2889,10 +2889,10 @@ vector<TreeNode*> gen(int start, int end) {
 ```C
 int numTrees(int n) {
     if (n == 0) return 0;
-    
+
     int* dp = malloc(sizeof(int) * (n+1));
     dp[0] = 1;
-    
+
     for (int i = 1; i <= n; i++) {
         int num = 0;
         for (int j = 0; j <= i; j++) // 依次选取第 k 个点作为根
@@ -2916,7 +2916,7 @@ bool isInterleave(char* s1, char* s2, char* s3) {
     bool** dp = malloc(sizeof(bool*) * (l1 + 1));
     for (int i = 0; i <= l1; i++)
         dp[i] = malloc(sizeof(bool) * (l2 + 1));
-    
+
     for (int i = 0; i <= l1; i++)
         for (int j = 0; j <= l2; j++)
             if (i == 0 && j == 0)
@@ -2942,7 +2942,7 @@ bool valid(struct TreeNode* root, long left, long right) {
         valid(root->left, left, root->val) &&
         valid(root->right, root->val, right);
 }
- 
+
 bool isValidBST(struct TreeNode* root) {
     return valid(root, INT_MIN - 1l, INT_MAX + 1l);
 }
@@ -3000,7 +3000,7 @@ bool sym(struct TreeNode* left, struct TreeNode* right) {
     if (left && !right || !left && right)
         return false;
     return !left && !right ||
-        left->val == right->val && 
+        left->val == right->val &&
         sym(left->left, right->right) &&
         sym(right->left, left->right);
 }
@@ -3087,10 +3087,10 @@ struct TreeNode* build(int* prestart, int* preend, int* instart, int* inend) {
     struct TreeNode* root = malloc(sizeof(struct TreeNode));
     root->val = *prestart;
     root->left = root->right = NULL;
-    
+
     if (prestart == preend)
         return root;
-    
+
     int* root_inorder = instart;
     while (root_inorder <= inend && *root_inorder != *prestart)
         root_inorder++;
@@ -3117,10 +3117,10 @@ struct TreeNode* build(int* instart, int* inend, int* poststart, int* postend) {
     struct TreeNode* root = malloc(sizeof(struct TreeNode));
     root->val = *postend;
     root->left = root->right = NULL;
-    
+
     if (poststart == postend)
         return root;
-    
+
     int* root_inorder = instart;
     while (root_inorder <= inend && *root_inorder != *postend)
         root_inorder++;
@@ -3241,7 +3241,7 @@ int minDepth(struct TreeNode* root) {
     int right = minDepth(root->right);
     if (!right) return left + 1;
     if (!left) return right + 1; // tricky here,当有空节点时，不能返回0，而是返回另一个值
-    
+
     return (left < right ? left : right) + 1;
 }
 ```
@@ -3277,7 +3277,7 @@ void getPaths(vector<vector<int>>& result, vector<int> path, TreeNode* root, int
         result.push_back(path);
         return;
     }
-    
+
     getPaths(result, path, root->left, sum - root->val);
     getPaths(result, path, root->right, sum - root->val);
 }
@@ -3308,7 +3308,7 @@ void flatten(TreeNode* root) {
  * Solution (DP):
  * 我们扫描字符串s
  * Path[i][j] 代表T.substr(1...i) 在 S(1...j)不同的子序列的数量
- * 
+ *
  * Path[i][j] = Path[i][j-1]            (discard S[j])
  *              +     Path[i-1][j-1]    (S[j] == T[i] and we are going to use S[j])
  *                 or 0                 (S[j] != T[i] so we could not use S[j])
@@ -3321,18 +3321,18 @@ public:
     int numDistinct(string s, string t) {
         int m = t.size();
         int n = s.size();
-        
+
         if (m > n)
             return 0;
         vector<vector<int>> path(m+1, vector<int>(n+1, 0));
-        
+
         for (int i = 0; i <= n; i++)
             path[0][i] = 1;
-        
+
         for (int j = 1; j <= n; j++) // S
             for (int i = 1; i <= m; i++) // T
                 path[i][j] = path[i][j-1] + (t[i-1] == s[j-1] ? path[i-1][j-1] : 0);
-        
+
         return path[m][n];
     }
 };
@@ -3368,16 +3368,16 @@ void connect(struct TreeLinkNode *root) {
     while (head) { // head 是每层的开始
         p = head;
         prev = head = NULL;
-        
+
         while (p) {
             if (p->left) {
                 if (prev)
                     prev->next = p->left;
-                else 
+                else
                     head = p->left;
                 prev = p->left;
-            } 
-            
+            }
+
             if (p->right) {
                 if (prev)
                     prev->next = p->right;
@@ -3399,8 +3399,8 @@ void connect(struct TreeLinkNode *root) {
 ```C++
 vector<vector<int>> generate(int n) {
     vector<vector<int>> result(n);
-    
-    
+
+
     for (int i = 0; i < n; i++) {
         result[i].resize(i+1);
         result[i][0] = result[i][i] = 1;
@@ -3477,7 +3477,7 @@ int maxProfit(int* prices, int pricesSize) {
 int maxProfit(int* prices, int pricesSize)
     int total = 0;
     for (int i=0; i< pricesSize-1; i++)
-        if (prices[i+1]>prices[i]) 
+        if (prices[i+1]>prices[i])
             total += prices[i+1]-prices[i];
 
     return total;
@@ -3505,10 +3505,10 @@ int maxProfit(int* prices, int pricesSize) {
             max = prices[i];
             buy = true;
         }
-            
+
     }
     return profit;
-    
+
 }
 ```
 
@@ -3521,14 +3521,14 @@ int maxProfit(int* prices, int pricesSize) {
 int maxProfit(vector<int>& prices) {
     int hold1 = INT_MIN, hold2 = INT_MIN;
     int release1 = 0, release2 = 0;
-    
+
     for (auto i : prices) {
         release2 = max(release2, hold2 + i);
         hold2 = max(hold2, release1 - i);
         release1 = max(release1, hold1 + i);
         hold1 = max(hold1, -i);
     }
-    
+
     return release2;
 }
 ```
@@ -3548,7 +3548,7 @@ int doSum(struct TreeNode* root, int* sum) {
     int right = max(0, doSum(root->right, sum));
     *sum = max(*sum, left+right+root->val);
     return max(left, right) + root->val;
-} 
+}
 
 
 int maxPathSum(struct TreeNode* root) {
@@ -3580,7 +3580,7 @@ bool isPalindrome(char* s) {
                 left++;
             if (!isalnum(r))
                 right--;
-        } 
+        }
     }
     return true;
 }
@@ -3596,7 +3596,7 @@ int ladderLength(string beginWord, string endWord, unordered_set<string>& wordLi
     unordered_set<string> beginSet, endSet, *set1, * set2;
     beginSet.insert(beginWord);
     endSet.insert(endWord);
-    
+
     int dist = 2;
     while (!beginSet.empty() && !endSet.empty()) {
         if (beginSet.size() < endSet.size()) {
@@ -3606,7 +3606,7 @@ int ladderLength(string beginWord, string endWord, unordered_set<string>& wordLi
             set1 = &endSet;
             set2 = &beginSet;
         }
-        
+
         unordered_set<string> temp;
         for (auto word : *set1) { // notice word in not ref
             wordList.erase(word);
@@ -3626,7 +3626,7 @@ int ladderLength(string beginWord, string endWord, unordered_set<string>& wordLi
         }
         dist++;
         swap(*set1, temp);
-        
+
     }
     return 0;
 }
@@ -3641,7 +3641,7 @@ int ladderLength(string beginWord, string endWord, unordered_set<string>& wordLi
 int longestConsecutive(vector<int>& nums) {
     int result = 0;
     unordered_map<int, int> hash; // 每个元素和它们所在序列的长度
-    
+
     for (auto n : nums) {
         if (hash.find(n) == hash.end()) {
             // 查找两边的元素，如果找到，把新元素合并进去
@@ -3652,7 +3652,7 @@ int longestConsecutive(vector<int>& nums) {
             result = max(result, sum);
         }
     }
-    
+
     return result;
 }
 ```
@@ -3692,19 +3692,19 @@ public:
         for (int i = 0; i < m_father.size(); i++)
             m_father[i] = i;
     }
-    
+
     int find(int x) {
         if (x != m_father[x])
             m_father[x] = find(m_father[x]);
         return m_father[x];
     }
-    
+
     void unionify(int x, int y) {
         x = find(x);
         y = find(y);
-        
+
         if (x == y) return;
-        
+
         if (m_rank[x] > m_rank[y]) {
             m_father[y] = x;
         } else {
@@ -3764,7 +3764,7 @@ void dfs(vector<vector<string>>& result, const string& s, vector<string>& group,
         result.push_back(group);
         return;
     }
-    
+
     for (int i = start; i < s.size(); i++) {
         if (isPalindrome(s, start, i)) {
             group.push_back(s.substr(start, i - start + 1));
@@ -3794,11 +3794,11 @@ int minCut(string s) {
 
     for (int i = 0; i < s.size(); i++) {
         for (int j = 0; i - j >= 0 && i + j < s.size() && s[i+j] == s[i-j]; j++)
-            cut[i+j+1] = min(cut[i+j+1], cut[i-j] + 1); // i-j -> i+j是 palindrome，所以只需要cut[i-j] 在加上这一段就好了 
+            cut[i+j+1] = min(cut[i+j+1], cut[i-j] + 1); // i-j -> i+j是 palindrome，所以只需要cut[i-j] 在加上这一段就好了
         for (int j = 1; i - j + 1 >= 0 && i + j < s.size() && s[i+j] == s[i-j+1]; j++)
             cut[i+j+1] = min(cut[i+j+1], cut[i - j + 1] + 1);
     }
-    
+
     return cut[s.size()];
 }
 ```
@@ -3816,7 +3816,7 @@ UndirectedGraphNode *cloneGraph(UndirectedGraphNode *node) {
         for (auto n : node->neighbors)
             hash[node]->neighbors.push_back(cloneGraph(n));
     }
-    
+
     return hash[node];
 }
 ```
@@ -3828,7 +3828,7 @@ UndirectedGraphNode *cloneGraph(UndirectedGraphNode *node) {
 int canCompleteCircuit(int* gas, int gasSize, int* cost, int costSize) {
     int total = 0;
     int j = -1;
-    
+
     for (int i = 0, sum = 0; i < gasSize; ++i) {
         sum += gas[i] - cost[i]; // 从此处经过能够净增多少汽油
         total += gas[i] - cost[i]; // 记录总的汽油量是否是正的
@@ -3837,7 +3837,7 @@ int canCompleteCircuit(int* gas, int gasSize, int* cost, int costSize) {
             sum = 0; // 同时重新开始计数
         }
     }
-    
+
     return total >= 0 ? j + 1 : -1;
 }
 ```
@@ -3851,19 +3851,19 @@ int candy(vector<int>& ratings) {
     if (n <= 1)
         return n;
     vector<int> candies(n, 1);
-    
+
     for (int i =1; i < n; i++)
         if (ratings[i] > ratings[i-1])
             candies[i] = candies[i-1] + 1;
-    
+
     for (int i = n - 1; i > 0; i--)
         if (ratings[i-1] > ratings[i])
             candies[i-1] = max(candies[i] + 1, candies[i-1]);
-    
+
     int result = 0;
     for (auto i : candies)
         result += i;
-    
+
     return result;
 }
 ```
@@ -3922,14 +3922,14 @@ struct RandomListNode *copyRandomList(struct RandomListNode *head) {
         p->next = node;
         p = node->next;
     }
-    
+
     p = head;
     while (p) {
         if (p->random)
             p->next->random = p->random->next;
         p = p->next->next;
     }
-    
+
     struct RandomListNode dummy, *q = &dummy;
     dummy.next = dummy.random = NULL;
     p = head;
@@ -4022,10 +4022,10 @@ struct ListNode *detectCycle(struct ListNode *head) {
 vector<int> preorderTraversal(TreeNode* root) {
     vector<int> result;
     if (!root) return result;
-    
+
     stack<TreeNode*> stk;
     stk.push(root);
-    
+
     while (!stk.empty()) {
         TreeNode* node  = stk.top();
         stk.pop();
@@ -4034,11 +4034,11 @@ vector<int> preorderTraversal(TreeNode* root) {
             stk.push(node->right);
         if (node->left)
             stk.push(node->left);
-        
+
     }
-    
+
     return result;
-        
+
 }
 ```
 
@@ -4055,7 +4055,7 @@ vector<int> postorderTraversal(TreeNode* root) {
         auto node = stk.top();
         stk.pop();
         output.push(node);
-        
+
         if (node->left)
             stk.push(node->left);
         if (node->right)
@@ -4152,9 +4152,9 @@ void split(struct ListNode* source, struct ListNode** frontptr, struct ListNode*
         while (fast && fast->next) {
             fast = fast->next->next;
             slow = slow->next;
-            
+
         }
-        
+
         *backptr = slow->next;
         slow->next = NULL;
     }
@@ -4287,7 +4287,7 @@ void swap(char *a, char *b) {
 }
 
 void reverse(char* start, char* end) {
-    while(start < end)  
+    while(start < end)
         swap(start++, end--);
 }
 
@@ -4296,11 +4296,11 @@ void trim(char* s) {
     char* fast, *slow;
     for (fast = s; *fast !='\0'; fast++) {
         if (isspace(*fast)) {
-            while(isspace(*(fast + 1)) && *(fast + 1) != 0) 
+            while(isspace(*(fast + 1)) && *(fast + 1) != 0)
                 fast++;
-            if(*(fast+1) == 0) 
+            if(*(fast+1) == 0)
                 break;
-            if(slow == s) 
+            if(slow == s)
                 continue;
         }
         swap(fast, slow++);
@@ -4446,7 +4446,7 @@ struct ListNode *getIntersectionNode(struct ListNode *headA, struct ListNode *he
         p1 = p1 ? p1->next : headB;
         p2 = p2 ? p2->next : headA;
     }
-    
+
     return p1;
 }
 ```
@@ -4506,14 +4506,14 @@ vector<int> ver(const string& version) {
 int compareVersion(string version1, string version2) {
     auto v1 = ver(version1);
     auto v2 = ver(version2);
-    
+
     for (int i = 0; i < v1.size() || i < v2.size(); i++) {
         int a = i < v1.size() ? v1[i] : 0;
         int b = i < v2.size() ? v2[i] : 0;
         if (a != b)
             return a > b ? 1 : -1;
     }
-    
+
     return 0;
 }
 ```
@@ -4525,16 +4525,16 @@ int compareVersion(string version1, string version2) {
 string fractionToDecimal(long numerator, long denominator) {
     if (numerator == 0) return "0";
     string result;
-    
+
     // 符号
     if (numerator < 0 ^ denominator < 0)
         result += "-";
     long n = abs(numerator), d = abs(denominator);
-    
+
     // 整数部分
     result += to_string(n / d);
     if (n % d == 0) return result;
-    
+
     // 小数部分
     result+= ".";
     unordered_map<int, int> map;
@@ -4544,7 +4544,7 @@ string fractionToDecimal(long numerator, long denominator) {
             result += ")";
             break;
         }
-        
+
         map[r] = result.size(); // 记录对应的位置，以便插入括号
         r *= 10; // 从上借位
         result += to_string(r / d);
@@ -4645,7 +4645,7 @@ public:
     /** @return whether we have a next smallest number */
     bool hasNext() {
         return !m_stack.empty();
-        
+
     }
 
     /** @return the next smallest number */
@@ -4655,7 +4655,7 @@ public:
         pushAll(temp->right);
         return temp->val;
     }
-    
+
 private:
     stack<TreeNode*> m_stack;
     void pushAll(TreeNode* root) {
@@ -4782,7 +4782,7 @@ uint32_t reverseBits(uint32_t n) {
         n >>= 1;
         r <<= 1; // only shift 31 times
     }
-    
+
     r |= n & 0x1;
     return r;
 }
@@ -4880,7 +4880,7 @@ vector<int> rightSideView(TreeNode* root) {
         return result;
     queue<TreeNode*> q;
     q.push(root);
-    
+
     while (!q.empty()) {
         TreeNode* node;
         int len = q.size(); // 保存为了获得最后一个元素
@@ -4913,19 +4913,19 @@ public:
         for (int i = 0; i < m_father.size(); i++)
             m_father[i] = i;
     }
-    
+
     int find(int x) {
         if (x != m_father[x])
             m_father[x] = find(m_father[x]);
         return m_father[x];
     }
-    
+
     void unionify(int x, int y) {
         x = find(x);
         y = find(y);
-        
+
         if (x == y) return;
-        
+
         if (m_rank[x] > m_rank[y]) {
             m_father[y] = x;
         } else {
@@ -4935,7 +4935,7 @@ public:
         }
         m_count--;
     }
-    
+
     int getCount() {
         return m_count;
     }
@@ -5020,7 +5020,7 @@ struct ListNode* removeElements(struct ListNode* head, int val) {
         } else {
             p = p->next;
         }
-        
+
     }
     return dummy.next;
 }
@@ -5035,12 +5035,12 @@ struct ListNode* removeElements(struct ListNode* head, int val) {
 int countPrimes(int n) {
     vector<bool> primes(n, true);
     primes[0] = primes[1] = false;
-    
+
     for (int i = 2; i * i < n; i++) // 注意，只到sqrt(n)
         if (primes[i])
             for (int j = i * i; j < n; j += i) // 从 i * i 开始，因为i* i--已经被杀过了
                 primes[j] = false;
-                
+
     int count = 0;
     for (int i = 2; i < n; i++)
         if (primes[i])
@@ -5077,7 +5077,7 @@ struct ListNode* reverseList(struct ListNode* head) {
     if (!head || !head->next)
         return head;
     struct ListNode *p = NULL, *cur = head, *next;
-    
+
     while (cur) {
         next = cur->next; // cache
         cur->next = p; // reverse pointing
@@ -5101,14 +5101,14 @@ struct ListNode* reverseList(struct ListNode* head) {
 bool canFinish(int numCourses, vector<pair<int, int>>& prerequisites) { // next -> before
     vector<unordered_set<int>> graph(numCourses); // 每条边和他的下一步，临接表
     for (auto& p : prerequisites)
-        graph[p.second].insert(p.first); 
-        
+        graph[p.second].insert(p.first);
+
     vector<int> d(numCourses, 0); // in degree
-    
+
     for (auto& nexts : graph)
         for (auto next : nexts)
             d[next]++;
-    
+
     for (int i = 0; i < numCourses; i++) {
         int nondep; // in degree == 0
         for (nondep = 0; nondep < numCourses && d[nondep] != 0; nondep++)
@@ -5116,10 +5116,10 @@ bool canFinish(int numCourses, vector<pair<int, int>>& prerequisites) { // next 
         if (nondep == numCourses)
             return false;
         d[nondep] = -1; // remove
-        for (auto next : graph[nondep]) // 所有下一步都 －1 
+        for (auto next : graph[nondep]) // 所有下一步都 －1
             d[next]--;
     }
-    
+
     return true;
 }
 ```
@@ -5207,7 +5207,7 @@ int minSubArrayLen(int s, vector<int>& nums) {
             sum -= nums[start++];
         }
     }
-    
+
     return len == INT_MAX? 0 : len;
 }
 ```
@@ -5244,7 +5244,7 @@ private:
         vector<unordered_set<int>> graph(numCourses);
         for (auto pre : prerequisites)
             graph[pre.second].insert(pre.first);
-        return graph; 
+        return graph;
     }
     vector<int> compute_indegree(vector<unordered_set<int>>& graph) {
         vector<int> degrees(graph.size(), 0);
@@ -5311,7 +5311,7 @@ public:
         }
         return true;
     }
-    
+
     TrieNode* getRoot() {
         return root;
     }
@@ -5336,13 +5336,13 @@ public:
     bool search(string word) override {
         return search(word.c_str(), getRoot());
     }
-    
+
     bool search(const char* word, TrieNode* root) {
         TrieNode* run = root;
         for (int i = 0; word[i]; i++) {
             if (run && word[i] != '.')
                 run = run->next[word[i] - 'a'];
-            else if (run && word[i] == '.') { 
+            else if (run && word[i] == '.') {
 
                 // skip checking this char
                 TrieNode* tmp = run;
@@ -5354,7 +5354,7 @@ public:
             }
             else break;
         }
-        return run && run->isWord; 
+        return run && run->isWord;
     }
 };
 
@@ -5379,7 +5379,7 @@ public:
             m_trie.insert(word);
         int row = board.size();
         int col = board[0].size();
-        
+
         unordered_set<string> result_set;
         vector<vector<bool>> visited(row, vector<bool>(col, false));
         for (int i = 0; i < row; i++)
@@ -5390,7 +5390,7 @@ public:
             result.push_back(r);
         return result;
     }
-    
+
     void find(unordered_set<string>& r, vector<vector<char>>& board, vector<vector<bool>>& visited, string word, int i, int j) {
         if (i < 0 || i >= board.size() || j < 0 || j >= board[0].size() || visited[i][j])
             return;
@@ -5399,7 +5399,7 @@ public:
             return;
         if (m_trie.search(word))
             r.insert(word);
-        
+
         visited[i][j] = true;
         find(r, board, visited, word, i-1, j);
         find(r, board, visited, word, i+1, j);
@@ -5408,7 +5408,7 @@ public:
         visited[i][j] = false;
 
     }
-    
+
 };
 ```
 
@@ -5600,7 +5600,7 @@ bool containsNearbyDuplicate(vector<int>& nums, int k) {
         return false;
     if (k >= nums.size()) // notice here
         k = nums.size() - 1;
-        
+
     for (int i = 0; i < nums.size(); i++) {
         if (i > k)
             s.erase(nums[i - k - 1]); // delete first note
@@ -5608,7 +5608,7 @@ bool containsNearbyDuplicate(vector<int>& nums, int k) {
             return true;
         s.insert(nums[i]); // insert
     }
-    
+
     return false;
 }
 ```
@@ -5655,7 +5655,7 @@ int maximalSquare(vector<vector<char>>& matrix) {
                 dp[i] = min(dp[i], min(dp[i - 1], pre)) + 1;
                 maxsize = max(maxsize, dp[i]);
             }
-            else dp[i] = 0; 
+            else dp[i] = 0;
             pre = temp;
         }
     }
@@ -5679,15 +5679,15 @@ int countNodes(struct TreeNode* root) {
         left = left->left;
         left_height++;
     }
-    
+
     while (right) {
         right = right->right;
         right_height++;
     }
-    
+
     if (left_height == right_height) // 满树 2^h - 1
         return (1 << left_height) - 1;
-    
+
     return countNodes(root->left) + countNodes(root->right) + 1;
 }
 ```
@@ -5699,10 +5699,10 @@ int countNodes(struct TreeNode* root) {
 int computeArea(int left1, int down1, int right1, int up1, int left2, int down2, int right2, int up2) {
     int left = max(left1, left2); //靠右的
     int right = max(min(right1, right2), left);// 靠左的，但是比左边大
-    
+
     int down = max(down1, down2);
     int up = max(min(up1, up2), down);
-    
+
     // 不小心写反了。。
     return -((left1 - right1) * (up1 - down1) + (left2 - right2) * (up2 - down2) - (left - right) * (up - down));
 }
@@ -5719,7 +5719,7 @@ int calculate(string s) {
     int sign = 1;
     int num = 0;
     int result = 0;
-    
+
     signs.push(1);
     for (auto c : s) {
         if (isdigit(c)) {
@@ -5728,7 +5728,7 @@ int calculate(string s) {
             result += signs.top() * sign * num;
             num = 0;
             sign = c == '+' ? 1 : -1;
-        } else if (c == '(') { 
+        } else if (c == '(') {
             signs.push(sign * signs.top()); // tricky
             sign = 1;
         } else if (c == ')') {
@@ -5740,7 +5740,7 @@ int calculate(string s) {
     }
 
     result += signs.top() * sign * num; // tricky
-    
+
     return result;
 }
 ```
@@ -5836,7 +5836,7 @@ int calculate(string s) {
             num = 0;
         }
     }
-    
+
     int result = 0;
     for (auto i : stk)
         result += i;
@@ -5852,7 +5852,7 @@ vector<string> summaryRanges(vector<int>& nums) {
     int n = nums.size();
     vector<string> result;
     if (n == 0) return result;
-    
+
     for (int i = 0; i < n; ) {
         int start = i, end = i;
         while (end + 1 < n && nums[end + 1] == nums[end] + 1)
@@ -5863,7 +5863,7 @@ vector<string> summaryRanges(vector<int>& nums) {
             result.push_back(to_string(nums[start]));
         i = end + 1;
     }
-    
+
     return result;
 }
 ```
@@ -5873,10 +5873,10 @@ vector<string> summaryRanges(vector<int>& nums) {
 
 ```C++
 vector<int> majorityElement(vector<int>& nums) {
-    
+
     int count1 = 0, count2 = 0;
     int a, b;
-    
+
     for (auto n : nums) {
         if (count1 == 0 || n == a) {
             count1++;
@@ -5889,15 +5889,15 @@ vector<int> majorityElement(vector<int>& nums) {
             count2--;
         }
     }
-    
+
     count1 = count2 = 0;
     for (int n : nums) {
         if (n == a) count1++;
         if (n == b) count2++;
     }
-    
+
     vector<int> result;
-    
+
     if (count1 > nums.size() / 3) // verify a
         result.push_back(a);
     if (count2 > nums.size() / 3 && a != b) // verify b
@@ -5924,7 +5924,7 @@ void inorder(struct TreeNode* root, int* k, int* number) {
 }
 int kthSmallest(struct TreeNode* root, int k) {
     int number;
-    inorder(root, &k, &number); 
+    inorder(root, &k, &number);
     return number;
 }
 ```
@@ -6001,7 +6001,7 @@ int countDigitOne(int n) {
     for (int m = 1; m <= n; m *= 10) { // m is the factor
         int a = n/m, b = n%m;  // a is left half, b is right half
         if (a % 10 >= 2)
-            ones += (a / 10 + 1) * m;    
+            ones += (a / 10 + 1) * m;
         if (a % 10 == 1)
             ones += (a / 10) * m + b + 1;
         if (a % 10 == 0)
@@ -6055,7 +6055,7 @@ bool isPalindrome(ListNode* head) {
         len++;
         temp = temp->next;
     }
-    
+
     stack<int> stk;
     temp = head;
     int mid = len / 2;
@@ -6063,10 +6063,10 @@ bool isPalindrome(ListNode* head) {
         stk.push(temp->val);
         temp = temp->next;
     }
-    
+
     if (len & 0x01)
         temp = temp->next;
-    
+
     while (temp != NULL && !stk.empty()) {
         int a = stk.top();
         stk.pop();
@@ -6076,7 +6076,7 @@ bool isPalindrome(ListNode* head) {
             return false;
         }
     }
-    
+
     return true;
 }
 ```
@@ -6109,7 +6109,7 @@ struct TreeNode* lowestCommonAncestor(struct TreeNode* root, struct TreeNode* p,
         return root;
     struct TreeNode* left = lowestCommonAncestor(root->left, p, q);
     struct TreeNode* right = lowestCommonAncestor(root->right, p, q);
-    
+
     if (!left) // not in left subtree
         return right;
     if (!right)
@@ -6141,7 +6141,7 @@ void deleteNode(struct ListNode* node) {
 然后从后往前乘，同样错开一位，这样每个元素又把他之后的元素都得到了。
 
 ```C++
-    
+
 ```
 
 
@@ -6207,7 +6207,7 @@ vector<int> diffWaysToCompute(string input) {
                 for (int b : diffWaysToCompute(input.substr(i+1))) // 右半部分
                     output.push_back(token == '+' ? a + b : token == '-'? a - b: a *b); // 两半部分之和
     }
-    
+
     if (output.empty())
         output.push_back(stoi(input));
     return output;
@@ -6251,9 +6251,9 @@ vector<string> binaryTreePaths(TreeNode* root) {
 }
 
 void paths(vector<string>& result, string path, TreeNode* root) {
-    if (path.empty()) 
+    if (path.empty())
         path += to_string(root->val);
-    else 
+    else
         path += "->" + to_string(root->val);
     if (root->left)
         paths(result, path, root->left);
@@ -6262,7 +6262,7 @@ void paths(vector<string>& result, string path, TreeNode* root) {
     if (!root->left && !root->right)
         result.push_back(path);
 }
-```  
+```
 
 258. 把数字的每一位加起来，直到变成一个一位的数字
 ------
@@ -6288,7 +6288,7 @@ int addDigits(int num) {
 vector<int> singleNumber(vector<int>& nums) {
     int r = 0;
     for (auto& n : nums)
-        r ^= n; 
+        r ^= n;
     int bit = r & -r; // last sig bit
 
     vector<int> result = {0, 0};
@@ -6381,7 +6381,7 @@ public:
     vector<string> digits = {"", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"};
     vector<string> tens = {"", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"};
     vector<string> seps = {"", " Thousand ", " Million ", " Billion "}; // notice the trailing spaces
-    
+
     string numberToWords(int num) {
         if (num == 0)
             return "Zero";
@@ -6389,44 +6389,44 @@ public:
             return "Negative " + numberToWords(-num);
         int count = 0;
         string result;
-        
+
         while (num) {
             if (num % 1000 != 0)
                 result = s2word(num % 1000) + seps[count] + result;
             num /= 1000;
             count++;
         }
-        
+
         // removw unnecessary tailing space
         if (isspace(result.back()))
             result.resize(result.size() - 1);
-        
+
         return result;
-        
+
     }
-    
+
     string s2word(int num) {
         string result;
         if (num >= 100) {
             result += digits[num/100] + " Hundred ";
             num %= 100;
         }
-        
+
         if (num >= 20) {
             result += tens[num / 10] + " ";
             num %= 10;
         }
-        
+
         if (num >= 1 && num <= 19)
             result += digits[num];
-        
+
         // remove tailing spaces
         if (isspace(result.back()))
             result.resize(result.size() - 1);
-            
+
         return result;
-        
-    }  
+
+    }
 };
 ```
 
@@ -6448,13 +6448,13 @@ int hIndex(int* cites, int n) {
         else
             hs[cites[i]]++;
     }
-    
+
     for (int i = n, papers = 0; i >= 0; i--) { // 从后往前，如果有符合条件的，那么就是Hindex
         papers += hs[i];
         if (papers >= i)
             return i;
     }
-    
+
     return 0;
 }
 ```
@@ -6524,7 +6524,7 @@ int numSquares(int n) {
 ```C++
 vector<string> addOperators(string num, int target) {
     vector<string> result;
-    if (num.size() == 0) 
+    if (num.size() == 0)
         return result;
     dfs(num, target, result, num[0] - '0', num.substr(0, 1), 1, 1);
     return result;
@@ -6536,7 +6536,7 @@ void dfs(string num, int target, vector<string> & v, long long last, string s, i
             v.push_back(s);
         return;
     } else {
-        if(last!=0) 
+        if(last!=0)
             dfs(num, target,         v, last * 10 + num[idx] - '0', s + num.substr(idx, 1), idx + 1, left); // 尝试拼成10
         dfs(num, target,             v, num[idx] - '0', s + '*' + num.substr(idx, 1), idx + 1, last*left);
         dfs(num, target - left*last, v, num[idx] - '0', s + '+' + num.substr(idx, 1), idx + 1, 1);
@@ -6586,7 +6586,7 @@ public:
         // Initialize any member here.
         // **DO NOT** save a copy of nums and manipulate it directly.
         // You should only use the Iterator interface methods.
-        
+
     }
 
     // Returns the next element in the iteration without advancing the iterator.
@@ -6615,7 +6615,7 @@ public:
 使用抽屉原理可以证明一定存在重复。据说高纳德解这个问题花了四个小时。
 
 我们把这个数组看做一个变幻方程 `f(i) = A[i]`，把一些数字变幻到另一些，那么存在一个 `i != j s.t. f(i) == f(j)`.
-那么这个问题变成了链表求环的问题。对于链表，我们有 n = n->next 遍历列表，对于这个序列，则是` n = f(n)` 
+那么这个问题变成了链表求环的问题。对于链表，我们有 n = n->next 遍历列表，对于这个序列，则是` n = f(n)`
 
 ```C
 int findDuplicate(int* nums, int n) {
@@ -6625,13 +6625,13 @@ int findDuplicate(int* nums, int n) {
         slow = nums[slow] - 1; // 减一是为了转化为坐标
         fast = nums[nums[fast] - 1] - 1;
     } while (slow != fast);
-    
+
     fast = n - 1;
     do {
         slow = nums[slow] - 1;
         fast = nums[fast] - 1;
     } while (slow != fast);
-    
+
     return slow + 1; // 从坐标到数字
 }
 ```
@@ -6672,13 +6672,13 @@ bool wordPattern(string pattern, string str) {
     map<char, int> chars;  // 使用两个map纪录
     map<string, int> words;
     istringstream in(str);
-    int i = 0, n = pattern.size(); // `i` is word count      
+    int i = 0, n = pattern.size(); // `i` is word count
     for (string word; in >> word; i++) {
         if (i == n || chars[pattern[i]] != words[word]) // 检查是否相等
             return false;
-        chars[pattern[i]] = words[word] = i + 1; // distinct non zero 
+        chars[pattern[i]] = words[word] = i + 1; // distinct non zero
     }
-    
+
     return i == n; // 检查长度是否相等
 }
 ```
@@ -6711,7 +6711,7 @@ char* reverseString(char* s) {
         t = *s;
         *s = *e;
         *e = t;
-        s++; 
+        s++;
         e--;
     }
     return start;
