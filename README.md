@@ -88,13 +88,13 @@ struct ListNode* addTwoNumbers(struct ListNode* l1, struct ListNode* l2) {
 
 int lengthOfLongestSubstring(char* s) {
     int indices[256];
-    for (int i = 0; i < 256; i++) //init the array, memset can only be used for char
+    for (int i = 0; i < 256; i++)  // init the array, memset can only be used for char
         indices[i] = -1;
-    int left = 0; // 关键点
-    int longest = 0; // 关键点
+    int left = 0;
+    int longest = 0;
 
     for (int i = 0; s[i] != '\0'; i++) {
-        left = max(left, indices[s[i]] + 1);
+        left = max(left, indices[s[i]] + 1);  // 考虑新加入字符后对左边界的影响
         indices[s[i]] = i;
         longest = max(longest, i - left + 1);
     }
@@ -106,31 +106,33 @@ int lengthOfLongestSubstring(char* s) {
 ------
 
 解法参见[这里](https://leetcode.com/discuss/15790/share-my-o-log-min-m-n-solution-with-explanation)
-把 AB 分成两份，比如 A[0..i], B[0..j] 和 A[i, m], B[j, n]，这样我们只需要下面两个条件就可以了
 
-1. i+j = m-i + n-j
-2. B[j-1] <= A[i] && A[i-1] <= B[j]
+使用两个数字 i 和 j, 分别作为 AB 的分隔元素, 把 AB 分成两份， 比如 
+A[0..i], B[0..j] 和 A[i, m], B[j, n]，这样我们只需要下面两个条件就可以了:
 
-这时候我们就得到了A[i]就是我们的中位数，或者之一。
-i 的初始值在0到 m 指尖，然后我们二分搜索 `i = (imin + imax) / 2, j = mid - i`。
+1. i+j = m-i + n-j, 也就是i+j = (m+n)/2
+2. B[j-1] <= A[i] && A[i-1] <= B[j],  B的前一半元素小于A的分隔符, A的前一半元素小于B的分隔符
+
+这时候我们就得到了 A[i] 就是我们的中位数，或者之一。
+i 的初始值在 0 到 m 之间，然后我们二分搜索 `i = (imin + imax) / 2, j = mid - i`。
 
 ```C
 #define max(a,b) ((a)>(b)?(a):(b))
 #define min(a,b) ((a)<(b)?(a):(b))
 double findMedianSortedArrays(int* A, int m, int* B, int n) {
     if (m > n) return findMedianSortedArrays(B, n, A, m);
-    int imin = 0, maxidx = m, i, j, num1, mid = (m + n + 1) >> 1,num2;
+    int imin = 0, maxidx = m, i, j, num1, mid = (m + n + 1) >> 1, num2;
     while (imin <= maxidx) {
         i = (imin + maxidx) >> 1;
         j = mid - i;
-        if (i < m && j > 0 && B[j-1] > A[i]) // B中的数字偏大
+        if (i < m && j > 0 && B[j-1] > A[i])  // B中的数字偏大
             imin = i + 1;
-        else if (i > 0 && j < n && B[j] < A[i-1]) // A中的数字偏大
+        else if (i > 0 && j < n && B[j] < A[i-1])  // A中的数字偏大
             maxidx = i - 1;
         else {
             if (i == 0) num1 = B[j-1];
             else if (j == 0) num1 = A[i - 1];
-            else num1 = max(A[i-1],B[j-1]); // 普通情况
+            else num1 = max(A[i-1],B[j-1]);  // 普通情况
             break;
         }
     }
