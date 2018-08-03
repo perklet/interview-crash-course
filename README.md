@@ -1,22 +1,23 @@
 LeetCode Complete
 ======
 
-2017-09-27 更新, 突然收到了某个dream company的笔试邀请, 决定再用python刷一遍...
 
-0. 说明
+0 说明
 ------
 
 * 欢迎 Star/Fork/Pull request，不理解的也可以加我QQ：860220736。
 * 原则上使用 C 做, 如果需要用到 Hash, Stack, Queue, 或者返回值特别复杂, 或者需要大量拼接字符串时, 使用 C++。
 * 这份文档的目的是复习用的，并不是教如何解题的，因此只有简略介绍，适合面试前查漏补缺复习。
 
-1. 从数组中找出两个数字使得他们的和是给定的数字
+1 从数组中找出两个数字使得他们的和是给定的数字
 ------
 
 使用一个散列, 存储数字和他对应的索引。然后遍历数组, 如果另一半在散列当中, 那么返回
 这两个数的索引, 程序结束；如果不在, 把当前数字加入到散列中。
 
-``` C++
+<details>
+<summary>C++</summary>
+```C++
 vector<int> twoSum(vector<int>& nums, int target) {
     unordered_map<int, int> hash;
     vector<int> result(2);
@@ -31,6 +32,19 @@ vector<int> twoSum(vector<int>& nums, int target) {
     }
     return result;
 }
+```
+</details>
+
+```Python
+class Solution:
+    # @return a tuple, (index1, index2)
+     def twoSum(self, num, target):
+         possible_answers = {}
+         for i in range(len(num)):
+             if num[i] in possible_answers:
+                 return possible_answers[num[i]] + 1, i + 1
+             else:
+                 possible_answers[target - num[i]] = i
 ```
 
 Follow up: 如果数组是已经排序的呢？
@@ -51,7 +65,7 @@ pair<int> twoSum(vector<int>& nums, int target) {
 }
 ```
 
-2. 给两个列表, 数字在其中按低位到高位存储, 求他们的和
+2 给两个列表, 数字在其中按低位到高位存储, 求他们的和
 ------
 
 直接迭代遍历数组, 考察细节操作。注意 dummy head 的使用。
@@ -77,7 +91,46 @@ struct ListNode* addTwoNumbers(struct ListNode* l1, struct ListNode* l2) {
 }
 ```
 
-3. 最长不重复子串
+```C++
+class Solution {
+    public:
+        ListNode *addTwoNumbers(ListNode *l1, ListNode *l2) {
+            if (l1 == NULL) return l2;
+            if (l2 == NULL) return l1;
+            int shift = 0;
+            ListNode* result = new ListNode(0);
+            ListNode* p = result;
+            while (l1 != NULL || l2 != NULL) {
+                ListNode* newNode = new ListNode(0);
+                int v1 = l1 != NULL ? l1->val : 0;
+                int v2 = l2 != NULL ? l2->val : 0;
+                newNode->val = v1 + v2 + shift;
+                if (newNode->val > 9) {
+                    newNode->val -= 10;
+                    shift = 1;
+                } else {
+                    shift = 0;
+                }
+                if (l1) {
+                    l1 = l1->next;
+                }
+                if (l2) {
+                    l2 = l2->next;
+                }
+                p->next = newNode;
+                p = p->next;
+            }
+
+            if (shift == 1) {
+                p->next = new ListNode(1);
+            }
+
+            return result->next;
+        }
+};
+```
+
+3 最长不重复子串
 ------
 
 使用动态规划, 在一个 Hash 中存储已经出现的字符的上一次出现的索引值, 如果索引值存在, 则把当前最长子串的左边界更新为改索引值。
@@ -102,7 +155,7 @@ int lengthOfLongestSubstring(char* s) {
 }
 ```
 
-4. 找到两个排序数组的中位数
+4 找到两个排序数组的中位数
 ------
 
 解法参见[这里](https://leetcode.com/discuss/15790/share-my-o-log-min-m-n-solution-with-explanation)
@@ -111,7 +164,7 @@ int lengthOfLongestSubstring(char* s) {
 A[0..i], B[0..j] 和 A[i, m], B[j, n]，这样我们只需要下面两个条件就可以了:
 
 1. i+j = m-i + n-j, 也就是i+j = (m+n)/2
-2. B[j-1] <= A[i] && A[i-1] <= B[j],  B的前一半元素小于A的分隔符, A的前一半元素小于B的分隔符
+2. `B[j-1] <= A[i] && A[i-1] <= B[j]`,  B的前一半元素小于A的分隔符, A的前一半元素小于B的分隔符
 
 这时候我们就得到了 A[i] 就是我们的中位数，或者之一。
 i 的初始值在 0 到 m 之间，然后我们二分搜索 `i = (imin + imax) / 2, j = mid - i`。
@@ -148,7 +201,7 @@ double findMedianSortedArrays(int* A, int m, int* B, int n) {
 }
 ```
 
-5. 最长回文子串
+5 最长回文子串
 ------
 
 1. 以某个元素为中心, 向两边展开, 注意处理奇数和偶数两种情况
@@ -193,7 +246,11 @@ char* longestPalindrome(char* s) {
 }
 ```
 
-6. ZigZag 字符串, 把字符串掰弯, 然后再按行输出
+```C++
+
+```
+
+6 ZigZag 字符串, 把字符串掰弯, 然后再按行输出
 ------
 
 考察数学, 找出规律, 所以实际上并不是 Z 子形，而是由 V 组成的，然后组合按行号重构后的字符串即可。
@@ -221,7 +278,7 @@ char* convert(char* s, int numRows) {
 }
 ```
 
-7. 翻转数字, 溢出返回0
+7 翻转数字, 溢出返回0
 ------
 
 注意溢出
@@ -241,7 +298,7 @@ int reverse(int x) {
 }
 ```
 
-8. 实现 atoi
+8 实现 atoi
 ------
 
 注意各种特殊情况：
@@ -280,7 +337,7 @@ int myAtoi(char* str) {
 }
 ```
 
-9. 是否是回文数字
+9 是否是回文数字
 ------
 
 限定不能用额外空间, 所以直接把 x 取余得到的数字作为一个反向作为一个新的数字
@@ -299,7 +356,7 @@ bool isPalindrome(int x) {
 }
 ```
 
-10. 正则表达式
+10 正则表达式
 ------
 
 实现正则表达式, 只需要实现`.`代表任意字符, `*`代表任意重复。只需要特殊处理`*`，如果遇到了`*`，贪婪地向后匹配。
@@ -323,7 +380,7 @@ bool isMatch(char* s, char* p) {
 }
 ```
 
-11. Container with most water
+11 Container with most water
 ------
 
 从左右向中间逼近，如果有更大的就更新
@@ -344,7 +401,7 @@ int maxArea(vector<int>& height) {
 ```
 
 
-12. 十进制转换为罗马数字
+12 十进制转换为罗马数字
 ------
 
 直接按每位把罗马数字转换出来在拼接就好了, 使用 C 的话, 拼接字符串很麻烦。
@@ -361,7 +418,85 @@ string intToRoman(int num) {
 }
 ```
 
-13. 罗马数字转为十进制
+```C
+char *intToRoman(int num) {
+    int digits[4] = {0};
+    char* romans = (char*)malloc(sizeof(char));
+    char* cursor = romans;
+    // if num = 1234, then
+    // digits = {1, 2, 3, 4};
+    int base = 1000;
+    for (int i = 0; i < 4; i++) {
+        digits[i] = num / base;
+        num = num % base;
+        base /= 10;
+    }
+    doRoman(digits[0], '_', '_', 'M', &cursor); // '_' can be anything
+    doRoman(digits[1], 'M', 'D', 'C', &cursor);
+    doRoman(digits[2], 'C', 'L', 'X', &cursor);
+    doRoman(digits[3], 'X', 'V', 'I', &cursor);
+    *cursor = '\0';
+    return romans;
+}
+
+void doRoman(int number, char ten, char five, char one, char** str) {
+
+    switch (number) {
+        case 9:
+            (*str)[0] = one;
+            (*str)[1] = ten;
+            (*str) += 2;
+            break;
+        case 8:
+            (*str)[0] = five;
+            (*str)[1] = one;
+            (*str)[2] = one;
+            (*str)[3] = one;
+            (*str) += 4;
+            break;
+        case 7:
+            (*str)[0] = five;
+            (*str)[1] = one;
+            (*str)[2] = one;
+            (*str) += 3;
+            break;
+        case 6:
+            (*str)[0] = five;
+            (*str)[1] = one;
+            (*str) += 2;
+            break;
+        case 5:
+            (*str)[0] = five;
+            (*str) += 1;
+            break;
+        case 4:
+            (*str)[0] = one;
+            (*str)[1] = five;
+            (*str) += 2;
+            break;
+        case 3:
+            (*str)[0] = one;
+            (*str)[1] = one;
+            (*str)[2] = one;
+            (*str) += 3;
+            break;
+        case 2:
+            (*str)[0] = one;
+            (*str)[1] = one;
+            (*str) += 2;
+            break;
+        case 1:
+            (*str)[0] = one;
+            (*str) += 1;
+            break;
+        case 0:
+        default:
+            break;
+    }
+}
+```
+
+13 罗马数字转为十进制
 ------
 
 主要是当前一个数字小于后一个数字的时候, 需要添加的是后一个谁和钱一个数字的差
@@ -393,10 +528,12 @@ int romanToInt(char* s) {
 }
 ```
 
-14. 最长公共前缀
+14 最长公共前缀
 ------
 
 横向遍历, 从头到尾, 如果, 不一致, 返回当前子串即可。如果约定不能更改当前字符串的化, 最好用C++做, 不然操作字符串太复杂了, 没必要出错。
+
+另一种方法是使用 trie
 
 ```c
 char* longestCommonPrefix(char** strs, int strsSize) {
@@ -416,7 +553,7 @@ char* longestCommonPrefix(char** strs, int strsSize) {
 }
 ```
 
-15. 从数组中找出三个数使得他们的和是0
+15 从数组中找出三个数使得他们的和是0
 ------
 
 按照 LeetCode 的要求的话, 使用 C 做, 返回值太复杂了, 所以用 C++ 做了。
@@ -452,7 +589,7 @@ vector<vector<int>> threeSum(vector<int>& nums) {
 }
 ```
 
-16. 在数组中找到三个数字使得他们得和尽可能的接近给定数字, 假设结果唯一
+16 在数组中找到三个数字使得他们得和尽可能的接近给定数字, 假设结果唯一
 ------
 
 和上一题解法类似, 在 http://stackoverflow.com/q/2070359 有详尽解释
@@ -487,7 +624,7 @@ int threeSumClosest(int* nums, int numsSize, int target) {
 }
 ```
 
-17. 生成电话键盘按键数字对应的所有可能的字符串, 不限制返回结果的顺序
+17 生成电话键盘按键数字对应的所有可能的字符串, 不限制返回结果的顺序
 ------
 
 ![键盘](http://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Telephone-keypad2.svg/200px-Telephone-keypad2.svg.png)
@@ -530,7 +667,7 @@ vector<string> letterCombinations(string digits) {
 1. 通过把所有的单词计算出来，然后查询哪个是合法的，查询可以使用Trie
 2. 通过把已经有的单词字典转换为数字字典，然后通过数字序列查询可能的单词组合。
 
-18. 4Sum
+18 4Sum
 ------
 
 ```C++
@@ -573,10 +710,11 @@ vector<vector<int>> fourSum(vector<int>& nums, int target) {
 }
 ```
 
-19. 删除链表中倒数第 k 的节点
+19 删除链表中倒数第 k 的节点
 ------
 
 双指针经典题目, 一个快指针先走 k 步, 另一个慢指针再出发, 注意链表长度小于 k 时。
+
 注意：LeetCode 给定的 n 都是有效地, 但要求返回头指针, 如果头指针被删除需要额外注意, 因此采用 dummy head
 
 ```C
@@ -599,7 +737,7 @@ struct ListNode* removeNthFromEnd(struct ListNode* head, int n) {
 ```
 
 
-20. 判定给定的字符串是否是合法的括号序列, 可能包括大中小三类
+20 判定给定的字符串是否是合法的括号序列, 可能包括大中小三类
 ------
 
 使用栈的基础题，注意逻辑简化
@@ -628,7 +766,7 @@ bool isValid(string s) {
 }
 ```
 
-21. 合并两个已经排序的链表
+21 合并两个已经排序的链表
 ------
 
 考察链表的基本操作, 很简单
@@ -662,7 +800,7 @@ struct ListNode* mergeTwoLists(struct ListNode* l1, struct ListNode* l2) {
 }
 ```
 
-22. 给定数字n, 生成所有合法的 n 个括号组成的序列
+22 给定数字n, 生成所有合法的 n 个括号组成的序列
 ------
 
 Cracking 上还提供了另一种复杂的思路
@@ -687,7 +825,7 @@ void gen(vector<string>& result, string s, int left, int right) {
 }
 ```
 
-23. 合并 k 个已经排序的列表
+23 合并 k 个已经排序的列表
 ------
 
 把列表看做一个队列, 每次拿出两个列表, 合并他们后放回到列表中, 每次遍历列表的一半, 这样每次遍历完一遍,
@@ -714,7 +852,7 @@ struct ListNode* mergeKLists(struct ListNode** lists, int listsSize) {
 }
 ```
 
-24. 给定一个链表, 交换两个相邻节点的值
+24 给定一个链表, 交换两个相邻节点的值
 ------
 
 最简单的做法显然是直接把前后两个节点的值交换, 但是LeetCode规定不能改变节点的值。
@@ -735,7 +873,7 @@ struct ListNode* swapPairs(struct ListNode* head) {
 }
 ```
 
-25. 给定一个链表, 把相邻的 k 个节点反转
+25 给定一个链表, 把相邻的 k 个节点反转
 ------
 
 和上题一样, 同样禁止改变节点的值。比较简单地解法是浪费一点空间, 使用 Stack, 实现逆转 k 个节点, 注意如果 k 较大的话, 这种方法是不合适的。
@@ -771,7 +909,7 @@ ListNode* reverseKGroup(ListNode* head, int k) {
 }
 ```
 
-26. 从已排序数组中删除重复元素, 并返回新数组的长度
+26 从已排序数组中删除重复元素, 并返回新数组的长度
 ------
 
 in-place的删除重复元素, 使用两个指针, 一个遍历, 一个指向当前的结尾。
@@ -789,7 +927,7 @@ int removeDuplicates(int* nums, int numsSize) {
 }
 ```
 
-27. 删除元素
+27 删除元素
 ------
 
 和上一题类似, 注意细节
@@ -806,7 +944,7 @@ int removeElement(int* nums, int numsSize, int val) {
 }
 ```
 
-28. 实现 strstr 函数, 即查找子串
+28 实现 strstr 函数, 即查找子串
 ------
 
 使用暴力算法, 时间复杂度O(n)。也可以用 kmp 算法。
@@ -887,7 +1025,7 @@ int kmp(char* needle, char* haystack) {
 }
 ```
 
-29. 给定连个整数, 不使用乘法和除法计算除法。
+29 给定连个整数, 不使用乘法和除法计算除法。
 ------
 
 [这里](https://leetcode.com/discuss/38997/detailed-explained-8ms-c-solution)有一个非常好的算法
@@ -919,7 +1057,7 @@ int divide(int dividend, int divisor) {
 }
 ```
 
-30. 包含所有单词的子字符串，找出所有。单词的长度都是一样的
+30 包含所有单词的子字符串，找出所有。单词的长度都是一样的
 ------
 
 ```C++
@@ -2643,7 +2781,7 @@ struct ListNode* partition(struct ListNode* head, int x) {
 }
 ```
 
-87. 把字符串分区后，交换得到的字符串
+87 把字符串分区后，交换得到的字符串
 ------
 
 ```C++
@@ -4579,7 +4717,7 @@ string convertToTitle(int n) {
 ------
 
 非常经典的一道题，首先我们假设拿到的数字就是目标，并记录他出现的次数，如果下一个
-数字和他不一样，那么我们减一，当次数为0的时候，我们知道这个数字在已经便利过的数字
+数字和他不一样，那么我们减一，当次数为0的时候，我们知道这个数字在已经遍历过的数字
 中出现小于一半了，这时候我们换下一个数字，最后剩下的一定是超过一半的数字。
 
 ```C++
@@ -4594,7 +4732,6 @@ int majorityElement(vector<int>& nums) {
         }
     }
     return candidate;
-}
 }
 ```
 
@@ -6547,7 +6684,7 @@ void dfs(string num, int target, vector<string> & v, long long last, string s, i
 }
 ```
 
-283. 移动0
+283 移动0
 ------
 
 注意swap的使用
@@ -6608,10 +6745,10 @@ public:
 };
 ```
 
-285. 286 Locked
+285 ~ 286 Locked
 ------
 
-287. 一个n的数组包含了1...n-1中的这些数字，证明一定存在重复，并找出这个重复
+287 一个n的数组包含了1...n-1中的这些数字，证明一定存在重复，并找出这个重复
 ------
 
 使用抽屉原理可以证明一定存在重复。据说高纳德解这个问题花了四个小时。
@@ -6641,7 +6778,7 @@ int findDuplicate(int* nums, int n) {
 288 Locked
 ------
 
-289. Conway's Game of Life
+289 Conway's Game of Life
 ------
 
 哈哈，机智，使用没有使用的第二个位存储下一代
@@ -6666,7 +6803,7 @@ void gameOfLife(int** board, int row, int col) {
 }
 ```
 
-290. 单词模式，给定一个模式abba等，判断单词是否是这个模式的。
+290 单词模式，给定一个模式abba等，判断单词是否是这个模式的。
 ------
 
 ```C++
@@ -6685,10 +6822,10 @@ bool wordPattern(string pattern, string str) {
 }
 ```
 
-291. Locked
+291 Locked
 ------
 
-292. Nim游戏，每个人可以选择丢掉1，2，3，最后一个操作者获胜
+292 Nim游戏，每个人可以选择丢掉1，2，3，最后一个操作者获胜
 ------
 
 显然，当我们遇到4的时候会输，其他情况都可以赢。
@@ -6699,7 +6836,7 @@ bool canWinNim(int n) {
 }
 ```
 
-344. 翻转字符串
+344 翻转字符串
 ------
 
 ```C
@@ -6720,7 +6857,7 @@ char* reverseString(char* s) {
 }
 ```
 
-347. 出现最多的几个数字
+347 出现最多的几个数字
 ------
 
 C 实在缺乏相关的基础数据结构，这道题用 JS 做了
@@ -6766,7 +6903,7 @@ let topKFrequent = function(nums, k) {
 };
 ```
 
-349. 两个数组中都出现的元素
+349 两个数组中都出现的元素
 ------
 
 先排序，降低复杂度
@@ -6800,7 +6937,39 @@ int* intersection(int* A, int m, int* B, int n, int* k) {
 }
 ```
 
-371. 两个数之和
+
+345 翻转一个字符串里面的元音字母
+------
+
+使用两个指针，不过需要注意元音字母包括了大小写
+
+```
+class Solution:
+    def reverseVowels(self, s):
+        """
+        :type s: str
+        :rtype: str
+        """
+        if not s:
+            return s
+        vowels = set("AEIOUaeiou")
+        s = list(s)
+        i = 0
+        j = len(s) - 1
+        while True:
+            while s[i] not in vowels and i < j:
+                i += 1
+            while s[j] not in vowels and i < j:
+                j -= 1
+            if i >= j:
+                break
+            s[i], s[j] = s[j], s[i]
+            i += 1
+            j -= 1
+        return ''.join(s)
+```
+
+371 两个数之和
 ------
 
 这道题要求不用+和-来计算出两个数之和，显然应该使用位运算，使用异或计算每一位的值，在使用或计算是否需要进位
@@ -6814,14 +6983,8 @@ int getSum(int a, int b) {
         int last_bit_of_a = a & 1;
         int last_bit_of_b = b & 1;
 
-        rv |= (last_bit_of_a
-                ^ last_bit_of_b ^ carry) << i;
-        carry = (carry
-                & last_bit_of_a)
-            | (carry
-                    & last_bit_of_b)
-            | (last_bit_of_a
-                    & last_bit_of_b);
+        rv |= (last_bit_of_a ^ last_bit_of_b ^ carry) << i;
+        carry = (carry & last_bit_of_a) | (carry & last_bit_of_b) | (last_bit_of_a & last_bit_of_b);
 
         a >>= 1;
         b >>= 1;
