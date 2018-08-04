@@ -157,7 +157,11 @@ class Solution {
 
 注意, 当字符有限的时候, 比如限定为 ASCII 字符, 可以使用一个数组代替 Hash。
 
-``` C
+
+<details>
+    <summary>C 解答</summary>
+
+```C
 
 int lengthOfLongestSubstring(char* s) {
     int indices[256];
@@ -174,6 +178,8 @@ int lengthOfLongestSubstring(char* s) {
     return longest;
 }
 ```
+</details>
+
 
 4 找到两个排序数组的中位数
 ------
@@ -231,7 +237,7 @@ double findMedianSortedArrays(int* A, int m, int* B, int n) {
 ------
 
 1. 以某个元素为中心, 向两边展开, 注意处理奇数和偶数两种情况
-2. Manacher 算法, 参见http://taop.marchtea.com/01.05.html
+2. Manacher 算法, 参见http://taop.marchtea.com/0105html
 
 
 <details>
@@ -1290,7 +1296,7 @@ vector<int> findSubstring(string s, vector<string>& words) {
 </details>
 
 
-31. 全排列，下一个
+31 全排列，下一个
 ------
 
 首先, 对于所有的组合, 最小的一个一定是按照升序排序的, 最大的一定是倒过来, 因此
@@ -1330,7 +1336,7 @@ void nextPermutation(vector<int>& nums) {
 </details>
 
 
-32. 从一个括号构成的字符串中找出最长的合法括号序列
+32 从一个括号构成的字符串中找出最长的合法括号序列
 ------
 
 显然判定合法括号顺序的题都可以用栈来做, 但是不妨使用动态规划来尝试一下 😄
@@ -1367,7 +1373,7 @@ int longestValidParentheses(char* s) {
 </details>
 
 
-33. 在排序后又被反转的数组中搜索
+33 在排序后又被反转的数组中搜索
 ------
 
 既然是部分有序的,自然还是使用二分搜索了,注意终止条件.
@@ -1413,7 +1419,7 @@ int search(int* nums, int numsSize, int target) {
 </details>
 
 
-34. 查找数组中一个重复出现数字的下界和上界, 数组已排序
+34 查找数组中一个重复出现数字的下界和上界, 数组已排序
 ------
 
 在 C++的标准库中包含了这两个函数, 分别是`std::lower_bound`和`std::upper_bound`.
@@ -1457,7 +1463,7 @@ int upper(vector<int>& nums, int target) {
 </details>
 
 
-35. 二分查找数字, 如果没有找到, 返回应该插入的位置
+35 二分查找数字, 如果没有找到, 返回应该插入的位置
 ------
 
 就是最基础的二分查找
@@ -1486,7 +1492,7 @@ int searchInsert(int* nums, int numsSize, int target) {
 
 
 
-36. 合法数独, 给定一个数独表,判定当前是否合法
+36 合法数独, 给定一个数独表,判定当前是否合法
 ------
 
 
@@ -1512,7 +1518,7 @@ bool isValidSudoku(char** board, int row, int col) {
 </details>
 
 
-37. 求解数独
+37 求解数独
 ------
 
 
@@ -1552,7 +1558,7 @@ bool isValidFill(vector<vector<char>>& board, int i, int j, char fill) {
 </details>
 
 
-38. 数数并说出来
+38 数数并说出来
 ------
 
 不太理解这道题有什么意义,直接暴力做出来了
@@ -1582,7 +1588,7 @@ string countAndSay(int n) {
 </details>
 
 
-39. 给定一个集合，在集合中找出和为target的数字，数字可以使用多次，集合中没有重复数字
+39 给定一个集合，在集合中找出和为target的数字，数字可以使用多次，集合中没有重复数字
 ------
 
 典型的深度优先搜索
@@ -1616,7 +1622,7 @@ void dfs(vector<vector<int>>& result, vector<int>& candidates, vector<int> comb,
 </details>
 
 
-40. 同上题一样，但是集合中的数字只能使用一次，并且集合中有重复数字
+40 同上题一样，但是集合中的数字只能使用一次，并且集合中有重复数字
 ------
 
 
@@ -1651,7 +1657,7 @@ void dfs(vector<vector<int>>& result, vector<int>& candidates, vector<int> comb,
 </details>
 
 
-41. 给定一个数组,找到第一个缺失的正数
+41 给定一个数组,找到第一个缺失的正数
 ------
 
 显然,结果的范围是[1..n+1]. 而数组的长度为 n 我们把每个位置都放上 i+1,
@@ -1682,7 +1688,7 @@ int firstMissingPositive(int* nums, int numsSize) {
 </details>
 
 
-42. 给定一个数组表示柱子的高度，求能存贮的雨水的总量
+42 给定一个数组表示柱子的高度，求能存贮的雨水的总量
 ------
 
 从两边向中间收拢
@@ -1719,7 +1725,7 @@ int trap(int* height, int heightSize) {
 </details>
 
 
-43. 给定两个任意长的字符串，返回一个字符串，代表他们相乘的结果
+43 给定两个任意长的字符串，返回一个字符串，代表他们相乘的结果
 ------
 
 按整数除法运算即可，重点是下标的表示
@@ -1762,7 +1768,7 @@ char* multiply(char* num1, char* num2) {
 </details>
 
 
-44. 通配符匹配，`?` 代表任意一个字符，`*`代表任意一个或多个字符
+44 通配符匹配，`?` 代表任意一个字符，`*`代表任意一个或多个字符
 ------
 
 注意和正则表达式的区别，要求完全匹配。这道题的关键在于对星号的处理, 如果出现星号的时候, 我们记录当时的p 和 s 的值, 如果发生了不匹配的话, 我们尝试回到该位置的下一个位置开始匹配
@@ -1799,7 +1805,7 @@ bool isMatch(char* s, char* p) {
 </details>
 
 
-45. 跳跃游戏，给定一个数组，每个数字是在该位置可以向前移动的距离，返回最少需要多少次才能到达终点
+45 跳跃游戏，给定一个数组，每个数字是在该位置可以向前移动的距离，返回最少需要多少次才能到达终点
 ------
 
 比较简单，看注释吧
@@ -1828,7 +1834,7 @@ int jump(int* nums, int numsSize) {
 </details>
 
 
-46. 生成全排列
+46 生成全排列
 ------
 
 Cracking上给出了一种解法，通过不断的添加下一个元素到上一组元素的不同位置来生成全排列，这样固然可以，但是大规模的拼接数组或者字符串是很耗费资源的。
@@ -1869,7 +1875,7 @@ void per(vector<vector<int>>& result, vector<int>& nums, int begin) {
 </details>
 
 
-47. 全排列，数组中有重复元素
+47 全排列，数组中有重复元素
 ------
 
 和上一题基本是一样的，注意跳过重复元素就好了
@@ -1903,7 +1909,7 @@ void per(vector<vector<int>>& result, vector<int> nums, int start) {
 </details>
 
 
-48. 给定一个`n*n`的图像旋转图像，顺时针旋转90度
+48 给定一个`n*n`的图像旋转图像，顺时针旋转90度
 ------
 
 做法显然是从里到外，一层一层的旋转，这道题主要考察下标的操作
@@ -1935,7 +1941,7 @@ void rotate(int** matrix, int m, int n) {
 </details>
 
 
-49. 给定字符数组，把他们按照Anagram分组
+49 给定字符数组，把他们按照Anagram分组
 ------
 
 
@@ -1965,7 +1971,7 @@ vector<vector<string>> groupAnagrams(vector<string>& strs) {
 
 
 
-50. 实现pow(x, n)
+50 实现pow(x, n)
 ------
 
 显然不能直接阶乘过去，分治法
@@ -2007,7 +2013,7 @@ double myPow(double x, long p) {
 }
 ```
 
-51. N 皇后问题
+51 N 皇后问题
 ------
 
 需要大幅度修改
@@ -2062,7 +2068,7 @@ void dfs(int t, vector<int>& x, int n) {
 </details>
 
 
-52. N 皇后一共有多少个解
+52 N 皇后一共有多少个解
 ------
 
 不要直接把皇后放好，而是把占用的都记录下来，然后继续深度优先搜索
@@ -2105,7 +2111,7 @@ public:
 </details>
 
 
-53. 最大子序列和
+53 最大子序列和
 ------
 
 动态规划经典题目，遍历数组，如果已经当前子序列已经小于0了，抛弃并置 sum = 0
@@ -2135,7 +2141,7 @@ int maxSubArray(int* nums, int numsSize) {
 </details>
 
 
-54. 顺时针螺旋打印矩阵
+54 顺时针螺旋打印矩阵
 ------
 
 一圈一圈地打印就好了
@@ -2174,7 +2180,7 @@ int* spiralOrder(int** matrix, int row, int col) {
 </details>
 
 
-55. 给定一个数组，每个数字表示在当前步可以移动的距离，返回是不是能够到达终点
+55 给定一个数组，每个数字表示在当前步可以移动的距离，返回是不是能够到达终点
 ------
 
 使用动态规划求解，如果当前距离大于最远距离，更新最远距离，如果已经超过了最远距离，跳出
@@ -2195,7 +2201,7 @@ bool canJump(int* nums, int numsSize) {
 </details>
 
 
-56. 合并序列，给定一组序列，把其中重叠的序列合并
+56 合并序列，给定一组序列，把其中重叠的序列合并
 ------
 
 这道题用 Python 做竟然比用 C++ 还要快
@@ -2225,7 +2231,7 @@ def merge(intervals):
 </details>
 
 
-57. 添加序列，给定一组已经排序的序列，向其中插入一个序列，需要合并的合并
+57 添加序列，给定一组已经排序的序列，向其中插入一个序列，需要合并的合并
 ------
 
 这道题inplace 的做法感觉没有什么意义，因为如果在中间插入的话，后半部分还是要被拷贝
@@ -2256,7 +2262,7 @@ def insert(self, intervals, newInterval):
 </details>
 
 
-58. 给定一个字符串，求其中最后一个单词的长度
+58 给定一个字符串，求其中最后一个单词的长度
 ------
 
 显然这道题可以用 strlen 求出长度然后从后往前数，但是，这样相当于多遍历了一次
@@ -2289,7 +2295,7 @@ int lengthOfLastWord(char* s) {
 </details>
 
 
-59. 给定 n，把1, 2, 3 ...螺旋打印到矩阵中
+59 给定 n，把1, 2, 3 ...螺旋打印到矩阵中
 ------
 
 和上一个完全一样的思路，只是这次是打印罢了
@@ -2333,7 +2339,7 @@ int** generateMatrix(int n) {
 </details>
 
 
-60. 给定n个数字，找出第k个Permutation
+60 给定n个数字，找出第k个Permutation
 ------
 
 
@@ -2376,7 +2382,7 @@ public:
 </details>
 
 
-61. 把列表旋转到倒数第 k 位
+61 把列表旋转到倒数第 k 位
 ------
 
 需要注意的是 k 大于列表长度的情况，这时候需要取余
@@ -2416,7 +2422,7 @@ struct ListNode* rotateRight(struct ListNode* head, int k) {
 </details>
 
 
-62. 给定一个`m*n`的矩阵，有多少种方法从左上角移动到右下角
+62 给定一个`m*n`的矩阵，有多少种方法从左上角移动到右下角
 ------
 
 显然可以使用组合数学直接求出来解，但是容易溢出。而且这是一道经典的动态规划题目，对于
@@ -2438,7 +2444,7 @@ int uniquePaths(int m, int n) {
 </details>
 
 
-63. 同上题，区别是在一些位置是有障碍物的
+63 同上题，区别是在一些位置是有障碍物的
 ------
 
 经过分析可知，递推关系是一样的，只需要把有障碍格子的到达方法设定为0。这个主要是实现上的一些技巧，
@@ -2467,7 +2473,7 @@ int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
 </details>
 
 
-64. 给定一个`m*n`矩阵，每个数字代表经过该处的耗费，找出一条耗费最小的路径
+64 给定一个`m*n`矩阵，每个数字代表经过该处的耗费，找出一条耗费最小的路径
 ------
 
 依然是动态规划
@@ -2496,7 +2502,7 @@ int minPathSum(vector<vector<int>>& grid) {
 </details>
 
 
-65. 判定一个字符串是否是合法的数字，包括了正负号，小数点，`e`等
+65 判定一个字符串是否是合法的数字，包括了正负号，小数点，`e`等
 ------
 
 一些例子：
@@ -2563,10 +2569,10 @@ def isNumber(self, s):
 </details>
 
 
-66. 给定一个字符串代表的数字，返回加1后的数字
+66 给定一个字符串代表的数字，返回加1后的数字
 ------
 
-我们知道只有当数字是999....999的时候，才会使得数字的长度+1变为1000...000。
+我们知道只有当数字是999...999的时候，才会使得数字的长度+1变为1000..000。
 
 
 <details>
@@ -2583,7 +2589,7 @@ vector<int> plusOne(vector<int>& digits) {
             return digits;
         }
     }
-    // real trick here, we know that the number is 999...999
+    // real trick here, we know that the number is 999..999
     // 改成insert
     digits[0] = 1;
     digits.push_back(0);
@@ -2593,7 +2599,7 @@ vector<int> plusOne(vector<int>& digits) {
 </details>
 
 
-67. 给定两个字符串代表的二进制数字，返回他们相加的和
+67 给定两个字符串代表的二进制数字，返回他们相加的和
 ------
 
 和上一题一样，按照加法定义做就好了
@@ -2623,7 +2629,7 @@ char* addBinary(char* a, char* b) {
 </details>
 
 
-68. 文字对齐
+68 文字对齐
 ------
 
 待研究
@@ -2654,7 +2660,7 @@ vector<string> fullJustify(vector<string>& words, int L) {
 </details>
 
 
-69. 给定整数x，求 sqrt(x)
+69 给定整数x，求 sqrt(x)
 ------
 
 比较坑的是 LeetCode 要求的是 `y*y < x` 的最大整数
@@ -2680,7 +2686,7 @@ int mySqrt(int x) {
 </details>
 
 
-70. 爬梯子，一次可以爬一步或者两步，有几种方法爬完梯子
+70 爬梯子，一次可以爬一步或者两步，有几种方法爬完梯子
 ------
 
 斐波那契数列，也可以理解为动态规划
@@ -2700,7 +2706,7 @@ int climbStairs(int n) {
 </details>
 
 
-71. 简化 Unix 路径，需要处理`.`, `..` 和多个斜杠等情况
+71 简化 Unix 路径，需要处理`.`, `..` 和多个斜杠等情况
 ------
 
 没有什么需要注意的，主要是使用 stringstream 用作string.split
@@ -2733,7 +2739,7 @@ string simplifyPath(string& path) {
 </details>
 
 
-72. 编辑距离，允许替换，删除，插入三种操作
+72 编辑距离，允许替换，删除，插入三种操作
 ------
 
 对于两个字符串比较，往往要使用二维的动态规划。
@@ -2837,7 +2843,7 @@ int minDistance(char* start1, char* end1, char* start2, char* end2) {
 </details>
 
 
-73. 给定一个矩阵，如果某个元素为零，把所在的行和所在的列都设为零
+73 给定一个矩阵，如果某个元素为零，把所在的行和所在的列都设为零
 ------
 
 一种可以接受的方法是使用O(m+n)的空间，记录哪行哪列需要设为零
@@ -2869,7 +2875,7 @@ void setZeroes(vector<vector<int>>& matrix) {
 </details>
 
 
-74. 搜索矩阵，矩阵每行从左到右依次增大，每行都比上一行大
+74 搜索矩阵，矩阵每行从左到右依次增大，每行都比上一行大
 ------
 
 当做数组直接二分搜索就可以了
@@ -2896,7 +2902,7 @@ bool searchMatrix(int** matrix, int row, int col, int target) {
 </details>
 
 
-75. 颜色排序，每个物体有颜色属性，把他们按照RGB的顺序排序(🇳🇱国旗问题)
+75 颜色排序，每个物体有颜色属性，把他们按照RGB的顺序排序(🇳🇱国旗问题)
 ------
 
 一种方法是简单地2 pass解法，遍历一遍计数再输出。另一种方法是把红色往前交换，蓝色往后交换
@@ -2917,10 +2923,10 @@ void sortColors(int* nums, int numsSize) {
 }
 ```
 
-76. 跳过
+76 跳过
 ------
 
-77. 给定数字 n 和 k，生成从 n 中取出 k 个数字的所有情况
+77 给定数字 n 和 k，生成从 n 中取出 k 个数字的所有情况
 ------
 
 数学上的组合，使用回溯来做，对状态空间进行深度搜索。
@@ -2961,7 +2967,7 @@ void combine(vector<vector<int>>& result, vector<int>& temp, int start, int coun
 </details>
 
 
-78. 给定一个集合，找到它的所有子集
+78 给定一个集合，找到它的所有子集
 ------
 
 这道题至少有3种解法：
@@ -3055,7 +3061,7 @@ vector<vector<int>> subsets(vector<int>& nums) {
 </details>
 
 
-79. 给定一个二维字符数组，查找一个单词是否能够有连续的字母构成，不能交叉
+79 给定一个二维字符数组，查找一个单词是否能够有连续的字母构成，不能交叉
 ------
 
 也是深度优先的做法，首先找到开始的字母，然后依次向上下左右查找，注意还需要统计有没有访问过
@@ -3102,7 +3108,7 @@ bool findNext(vector<vector<char>>& board, string& word, vector<vector<bool>>& v
 </details>
 
 
-80. 从排序数组中删除重复元素，但是允许一个元素重复出现两次
+80 从排序数组中删除重复元素，但是允许一个元素重复出现两次
 ------
 
 巧妙地解法，和`i-2`的元素对比
@@ -3125,7 +3131,7 @@ int removeDuplicates(int* nums, int numsSize) {
 </details>
 
 
-81. 在被翻转的数组中查找元素，可能包含重复元素
+81 在被翻转的数组中查找元素，可能包含重复元素
 ------
 
 经典题目，还是一个二分查找问题，只是要分很多种情况
@@ -3161,7 +3167,7 @@ bool search(int A[], int n, int key) {
 </details>
 
 
-82. 从已经排序的链表中删除所有重复过的元素，只留下只出现一次的元素
+82 从已经排序的链表中删除所有重复过的元素，只留下只出现一次的元素
 ------
 
 考察链表操作
@@ -3192,7 +3198,7 @@ struct ListNode* deleteDuplicates(struct ListNode* head) {
 </details>
 
 
-83. 从已经排序的链表中删除所有重复过的元素，但是重复过的也留下一个，即，使新链表不重复
+83 从已经排序的链表中删除所有重复过的元素，但是重复过的也留下一个，即，使新链表不重复
 ------
 
 同样是考察链表基本操作
@@ -3218,7 +3224,7 @@ struct ListNode* deleteDuplicates(struct ListNode* head) {
 </details>
 
 
-84. 在柱状图中查找最大的矩形
+84 在柱状图中查找最大的矩形
 ------
 
 见注释
@@ -3250,7 +3256,7 @@ int largestRectangleArea(vector<int>& height) {
 </details>
 
 
-85. 最大的长方形
+85 最大的长方形
 ------
 
 
@@ -3299,7 +3305,7 @@ int maximalRectangle(char** matrix, int row, int col) {
 </details>
 
 
-86. 链表分区，要求把小于某个值得元素全都放到前面
+86 链表分区，要求把小于某个值得元素全都放到前面
 ------
 
 对于链表这道题很简单，分两个列表在合并就好了，问题是当我们处理类似的数组问题时，也有一种巧妙地O(n)的解法
@@ -3368,7 +3374,7 @@ bool isScramble(string s1, string s2) {
 </details>
 
 
-88. 合并已排序数组，要求合并到其中一个空间较大的数组中
+88 合并已排序数组，要求合并到其中一个空间较大的数组中
 ------
 
 对于这种要求 in-place的算法，从后往前往往可以解决
@@ -3398,7 +3404,7 @@ void merge(int* nums1, int m, int* nums2, int n) {
 </details>
 
 
-89. 生成格雷码(Gray Code)
+89 生成格雷码(Gray Code)
 ------
 
 记住格雷码的生成规则
@@ -3419,7 +3425,7 @@ vector<int> grayCode(int n) {
 </details>
 
 
-90. 由给定元素生成子集，可能包含重复元素
+90 由给定元素生成子集，可能包含重复元素
 ------
 
 使用了和手机键盘生成字符串号码类似的迭代算法，注意其中对重复元素的处理，当然也可以用DFS来做
@@ -3455,7 +3461,7 @@ vector<vector<int>> subsetsWithDup(vector<int>& nums) {
 </details>
 
 
-91. 给定一个数组只包含1-9，可以用1-26代表字母，求出从其中能都得到多少字符串
+91 给定一个数组只包含1-9，可以用1-26代表字母，求出从其中能都得到多少字符串
 ------
 
 使用动态规划，但是注意其中0的处理，很玄妙
@@ -3489,7 +3495,7 @@ int numDecodings(char* s) {
 </details>
 
 
-92. 在给定区间上翻转数组
+92 在给定区间上翻转数组
 ------
 
 同样是数组操作细节题
@@ -3521,7 +3527,7 @@ struct ListNode* reverseBetween(struct ListNode* head, int m, int n) {
 </details>
 
 
-93. 恢复 IP 地址，给定一个字符串，适当插入点，一共有多少种方式构成 IP 地址
+93 恢复 IP 地址，给定一个字符串，适当插入点，一共有多少种方式构成 IP 地址
 ------
 
 又是一道 DFS 的题，注意对于字符串问题如何处理
@@ -3556,7 +3562,7 @@ void restore(vector<string>& result, string& s, string restored, int start, int 
 </details>
 
 
-94. 中序遍历二叉树
+94 中序遍历二叉树
 ------
 
 当然是使用栈了
@@ -3588,7 +3594,7 @@ vector<int> inorderTraversal(TreeNode* root) {
 </details>
 
 
-95. 生成二叉树，同下题一样
+95 生成二叉树，同下题一样
 ------
 
 ```C＋＋
@@ -3620,7 +3626,7 @@ vector<TreeNode*> gen(int start, int end) {
 ```
 
 
-96. 给定数字n，从1到 n 作为节点有多少种方式生成二叉树
+96 给定数字n，从1到 n 作为节点有多少种方式生成二叉树
 ------
 
 这道题看似是树，实际上是一个动态规划问题。
@@ -3648,7 +3654,7 @@ int numTrees(int n) {
 </details>
 
 
-97. 给定两个字符串交叉是否能够构成第三个字符串
+97 给定两个字符串交叉是否能够构成第三个字符串
 ------
 
 这道题是一道二维的 DP 问题，因为需要对于每个字符串的每个位置用另一个字符串尝试匹配
@@ -3682,7 +3688,7 @@ bool isInterleave(char* s1, char* s2, char* s3) {
 </details>
 
 
-98. 验证二叉搜索树是否合法
+98 验证二叉搜索树是否合法
 ------
 
 先序遍历即可
@@ -3705,7 +3711,7 @@ bool isValidBST(struct TreeNode* root) {
 </details>
 
 
-99. 在二叉搜索树中有两个节点被调换了，找出这两个节点，并恢复该二叉树
+99 在二叉搜索树中有两个节点被调换了，找出这两个节点，并恢复该二叉树
 ------
 
 
@@ -3740,7 +3746,7 @@ void recoverTree(struct TreeNode* root) {
 </details>
 
 
-100. 判断是否是相同的树
+100 判断是否是相同的树
 ------
 
 
@@ -3761,7 +3767,7 @@ bool isSameTree(struct TreeNode *p, struct TreeNode *q) {
 </details>
 
 
-101. 判断是不是左右对称的树
+101 判断是不是左右对称的树
 ------
 
 
@@ -3786,7 +3792,7 @@ bool isSymmetric(struct TreeNode* root) {
 </details>
 
 
-102. 二叉树层序遍历
+102 二叉树层序遍历
 ------
 
 
@@ -3818,7 +3824,7 @@ vector<vector<int>> levelOrder(TreeNode* root) {
 </details>
 
 
-103. 二叉树 ZigZag 层序遍历
+103 二叉树 ZigZag 层序遍历
 ------
 
 这道题更好的做法是使用一个栈，从而使得每行的顺序都是上一行的翻转
@@ -3855,7 +3861,7 @@ vector<vector<int>> zigzagLevelOrder(TreeNode* root) {
 </details>
 
 
-104. 树的最大深度
+104 树的最大深度
 ------
 
 
@@ -3872,7 +3878,7 @@ int maxDepth(struct TreeNode* root) {
 </details>
 
 
-105. 从前序遍历和中序遍历生成生二叉树
+105 从前序遍历和中序遍历生成生二叉树
 ------
 
 
@@ -3908,7 +3914,7 @@ struct TreeNode* buildTree(int* preorder, int m, int* inorder, int n) {
 </details>
 
 
-106. 从中序遍历和后序遍历生成二叉树
+106 从中序遍历和后序遍历生成二叉树
 ------
 
 
@@ -3943,7 +3949,7 @@ struct TreeNode* buildTree(int* inorder, int m, int* postorder, int n) {
 </details>
 
 
-107. 二叉树层序遍历，但要生成翻转的遍历序列
+107 二叉树层序遍历，但要生成翻转的遍历序列
 ------
 
 
@@ -3976,7 +3982,7 @@ vector<vector<int>> levelOrderBottom(TreeNode* root) {
 </details>
 
 
-108. 把排序数组转化为二叉树
+108 把排序数组转化为二叉树
 ------
 
 
@@ -4003,7 +4009,7 @@ struct TreeNode* sortedArrayToBST(int* nums, int n) {
 </details>
 
 
-109. 把排序列表转化为二叉树
+109 把排序列表转化为二叉树
 ------
 
 
@@ -4037,7 +4043,7 @@ struct TreeNode* sortedListToBST(struct ListNode* head) {
 </details>
 
 
-110. 平衡二叉树
+110 平衡二叉树
 ------
 
 
@@ -4060,7 +4066,7 @@ bool isBalanced(struct TreeNode* root) {
 </details>
 
 
-111. 二叉树最小高度
+111 二叉树最小高度
 ------
 
 
@@ -4081,7 +4087,7 @@ int minDepth(struct TreeNode* root) {
 </details>
 
 
-112. 二叉树中是否存在和为某个数的路径
+112 二叉树中是否存在和为某个数的路径
 ------
 
 
@@ -4099,7 +4105,7 @@ bool hasPathSum(struct TreeNode* root, int sum) {
 </details>
 
 
-113. 接上题，把这个路径找出来
+113 接上题，把这个路径找出来
 ------
 
 
@@ -4130,7 +4136,7 @@ void getPaths(vector<vector<int>>& result, vector<int> path, TreeNode* root, int
 </details>
 
 
-114. 把二叉树扁平成列表
+114 把二叉树扁平成列表
 ------
 
 
@@ -4151,7 +4157,7 @@ void flatten(TreeNode* root) {
 </details>
 
 
-115. 通过删掉一些字母得到子序列，问有多少种方法能够得到子序列呢
+115 通过删掉一些字母得到子序列，问有多少种方法能够得到子序列呢
 ------
 
 使用DP，
@@ -4198,7 +4204,7 @@ public:
 
 
 
-116. 完全二叉树中把每个节点指向他这一层的右面的节点
+116 完全二叉树中把每个节点指向他这一层的右面的节点
 ------
 
 显然左节点的下一个节点是父节点的右节点，右节点的下一个节点是父节点下一个节点的左节点。
@@ -4222,7 +4228,7 @@ void connect(struct TreeLinkNode *root) {
 </details>
 
 
-117. 同上题，但是是任意的🌲
+117 同上题，但是是任意的🌲
 ------
 
 通过上一层已经被连接的 next 指针，顺序层序访问，从而连接下一层。
@@ -4256,7 +4262,7 @@ void connect(struct TreeLinkNode *root) {
 }
 ```
 
-118. 杨辉三角
+118 杨辉三角
 ------
 
 注意坐标关系，不要被骗了
@@ -4282,7 +4288,7 @@ vector<vector<int>> generate(int n) {
 </details>
 
 
-119. 返回杨辉三角的第 k 行
+119 返回杨辉三角的第 k 行
 ------
 
 要求只能使用O(k)的额外空间，比较蛋疼的是这里的 k 是从0计数的。
@@ -4308,7 +4314,7 @@ vector<int> getRow(int rowIndex) {
 </details>
 
 
-120. 给定一个类似杨辉三角形状的数组，求从顶部到底部的最短路径
+120 给定一个类似杨辉三角形状的数组，求从顶部到底部的最短路径
 ------
 
 显然是使用 DP，但是有一个问题，如果是 top down 的话，最后还需要遍历一下，而如果是 bottom up 就只需要返回dp[0]就好了。
@@ -4329,7 +4335,7 @@ int minimumTotal(vector<vector<int>>& triangle) {
 </details>
 
 
-121. 买卖股票最佳时机，只能交易一次
+121 买卖股票最佳时机，只能交易一次
 ------
 
 
@@ -4355,7 +4361,7 @@ int maxProfit(int* prices, int pricesSize) {
 </details>
 
 
-122. 买卖股票的最佳时机，可以做任意多比交易
+122 买卖股票的最佳时机，可以做任意多比交易
 ------
 
 有两种解法，一种是不断做交易，完全不考虑交易次数，这种做法不符合实际情况。
@@ -4413,7 +4419,7 @@ int maxProfit(int* prices, int pricesSize) {
 </details>
 
 
-123. 股票交易，限制只能交易两股
+123 股票交易，限制只能交易两股
 ------
 
 每次求解的是：卖出两股以后的最大值，刚刚买入第二股的最大值，卖出第一股时候的最大值，买入第一股时候的最大值。
@@ -4440,7 +4446,7 @@ int maxProfit(vector<int>& prices) {
 </details>
 
 
-124. 二叉树路径最大和，路径可以从任意一个节点开始到任意一个节点结束
+124 二叉树路径最大和，路径可以从任意一个节点开始到任意一个节点结束
 ------
 
 
@@ -4472,7 +4478,7 @@ int maxPathSum(struct TreeNode* root) {
 
 
 
-125. 给定一个字符串，只考虑字母和数字，忽略大小写，判断是否是回文字符串
+125 给定一个字符串，只考虑字母和数字，忽略大小写，判断是否是回文字符串
 ------
 
 太简单了，没啥可说的
@@ -4505,7 +4511,7 @@ bool isPalindrome(char* s) {
 </details>
 
 
-127. 单词梯子
+127 单词梯子
 ------
 
 给定梯子，和开始单词和结束单词，最少需要多少个中间单词，才能变化过去，每次只能变化一个字母
@@ -4557,7 +4563,7 @@ int ladderLength(string beginWord, string endWord, unordered_set<string>& wordLi
 </details>
 
 
-128. 最长递增子序列
+128 最长递增子序列
 ------
 
 使用动态规划
@@ -4588,7 +4594,7 @@ int longestConsecutive(vector<int>& nums) {
 </details>
 
 
-129. 二叉树中只有0-9找出所有根节点到子节点的和
+129 二叉树中只有0-9找出所有根节点到子节点的和
 ------
 
 
@@ -4615,7 +4621,7 @@ int sumNumbers(struct TreeNode* root) {
 </details>
 
 
-130. 把所有被包围的O置为X
+130 把所有被包围的O置为X
 ------
 
 使用并查集
@@ -4691,7 +4697,7 @@ public:
 </details>
 
 
-131. 对字符串分组，是的每个字串都是回文，返回所有可能的分组
+131 对字符串分组，是的每个字串都是回文，返回所有可能的分组
 ------
 
 
@@ -4732,7 +4738,7 @@ bool isPalindrome(const string& s, int left, int right) {
 </details>
 
 
-132. 如上题，找出最少需要分组几次
+132 如上题，找出最少需要分组几次
 ------
 
 
@@ -4758,7 +4764,7 @@ int minCut(string s) {
 </details>
 
 
-133. 复制有向图
+133 复制有向图
 ------
 
 
@@ -4782,7 +4788,7 @@ UndirectedGraphNode *cloneGraph(UndirectedGraphNode *node) {
 </details>
 
 
-134. 加油站
+134 加油站
 ------
 
 
@@ -4809,7 +4815,7 @@ int canCompleteCircuit(int* gas, int gasSize, int* cost, int costSize) {
 </details>
 
 
-135. 糖块，成绩高的需要比他身边成绩低的获得更多的糖
+135 糖块，成绩高的需要比他身边成绩低的获得更多的糖
 ------
 
 
@@ -4841,7 +4847,7 @@ int candy(vector<int>& ratings) {
 </details>
 
 
-136. 找出数组中只出现一次的数字
+136 找出数组中只出现一次的数字
 ------
 
 
@@ -4859,7 +4865,7 @@ int singleNumber(int* nums, int numsSize) {
 </details>
 
 
-137. 一个数组中，所有数字都出现三次，除了一个数字以外，找出这个数字
+137 一个数组中，所有数字都出现三次，除了一个数字以外，找出这个数字
 ------
 
 
@@ -4884,7 +4890,7 @@ int singleNumber(int* nums, int numsSize) {
 </details>
 
 
-138. 复制复杂结构链表
+138 复制复杂结构链表
 ------
 
 
@@ -4934,7 +4940,7 @@ struct RandomListNode *copyRandomList(struct RandomListNode *head) {
 </details>
 
 
-139. 查找单词是否能组成句子
+139 查找单词是否能组成句子
 ------
 
 
@@ -4964,7 +4970,7 @@ bool wordBreak(string s, unordered_set<string>& wordDict) {
 </details>
 
 
-141. 列表是否有环
+141 列表是否有环
 ------
 
 slow每次走一步，而fast每次走两步，因此在进入环之后，两者一定会相遇
@@ -4988,7 +4994,7 @@ bool hasCycle(struct ListNode *head) {
 </details>
 
 
-142. 列表是否有环？如果有找到环的开始
+142 列表是否有环？如果有找到环的开始
 ------
 
 从两者出发，到两者相遇，slow指针走了p步，而fast指针走了2p步，显然fast多走了一圈（或者多圈）。
@@ -5024,7 +5030,7 @@ struct ListNode *detectCycle(struct ListNode *head) {
 </details>
 
 
-144. 前序遍历
+144 前序遍历
 ------
 
 
@@ -5057,7 +5063,7 @@ vector<int> preorderTraversal(TreeNode* root) {
 </details>
 
 
-145. 后序遍历
+145 后序遍历
 ------
 
 
@@ -5090,7 +5096,7 @@ vector<int> postorderTraversal(TreeNode* root) {
 </details>
 
 
-146. LRU缓存
+146 LRU缓存
 ------
 
 
@@ -5143,7 +5149,7 @@ private:
 </details>
 
 
-147. 链表插入排序
+147 链表插入排序
 ------
 
 
@@ -5171,7 +5177,7 @@ struct ListNode* insertionSortList(struct ListNode* head) {
 </details>
 
 
-148. 排序链表，要求达到O(nlogn)时间复杂度
+148 排序链表，要求达到O(nlogn)时间复杂度
 ------
 
 
@@ -5239,7 +5245,7 @@ struct ListNode* sortList(struct ListNode* head) {
 </details>
 
 
-149. 在同一条线上的点最多的线
+149 在同一条线上的点最多的线
 ------
 
 
@@ -5283,7 +5289,7 @@ int gcd(int x, int y) {
 </details>
 
 
-150. 后缀表达式求值
+150 后缀表达式求值
 ------
 
 
@@ -5322,7 +5328,7 @@ int evalRPN(vector<string>& tokens) {
 </details>
 
 
-151. 反转句子中的单词顺序
+151 反转句子中的单词顺序
 ------
 
 一般面试的时候会假定没有多余字符的，解法是
@@ -5390,7 +5396,7 @@ void reverseWords(char *s) {
 </details>
 
 
-152. 最大子序列乘积
+152 最大子序列乘积
 ------
 
 
@@ -5416,7 +5422,7 @@ int maxProduct(vector<int>& A) {
 </details>
 
 
-153. 在旋转数组中查找最小值
+153 在旋转数组中查找最小值
 ------
 
 
@@ -5441,7 +5447,7 @@ int findMin(int* A, int n) {
 </details>
 
 
-154. 在旋转数组中查找最小值，可能有重复
+154 在旋转数组中查找最小值，可能有重复
 ------
 
 
@@ -5467,7 +5473,7 @@ int findMin(int* A, int n) {
 </details>
 
 
-155. 设计一个栈，在普通栈的基础上支持 getmin 操作
+155 设计一个栈，在普通栈的基础上支持 getmin 操作
 ------
 
 解法1: 使用额外的栈，每个值都记录一个当前最小值，浪费空间
@@ -5511,7 +5517,7 @@ public:
 156-159 Locked
 ------
 
-160. 求两个链表的交叉点
+160 求两个链表的交叉点
 ------
 
 分析题目可知，如果有一个交叉点，那么在这之后的所有点都是交叉的。这里有一个非常巧妙
@@ -5544,10 +5550,10 @@ struct ListNode *getIntersectionNode(struct ListNode *headA, struct ListNode *he
 </details>
 
 
-161. Locked
+161 Locked
 ------
 
-162.  找到极大值，给定一个数组，可能有多个极大值，找到任意一个即可，给定数组中A[i] != A[i+1]
+162  找到极大值，给定一个数组，可能有多个极大值，找到任意一个即可，给定数组中A[i] != A[i+1]
 ------
 
 题目要求在对数时间内做出来，二分搜索，如果中间的数在左半部分，就向右找。
@@ -5572,17 +5578,17 @@ int findPeakElement(int* nums, int numsSize) {
 </details>
 
 
-163. Locked
+163 Locked
 ------
 
-164. 未排序数组中相差最大的两个数之间的差
+164 未排序数组中相差最大的两个数之间的差
 ------
 
 根据抽屉原理，最大差不可能小于(max - min) / (n - 1)。证明：如果小于，那么整个数组的大小就会小于max - min。
 因此我们把
 
 
-165. 比较版本号大小
+165 比较版本号大小
 ------
 
 
@@ -5623,7 +5629,7 @@ int compareVersion(string version1, string version2) {
 </details>
 
 
-166. 分数生成小数
+166 分数生成小数
 ------
 
 
@@ -5664,10 +5670,10 @@ string fractionToDecimal(long numerator, long denominator) {
 </details>
 
 
-167. Locked
+167 Locked
 ------
 
-168. 生成 Excel 表格标题
+168 生成 Excel 表格标题
 ------
 
 注意 A 对应的是1而不是0，而且数字也是从1开始的
@@ -5690,7 +5696,7 @@ string convertToTitle(int n) {
 </details>
 
 
-169. 给定一个数组，有一个数字的出现频率超过了一半，找出这个数字
+169 给定一个数组，有一个数字的出现频率超过了一半，找出这个数字
 ------
 
 非常经典的一道题，首先我们假设拿到的数字就是目标，并记录他出现的次数，如果下一个
@@ -5718,10 +5724,10 @@ int majorityElement(vector<int>& nums) {
 </details>
 
 
-170. Locked
+170 Locked
 ------
 
-171. Excel 标题转换为数字
+171 Excel 标题转换为数字
 ------
 
 同样，我们需要注意 A 对应的是1，而不是0
@@ -5741,7 +5747,7 @@ int titleToNumber(char* s) {
 </details>
 
 
-172. 阶乘中能有几个0
+172 阶乘中能有几个0
 ------
 
 显然先算出阶乘数字是会溢出的，而有0的话，就是需要10，也就是就需要2和5，
@@ -5766,7 +5772,7 @@ int trailingZeroes(int n) {
 </details>
 
 
-173. 二叉树中序遍历迭代器
+173 二叉树中序遍历迭代器
 ------
 
 
@@ -5813,7 +5819,7 @@ private:
 </details>
 
 
-174. 地下城游戏
+174 地下城游戏
 ------
 
 王子在格子的左上角，需要到右下角去救公主，在过程中王子不能死掉，和机器人走路一样，使用动态规划
@@ -5841,10 +5847,10 @@ int calculateMinimumHP(vector<vector<int>>& dungeon) {
 </details>
 
 
-175-178. Missing
+175-178 Missing
 ------
 
-179. 最大的数字
+179 最大的数字
 ------
 
 神奇的排序方法
@@ -5879,7 +5885,7 @@ string largestNumber(vector<int>& nums) {
 186 Locked
 ------
 
-187. 找到所有10个字母唱的重复DNA序列
+187 找到所有10个字母唱的重复DNA序列
 ------
 
 
@@ -5903,7 +5909,7 @@ vector<string> findRepeatedDnaSequences(string s) {
 </details>
 
 
-189. 翻转树组
+189 翻转树组
 ------
 
 
@@ -5933,7 +5939,7 @@ void rotate(int* nums, int numsSize, int k) {
 </details>
 
 
-190. 翻转二进制表示
+190 翻转二进制表示
 ------
 
 
@@ -5958,7 +5964,7 @@ uint32_t reverseBits(uint32_t n) {
 </details>
 
 
-191. 数字二进制表示中1的个数
+191 数字二进制表示中1的个数
 ------
 
 我们知道n&(n-1)会把 n 中的最后一个1去掉，所以循环直到 n 为0即可
@@ -6020,10 +6026,10 @@ int main() {
 }
 ```
 
-192-197. Missing
+192-197 Missing
 ------
 
-198.  有一排房子，每个房子中都有一定财产，但是不能偷相邻的两个房子，求能偷到的最大值
+198  有一排房子，每个房子中都有一定财产，但是不能偷相邻的两个房子，求能偷到的最大值
 ------
 
 使用 DP，对于每个房子，可以选择不偷或者前 i-1个房子加上偷当前房子，即`dp[i+1]
@@ -6051,7 +6057,7 @@ int rob(int* nums, int numsSize) {
 </details>
 
 
-199. 从右边看二叉树的效果
+199 从右边看二叉树的效果
 ------
 
 
@@ -6086,7 +6092,7 @@ vector<int> rightSideView(TreeNode* root) {
 </details>
 
 
-200. 找出小岛的数量
+200 找出小岛的数量
 ------
 
 采用并查集，找到最后集合的数量
@@ -6162,7 +6168,7 @@ public:
 </details>
 
 
-201. 给定区间内，所有数字AND的结果
+201 给定区间内，所有数字AND的结果
 ------
 
 显然直接过一遍是会超时的，那么分析可知
@@ -6186,7 +6192,7 @@ int rangeBitwiseAnd(int m, int n) {
 </details>
 
 
-202. 快乐数字，各位数字平方相加得到下一个数字，如果最后等于1
+202 快乐数字，各位数字平方相加得到下一个数字，如果最后等于1
 ------
 
 没啥，一直算就可以了。。
@@ -6211,7 +6217,7 @@ bool isHappy(int n) {
 </details>
 
 
-203. 删除链表中给定的值
+203 删除链表中给定的值
 ------
 
 
@@ -6238,7 +6244,7 @@ struct ListNode* removeElements(struct ListNode* head, int val) {
 </details>
 
 
-204. 找出素数
+204 找出素数
 ------
 
 什么筛子，忘了
@@ -6267,7 +6273,7 @@ int countPrimes(int n) {
 </details>
 
 
-205. 同构字符串，可以看作word pattern的简化
+205 同构字符串，可以看作word pattern的简化
 ------
 
 
@@ -6293,7 +6299,7 @@ bool isIsomorphic(char* s, char* t) {
 </details>
 
 
-206. 反转链表
+206 反转链表
 ------
 
 
@@ -6328,7 +6334,7 @@ struct ListNode* reverseList(struct ListNode* head) {
 </details>
 
 
-207. 标准的拓扑排序
+207 标准的拓扑排序
 ------
 
 给定边这种方法表示图也是醉了
@@ -6368,7 +6374,7 @@ bool canFinish(int numCourses, vector<pair<int, int>>& prerequisites) { // next 
 
 
 
-208. 实现前缀树
+208 实现前缀树
 ------
 
 
@@ -6440,7 +6446,7 @@ private:
 </details>
 
 
-209. 最短子数组使得和大于某个数
+209 最短子数组使得和大于某个数
 ------
 
 双指针，超过和之后再尝试从开始处减去元素
@@ -6466,7 +6472,7 @@ int minSubArrayLen(int s, vector<int>& nums) {
 </details>
 
 
-210. Course Schedule II
+210 Course Schedule II
 ------
 
 BFS
@@ -6516,7 +6522,7 @@ private:
 </details>
 
 
-211. 添加和搜索字符串
+211 添加和搜索字符串
 ------
 
 
@@ -6630,7 +6636,7 @@ public:
 </details>
 
 
-212. 单词搜索
+212 单词搜索
 ------
 
 Trie结构见前面，注意要记录visited，还有边界的问题，另外集合的使用
@@ -6684,7 +6690,7 @@ public:
 </details>
 
 
-213. 小偷偷环状数组
+213 小偷偷环状数组
 ------
 
 
@@ -6717,7 +6723,7 @@ int rob(int* nums, int numsSize) {
 </details>
 
 
-214. 最短回文字符串，给指定的字符串添加字母获得回文
+214 最短回文字符串，给指定的字符串添加字母获得回文
 ------
 
 
@@ -6746,7 +6752,7 @@ string shortestPalindrome(string s) {
 
 
 
-215. 数组中第k大的数字
+215 数组中第k大的数字
 ------
 
 实际上这道题更可能的题目是找到前k大的所有数字。
@@ -6803,7 +6809,7 @@ int findKthLargest(int* nums, int numsSize, int k) {
 </details>
 
 
-216. 找到k个数字[1...9]，使得他们的和是n
+216 找到k个数字[1...9]，使得他们的和是n
 ------
 
 
@@ -6835,7 +6841,7 @@ void dfs(vector<vector<int>>& result, vector<int> combination, int n, int k) {
 </details>
 
 
-217. 包含重复数字
+217 包含重复数字
 ------
 
 这道题太简单了，也没有什么精妙的解法，可以使用排序，Hash 等多种解法
@@ -6858,7 +6864,7 @@ bool containsDuplicate(vector<int>& nums) {
 </details>
 
 
-218. 获得矩形重合部分的拐点
+218 获得矩形重合部分的拐点
 ------
 
 抄过来的，还没仔细研究
@@ -6896,7 +6902,7 @@ vector<pair<int, int>> getSkyline(vector<vector<int>>& buildings) {
 
 
 
-219. 包含重复数字，并且两个的坐标不超过k
+219 包含重复数字，并且两个的坐标不超过k
 ------
 
 
@@ -6927,7 +6933,7 @@ bool containsNearbyDuplicate(vector<int>& nums, int k) {
 </details>
 
 
-*220. 同上一题，同时保证两个数字之间小于t
+*220 同上一题，同时保证两个数字之间小于t
 ------
 
 保证两个数字之差小于t
@@ -6957,7 +6963,7 @@ bool containsNearbyAlmostDuplicate(vector<int>& nums, int k, int t) {
 </details>
 
 
-＊221. 找到最大的正方形
+＊221 找到最大的正方形
 ------
 
 使用动态规划 https://leetcode.com/discuss/38489/easy-solution-with-detailed-explanations-8ms-time-and-space
@@ -6992,7 +6998,7 @@ int maximalSquare(vector<vector<char>>& matrix) {
 
 
 
-222. 给定一个完全树，计算节点的数量。
+222 给定一个完全树，计算节点的数量。
 ------
 
 
@@ -7024,7 +7030,7 @@ int countNodes(struct TreeNode* root) {
 </details>
 
 
-223. 找出两个长方形覆盖的面积
+223 找出两个长方形覆盖的面积
 ------
 
 
@@ -7046,7 +7052,7 @@ int computeArea(int left1, int down1, int right1, int up1, int left2, int down2,
 </details>
 
 
-224. 给定一个字符串，包含加减和括号，计算值
+224 给定一个字符串，包含加减和括号，计算值
 ------
 
 难点是对括号的处理，注意每次都要和signs.top()相乘
@@ -7089,7 +7095,7 @@ int calculate(string s) {
 </details>
 
 
-225. 使用队列模拟栈
+225 使用队列模拟栈
 ------
 
 其实有两种做法，一种是在push的时候，把队列清空，把x放到最底下。
@@ -7137,7 +7143,7 @@ private:
 </details>
 
 
-226. 反转二叉树
+226 反转二叉树
 ------
 
 
@@ -7156,7 +7162,7 @@ struct TreeNode* invertTree(struct TreeNode* root) {
 </details>
 
 
-227. 给定一个字符串包含+-*/计算他的值
+227 给定一个字符串包含+-*/计算他的值
 ------
 
 
@@ -7236,7 +7242,7 @@ vector<string> summaryRanges(vector<int>& nums) {
 </details>
 
 
-229. 找出超过三分之一的元素
+229 找出超过三分之一的元素
 ------
 
 
@@ -7280,7 +7286,7 @@ vector<int> majorityElement(vector<int>& nums) {
 </details>
 
 
-＊230. 二叉树中第k小的数字
+＊230 二叉树中第k小的数字
 ------
 
 
@@ -7309,7 +7315,7 @@ int kthSmallest(struct TreeNode* root, int k) {
 </details>
 
 
-231. 2的次方
+231 2的次方
 ------
 
 ```
@@ -7321,7 +7327,7 @@ bool isPowerOfTwo(int n) {
 
 
 
-232. 使用栈模拟队列
+232 使用栈模拟队列
 ------
 
 
@@ -7372,7 +7378,7 @@ private:
 </details>
 
 
-*233. 小于n的数字中1的个数
+*233 小于n的数字中1的个数
 ------
 
 对于每一位，有三种情况：
@@ -7434,7 +7440,7 @@ int countDigitOneBinary(int n) {
 
 即｀f(10^n-1) ＝ n * 10^(n-1)｀，找到之后递减找最大的即可
 
-234. 判断一个链表是否是回文
+234 判断一个链表是否是回文
 ------
 
 解法1: 如果链表是可以改变的，不妨反转它的前半部分，然后再与后半部分比较
@@ -7485,7 +7491,7 @@ bool isPalindrome(ListNode* head) {
 </details>
 
 
-235. 二叉搜索树公共祖先
+235 二叉搜索树公共祖先
 ------
 
 
@@ -7507,7 +7513,7 @@ struct TreeNode* lowestCommonAncestor(struct TreeNode* root, struct TreeNode* p,
 </details>
 
 
-*236. 二叉树公共祖先
+*236 二叉树公共祖先
 ------
 
 如果二叉树的根就是其中一个节点，那显然是这个。
@@ -7534,7 +7540,7 @@ struct TreeNode* lowestCommonAncestor(struct TreeNode* root, struct TreeNode* p,
 </details>
 
 
-237. 删除链表中的元素
+237 删除链表中的元素
 ------
 
 直接将后继节点的值复制到当前节点
@@ -7556,7 +7562,7 @@ void deleteNode(struct ListNode* node) {
 </details>
 
 
-238. 数组除了自己以外的乘积，规定不能用除法
+238 数组除了自己以外的乘积，规定不能用除法
 ------
 
 首先从前往后乘，错开一位元素，这样每个元素都乘到了他之前的所有元素，最后一个元素已经是结果了。
@@ -7573,7 +7579,7 @@ void deleteNode(struct ListNode* node) {
 
 
 
-239. 滑动窗口最大值，给定一个滑动窗口，返回它移动过程中的最大值
+239 滑动窗口最大值，给定一个滑动窗口，返回它移动过程中的最大值
 ------
 
 这道题和 min stack 的思路完全一样，只不过换成了 deque
@@ -7604,7 +7610,7 @@ vector<int> maxSlidingWindow(vector<int>& nums, int k) {
 </details>
 
 
-240. 给定一个矩阵，每行从左到右都是增大的，每一列从上到下都是增大的，找出给定数字是否存在
+240 给定一个矩阵，每行从左到右都是增大的，每一列从上到下都是增大的，找出给定数字是否存在
 ------
 
 我们考虑右上角的元素
@@ -7632,7 +7638,7 @@ bool searchMatrix(int** matrix, int row, int col, int target) {
 </details>
 
 
-241. 添加括号得到不同的结果
+241 添加括号得到不同的结果
 ------
 
 对每一个符号，在他的两边添加括号的好的不同结果再计算。
@@ -7660,7 +7666,7 @@ vector<int> diffWaysToCompute(string input) {
 </details>
 
 
-242. 一个单词是否能由另一个变幻而来
+242 一个单词是否能由另一个变幻而来
 ------
 
 还是，对于 ASCII 字符，直接用数组代替字典
@@ -7689,7 +7695,7 @@ bool isAnagram(char* s, char* t) {
 243-256 Locked
 ------
 
-257. 二叉树左右路径
+257 二叉树左右路径
 ------
 
 典型的 DFS，发挥所有从根节点到叶节点的路径
@@ -7722,7 +7728,7 @@ void paths(vector<string>& result, string path, TreeNode* root) {
 </details>
 
 
-258. 把数字的每一位加起来，直到变成一个一位的数字
+258 把数字的每一位加起来，直到变成一个一位的数字
 ------
 
 这完全是一道数学题，对于每个进制的数字都有规律 `(n - 1) % (x - 1) + 1`。实际上是把10进制的转化为9进制数字
@@ -7736,7 +7742,7 @@ int addDigits(int num) {
 259 Locked
 ------
 
-260. 给定一个数组，每个数字都是重复的，只有两个数字不是，找出这两个数字
+260 给定一个数组，每个数字都是重复的，只有两个数字不是，找出这两个数字
 ------
 
 这道题很奇妙，依然可以使用 XOR 来解，首先遍历一遍，这时候由于有两个数字是不同的，那么一定结果不为0，那么其中一个 bit 位一定是一个数字有，另一个数字没有。
@@ -7765,10 +7771,10 @@ vector<int> singleNumber(vector<int>& nums) {
 </details>
 
 
-261. 262 Locked
+261 262 Locked
 ------
 
-263. 丑陋的数字，质数因子只含有2,3,5的数字
+263 丑陋的数字，质数因子只含有2,3,5的数字
 ------
 
 按定义做就好了
@@ -7798,7 +7804,7 @@ bool isUgly(int n) {
 </details>
 
 
-264. 找出第 n 个丑陋数字
+264 找出第 n 个丑陋数字
 ------
 
 使用数列记录 n 个丑陋数字，每一个丑陋数字肯定是之前数字乘以235得到的，然后用三个指针分别指向上一个做乘法的数字，每次找出最小的一个
@@ -7831,7 +7837,7 @@ int nthUglyNumber(int n) {
 </details>
 
 
-268. 丢失的数字，给定0...n，丢失了一个，然后放在长度为 n 的数组之中，找出这个数字
+268 丢失的数字，给定0...n，丢失了一个，然后放在长度为 n 的数组之中，找出这个数字
 ------
 
 显然还是使用异或，注意 0 ^ x == x，所以直接把 0 忽略就行了。把每个数字都和 i 异或，丢失的数字就出来了
@@ -7854,7 +7860,7 @@ int missingNumber(int* nums, int n) {
 269-272 Locked
 ------
 
-273. 数字转换为英语单词
+273 数字转换为英语单词
 ------
 
 
@@ -7918,7 +7924,7 @@ public:
 </details>
 
 
-274. H-Index
+274 H-Index
 ------
 
 H-Index的定义：一个科学家的N篇论文h个至少有h个引用，而且剩下的N-h篇论文都没有超过h个引用。
@@ -7947,7 +7953,7 @@ int hIndex(int* cites, int n) {
 }
 ```
 
-275. H-index II，论文已经按照引用数量排序
+275 H-index II，论文已经按照引用数量排序
 ------
 
 
@@ -7975,7 +7981,7 @@ int hIndex(int* citations, int n) {
 276-277 Locked
 ------
 
-278. 第一个坏版本
+278 第一个坏版本
 ------
 
 
@@ -7999,7 +8005,7 @@ int firstBadVersion(int n) {
 </details>
 
 
-279. 分解为平方数的和
+279 分解为平方数的和
 ------
 
 最多4个即可，尝试在三个以内是否可以。
@@ -8024,7 +8030,7 @@ int numSquares(int n) {
 </details>
 
 
-282. 添加运算符使得算式成立
+282 添加运算符使得算式成立
 ------
 
 
@@ -8078,7 +8084,7 @@ void moveZeroes(vector<int>& nums) {
 </details>
 
 
-284. Peek Iterator
+284 Peek Iterator
 ------
 
 
