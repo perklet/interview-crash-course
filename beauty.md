@@ -1,4 +1,4 @@
-Beauty of Programming
+编程之美
 ======
 
 1.2 中国象棋将帅问题
@@ -6,8 +6,8 @@ Beauty of Programming
 
 ```C
 struct {
-	unsigned char a:4;
-	unsigned char b:4;
+    unsigned char a:4;
+    unsigned char b:4;
 };
 
 for (i.a = 1; i.a <= 9; i.a++)
@@ -22,17 +22,17 @@ for (i.a = 1; i.a <= 9; i.a++)
 ```C
 Grid* preClick = NULL, * curClick = NULL;
 while(true) {
-	// listen user event
-	if (点击格子 xy 非空) {
-	    preClick = curClick;
-	    curClick.pos = x, y;
-	}
+    // listen user event
+    if (点击格子 xy 非空) {
+        preClick = curClick;
+        curClick.pos = x, y;
+    }
 
-	if (preClick && curClick && findPath(preClick, curClick)) {
-		显示路径
-		消去
-		preClick = curClick = NULL;
-	}
+    if (preClick && curClick && findPath(preClick, curClick)) {
+        显示路径
+        消去
+        preClick = curClick = NULL;
+    }
 }
 ```
 
@@ -55,10 +55,10 @@ int gcd(int x, int y) {
 ```
 // iterative
 int gcd(int x, int y) {
-	while (y) {
-	    int t = x;
-	    x = y
-	    y = t % y;
+    while (y) {
+        int t = x;
+        x = y
+        y = t % y;
     }
     return x;
 }
@@ -67,30 +67,30 @@ int gcd(int x, int y) {
 
 ```C
 int gcd(int x, int y) {
-	if (x < y)
-	    return gcd(y, x);
-	if (y == 0)
-	    return x;
-	return gcd(x - y, y);
+    if (x < y)
+        return gcd(y, x);
+    if (y == 0)
+        return x;
+    return gcd(x - y, y);
 }
 ```
 
 ```C
 int gcd(int x, int y) {
-	if (x < y)
-	    return gcd(y, x);
-	if (y == 0)
-	    return x;
-	if (x & 0x1 == 0)
-	    if (y & 0x1 == 0)
-	        return gcd(x>>1, y>>1) << 1;
-	    else
-	        return gcd(x >>1, y);
-	else
-	    if (y & 0x1 == 0)
-	        return gcd(x, y>>1);
-	    else
-	        return gcd(y, x-y);
+    if (x < y)
+        return gcd(y, x);
+    if (y == 0)
+        return x;
+    if (x & 0x1 == 0)
+        if (y & 0x1 == 0)
+            return gcd(x>>1, y>>1) << 1;
+        else
+            return gcd(x >>1, y);
+    else
+        if (y & 0x1 == 0)
+            return gcd(x, y>>1);
+        else
+            return gcd(y, x-y);
 }
 ```
 
@@ -110,31 +110,31 @@ O(logn)的解法
 
 通项公式
 
-	f(n), f(n-1) = (f(n-1), f(n-2)) * A
+    f(n), f(n-1) = (f(n-1), f(n-2)) * A
 
-	A = |1  1|
-	    |1  0| 
+    A = |1  1|
+        |1  0| 
 
-	f(n), f(n-1) = (f(n-1), f(n-2)) * A = ... = (f1, f0) * A^(n-1)
+    f(n), f(n-1) = (f(n-1), f(n-2)) * A = ... = (f1, f0) * A^(n-1)
 
 下面我们计算`A^n-1`，太简单了，使用`A^(2n) = A^n * A^n`
 
 ```
 // pesudo code
 int fib(int n) {
-	Matrix factor = matrixPow(A, n-1);
-	return f1*factor + f0*factor;
+    Matrix factor = matrixPow(A, n-1);
+    return f1*factor + f0*factor;
 }
 
 Matrix matrixPow(Matrix m, int n) {
-	Matrix result = Matrix::Identity;
-	while (n) {
-	    if (n & 1)
-	        result *= m;
-	    m *= m;
-	    n >>= 1;
-	}
-	return result;
+    Matrix result = Matrix::Identity;
+    while (n) {
+        if (n & 1)
+            result *= m;
+        m *= m;
+        n >>= 1;
+    }
+    return result;
 }
 ```
 
@@ -182,19 +182,19 @@ pair<int, int> abstract(vector<string> article, unordered_set<string> keywords) 
         while (end < article.size() && !isContain(keywords, having)) {
             indecies[articel[end]] = end;
             end++;
-    	}
+        }
         while (isContain(keywords, having)) {
             if (end - start + 1 < range) {
                 range = end - start + 1;
                 result.first = start;
                 result.second = end;
-        	}
-        	if (indecies[aritcle[start]] == start)
-        	    having.erase[article[start]];
-        	start++;
-		}
-	}
-	return result;
+            }
+            if (indecies[aritcle[start]] == start)
+                having.erase[article[start]];
+            start++;
+        }
+    }
+    return result;
 }
 ```
 
@@ -218,25 +218,25 @@ pair<int, int> abstract(vector<string> article, unordered_set<string> keywords) 
 
 ```C
 typedef struct {
-	int max_distance;
-	int max_depth;
+    int max_distance;
+    int max_depth;
 } result_t;
 
 // get max distance of two nodes in a tree
 result_t get_max(tree_node_t* root) {
-	result_t result;
-	if (!root) {
-		result.max_distance = 0;
-		result.max_depth = -1;
-		return result;
-	}
+    result_t result;
+    if (!root) {
+        result.max_distance = 0;
+        result.max_depth = -1;
+        return result;
+    }
 
-	result_t left = get_max(root->left);
-	result_t right = get_max(root->right);
+    result_t left = get_max(root->left);
+    result_t right = get_max(root->right);
 
-	result.max_depth = max(left.max_depth, right.max_depth) + 1;
-	result.max_distance = max(max(left.max_distance, right.max_distance), left.max_depth + right.max_depth + 2);
-	return result;
+    result.max_depth = max(left.max_depth, right.max_depth) + 1;
+    result.max_distance = max(max(left.max_distance, right.max_distance), left.max_depth + right.max_depth + 2);
+    return result;
 }
 ```
 
@@ -290,28 +290,28 @@ pxq覆盖mxn？
 ```
 // 利用面积，如果 D 和 ABC 分别构成的三角形的面积小于 ABC 的面积，那么 D 在三角形内部
 double area(Point A, Point B, Point, C) {
-	double a, b, c;
-	b = distance(A, C);
-	a = distance(B, C);
-	c = distance(A, B);
+    double a, b, c;
+    b = distance(A, C);
+    a = distance(B, C);
+    c = distance(A, B);
 
-	double p = (a + b + c) / 2;
-	return sqrt((p-a) * (p-b) * (p-c) * p);
+    double p = (a + b + c) / 2;
+    return sqrt((p-a) * (p-b) * (p-c) * p);
 }
 
 bool isInTriangle(A, B, C, D) {
-	return area(A, B, D) + area(A, C, D) + area(B, C, D) <= area(A, B, C);
+    return area(A, B, D) + area(A, C, D) + area(B, C, D) <= area(A, B, C);
 } 
 ```
 
 ```
 // 根据角度考虑，如果两个向量叉积为正，那么 P3 在P1P2的左边，如果一个点同时在 AB，BC，CA 的左边
 double cross(Point A, Point B, Point X) {
-	return (B.x - A.x) * (X.y - A.y) - (X.x - A.x) * (B.y - A.y);
+    return (B.x - A.x) * (X.y - A.y) - (X.x - A.x) * (B.y - A.y);
 }
 
 bool isInTriangle(A, B, C, D) {
-	return cross(A, B, D) >= 0 && cross(B, C, D) >= 0 && cross(C, A, D) >= 0;
+    return cross(A, B, D) >= 0 && cross(B, C, D) >= 0 && cross(C, A, D) >= 0;
 }
 ```
 
@@ -343,13 +343,13 @@ bool isInTriangle(A, B, C, D) {
 
 2. 测试用例
 
-	1. 合法输入，各种三角形的形状，以及不是三角形的，还需要考虑交换不同边的顺序；
+    1. 合法输入，各种三角形的形状，以及不是三角形的，还需要考虑交换不同边的顺序；
 
-	2. 非法输入，负数，0，类型错误等等；
+    2. 非法输入，负数，0，类型错误等等；
 
-	3. 边界值，一般程序可能在`< <= > >=`上犯错误；
+    3. 边界值，一般程序可能在`< <= > >=`上犯错误；
 
-	4. 很大的数，很小的数，等等。
+    4. 很大的数，很小的数，等等。
 
 一般需要给出15-20个用例
 
