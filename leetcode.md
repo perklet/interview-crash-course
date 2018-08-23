@@ -285,16 +285,6 @@ char* longestPalindrome(char* s) {
 </details>
 
 
-
-<details>
-    <summary>C++ 解答</summary>
-
-```C++
-// 待补充
-```
-</details>
-
-
 6 ZigZag 字符串, 把字符串掰弯, 然后再按行输出
 ------
 
