@@ -64,6 +64,7 @@ pair<int> twoSum(vector<int>& nums, int target) {
 struct ListNode* addTwoNumbers(struct ListNode* l1, struct ListNode* l2) {
     struct ListNode dummy, *p = &dummy;
     int carry = 0;
+    // 注意最后如果有 carry 的话，需要再生成一个节点
     while (l1 || l2 || carry) {
         int v1 = l1 ? l1->val: 0;
         int v2 = l2 ? l2->val: 0;
@@ -110,11 +111,10 @@ class Solution {
                 p->next = newNode;
                 p = p->next;
             }
-
+            // 注意最后多余的一个进位处理
             if (shift == 1) {
                 p->next = new ListNode(1);
             }
-
             return result->next;
         }
 };
@@ -123,7 +123,8 @@ class Solution {
 3 最长不重复子串
 ------
 
-使用动态规划, 在一个 Hash 中存储已经出现的字符的上一次出现的索引值, 如果索引值存在, 则把当前最长子串的左边界更新为改索引值。
+使用动态规划, 在一个 Hash 中存储已经出现的字符的上一次出现的索引值, 如果索引值
+存在, 则把当前最长子串的左边界更新为该索引值。
 
 注意, 当字符有限的时候, 比如限定为 ASCII 字符, 可以使用一个数组代替 Hash。
 
@@ -137,9 +138,9 @@ int lengthOfLongestSubstring(char* s) {
     int longest = 0;
 
     for (int i = 0; s[i] != '\0'; i++) {
-        left = max(left, indices[s[i]] + 1);  // 考虑新加入字符后对左边界的影响
-        indices[s[i]] = i;
-        longest = max(longest, i - left + 1);
+        left = max(left, indices[s[i]] + 1);   // 考虑新加入字符后对左边界的影响
+        indices[s[i]] = i;                     // 更新元素上次出现位置
+        longest = max(longest, i - left + 1);  // 应用动态规划
     }
     return longest;
 }
@@ -151,13 +152,13 @@ int lengthOfLongestSubstring(char* s) {
 解法参见[这里](https://leetcode.com/discuss/15790/share-my-o-log-min-m-n-solution-with-explanation)
 
 使用两个数字 i 和 j, 分别作为 AB 的分隔元素, 把 AB 分成两份， 比如 
-A[0..i], B[0..j] 和 A[i, m], B[j, n]，这样我们只需要下面两个条件就可以了:
+`A[0..i]`, `B[0..j]` 和 `A[i, m]`, `B[j, n]`，这样我们只需要下面两个条件就可以了:
 
-1. i+j = m-i + n-j, 也就是i+j = (m+n)/2
-2. `B[j-1] <= A[i] && A[i-1] <= B[j]`,  B的前一半元素小于A的分隔符, A的前一半元素小于B的分隔符
+* `i+j = m-i + n-j`, 也就是 `i+j = (m+n)/2`
+* `B[j-1] <= A[i] && A[i-1] <= B[j]`,  B的前一半元素小于A的分隔符, A的前一半元素小于B的分隔符
 
-这时候我们就得到了 A[i] 就是我们的中位数，或者之一。
-i 的初始值在 0 到 m 之间，然后我们二分搜索 `i = (imin + imax) / 2, j = mid - i`。
+这时候我们就得到了 A[i] 就是我们的中位数，或者之一。 i 的初始值在 0 到 m 之间，
+然后我们二分搜索 `i = (imin + imax) / 2, j = mid - i`。
 
 ```C
 #define max(a,b) ((a)>(b)?(a):(b))
@@ -195,7 +196,7 @@ double findMedianSortedArrays(int* A, int m, int* B, int n) {
 ------
 
 1. 以某个元素为中心, 向两边展开, 注意处理奇数和偶数两种情况
-2. Manacher 算法, 参见http://taop.marchtea.com/0105html
+2. Manacher 算法, 参见[这里](http://taop.marchtea.com/01.05.html)
 
 ```C
 char* longestPalindrome(char* s) {
@@ -237,7 +238,7 @@ char* longestPalindrome(char* s) {
 ```
 
 ```C++
-
+// 待补充
 ```
 
 6 ZigZag 字符串, 把字符串掰弯, 然后再按行输出
@@ -283,15 +284,15 @@ int reverse(int x) {
         result = result * 10 + x % 10;
         x /= 10;
     }
-    return result > INT_MAX ? 0 : result;
 
+    return result > INT_MAX ? 0 : result;
 }
 ```
 
 8 实现 atoi
 ------
 
-注意各种特殊情况：
+这道题考察各种细节，注意各种特殊情况：
 
 1. 首先过滤空格
 2. 判定符号, 符号只能出现一次
@@ -332,8 +333,9 @@ int myAtoi(char* str) {
 
 限定不能用额外空间, 所以直接把 x 取余得到的数字作为一个反向作为一个新的数字
 
-```c
+```C
 bool isPalindrome(int x) {
+
     // tricky here, for x == k * 10^j
     if (x < 0 || x && (x % 10 == 0)) return false;
     int y = 0;
@@ -349,12 +351,13 @@ bool isPalindrome(int x) {
 10 正则表达式
 ------
 
-实现正则表达式, 只需要实现`.`代表任意字符, `*`代表任意重复。只需要特殊处理`*`，如果遇到了`*`，贪婪地向后匹配。
-和通配符的不同之处在于，正则表达式需要两个字母组成模式，`*`是对前一个字母的修饰。
+实现正则表达式, 只需要实现`.`代表任意字符, `*`代表任意重复。只需要特殊处理`*`，
+如果遇到了`*`，贪婪地向后匹配。和通配符的不同之处在于，正则表达式需要两个字母
+组成模式，`*`是对前一个字母的修饰。
 
-```c
+```C
 bool isMatch(char* s, char* p) {
-    for (char c = *p; c != 0;s++, c = *p) {
+    for (char c = *p; c != 0; s++, c = *p) {
         // if next char in pattern is not *
         if (*(p+1) != '*')
             p++;
@@ -380,7 +383,8 @@ int maxArea(vector<int>& height) {
     int left = 0, right = height.size() - 1;
     int result = 0;
     while (left < right) {
-        result = max(result, min(height[left], height[right]) * (right - left));
+        water = min(height[left], height[right]) * (right - left)
+        result = max(result, water);
         if (height[left] < height[right])
             left++;
         else
@@ -488,7 +492,7 @@ void doRoman(int number, char ten, char five, char one, char** str) {
 13 罗马数字转为十进制
 ------
 
-主要是当前一个数字小于后一个数字的时候, 需要添加的是后一个谁和钱一个数字的差
+主要是当前一个数字小于后一个数字的时候, 需要添加的是后一个数和前一个数字的差
 
 
 ```C
@@ -520,15 +524,20 @@ int romanToInt(char* s) {
 14 最长公共前缀
 ------
 
-横向遍历, 从头到尾, 如果, 不一致, 返回当前子串即可。如果约定不能更改当前字符串的化, 最好用C++做, 不然操作字符串太复杂了, 没必要出错。
+一种 naive 的做法：
+
+纵向扫描, 从头到尾, 如果不一致, 返回当前子串即可。
+
+如果约定不能更改当前字符串, 最好用C++做, 不然操作字符串太复杂了, 没必要出错。
 
 另一种方法是使用 trie
 
-```
-
+```C++
+// 待续
 ```
 
 ```C
+// 纵向扫描
 char* longestCommonPrefix(char** strs, int strsSize) {
     if (!strs || !strs[0]) return "";
     if (strsSize == 1) return strs[0];
@@ -549,8 +558,9 @@ char* longestCommonPrefix(char** strs, int strsSize) {
 15 从数组中找出三个数使得他们的和是0
 ------
 
-按照 LeetCode 的要求的话, 使用 C 做, 返回值太复杂了, 所以用 C++ 做了。
-首先, 把数组排序, 然后使用类似 two sum 的方法做就好了
+使用 C 做, 返回值太复杂了, 所以用 C++ 做了。
+
+首先把数组排序, 然后使用类似 two sum 的方法做就好了
 
 ```C++
 vector<vector<int>> threeSum(vector<int>& nums) {
@@ -624,7 +634,9 @@ int threeSumClosest(int* nums, int numsSize, int target) {
 
 遍历数字, 设当前结果为`{a, b, c}`, 下一个数字是`3`, 找出对应的字母`{d, e, f}`, 则新的结果是
 
+```
 { a + {def}, b + {def}, c + {def}}
+```
 
 然后把新获得的数组作为下一轮的初始数组。最开始时, 使用空数组开始。
 
@@ -1025,7 +1037,7 @@ int kmp(char* needle, char* haystack) {
 
 计算可以从被除数中减去除数的次数
 
-```c
+```C
 int divide(int dividend, int divisor) {
     // abs(INT_MIN) == INT_MAX + 1
     if (divisor == 0 || (dividend == INT_MIN && divisor == -1))
@@ -1244,7 +1256,6 @@ int searchInsert(int* nums, int numsSize, int target) {
     return left;
 }
 ```
-
 
 36 合法数独, 给定一个数独表,判定当前是否合法
 ------
@@ -1639,7 +1650,7 @@ vector<vector<string>> groupAnagrams(vector<string>& strs) {
     return result;
 }
 ```
-
+```
 
 50 实现pow(x, n)
 ------
@@ -2146,6 +2157,8 @@ def isNumber(self, s):
 66 给定一个字符串代表的数字，返回加1后的数字
 ------
 
+我们知道只有当数字是999....999的时候，才会使得数字的长度+1变为1000...000。
+
 我们知道只有当数字是999...999的时候，才会使得数字的长度+1变为1000..000。
 
 ```C++
@@ -2157,7 +2170,7 @@ vector<int> plusOne(vector<int>& digits) {
         } else {
             digits[i]++;
             return digits;
-        }
+    // real trick here, we know that the number is 999...999
     }
     // real trick here, we know that the number is 999..999
     // 改成insert
@@ -2432,7 +2445,6 @@ void sortColors(int* nums, int numsSize) {
 ```
 
 76 跳过
-------
 
 77 给定数字 n 和 k，生成从 n 中取出 k 个数字的所有情况
 ------
@@ -3013,7 +3025,6 @@ vector<TreeNode*> gen(int start, int end) {
 }
 ```
 
-
 96 给定数字n，从1到 n 作为节点有多少种方式生成二叉树
 ------
 
@@ -3471,7 +3482,6 @@ public:
 };
 ```
 
-
 116 完全二叉树中把每个节点指向他这一层的右面的节点
 ------
 
@@ -3690,7 +3700,6 @@ int maxPathSum(struct TreeNode* root) {
     return sum;
 }
 ```
-
 
 125 给定一个字符串，只考虑字母和数字，忽略大小写，判断是否是回文字符串
 ------
@@ -4555,7 +4564,6 @@ public:
 ```
 
 156-159 Locked
-------
 
 160 求两个链表的交叉点
 ------
@@ -4585,7 +4593,6 @@ struct ListNode *getIntersectionNode(struct ListNode *headA, struct ListNode *he
 ```
 
 161 Locked
-------
 
 162  找到极大值，给定一个数组，可能有多个极大值，找到任意一个即可，给定数组中A[i] != A[i+1]
 ------
@@ -4607,14 +4614,13 @@ int findPeakElement(int* nums, int numsSize) {
 ```
 
 163 Locked
-------
 
 164 未排序数组中相差最大的两个数之间的差
 ------
 
 根据抽屉原理，最大差不可能小于(max - min) / (n - 1)。证明：如果小于，那么整个数组的大小就会小于max - min。
 因此我们把
-
+```
 
 165 比较版本号大小
 ------
@@ -4687,7 +4693,7 @@ string fractionToDecimal(long numerator, long denominator) {
 ```
 
 167 Locked
-------
+```
 
 168 生成 Excel 表格标题
 ------
@@ -4729,7 +4735,7 @@ int majorityElement(vector<int>& nums) {
 ```
 
 170 Locked
-------
+```
 
 171 Excel 标题转换为数字
 ------
@@ -4857,7 +4863,6 @@ string largestNumber(vector<int>& nums) {
 ------
 
 186 Locked
-------
 
 187 找到所有10个字母唱的重复DNA序列
 ------
@@ -4977,7 +4982,6 @@ int main() {
 ```
 
 192-197 Missing
-------
 
 198  有一排房子，每个房子中都有一定财产，但是不能偷相邻的两个房子，求能偷到的最大值
 ------
@@ -5255,7 +5259,6 @@ bool canFinish(int numCourses, vector<pair<int, int>>& prerequisites) { // next 
     return true;
 }
 ```
-
 
 
 208 实现前缀树
@@ -5571,6 +5574,7 @@ int rob(int* nums, int numsSize) {
 }
 ```
 
+
 214 最短回文字符串，给指定的字符串添加字母获得回文
 ------
 
@@ -5592,7 +5596,6 @@ string shortestPalindrome(string s) {
     return rev_s.substr(0, s.size() - p[l.size() - 1]) + s;
 }
 ```
-
 
 215 数组中第k大的数字
 ------
@@ -5719,7 +5722,6 @@ vector<pair<int, int>> getSkyline(vector<vector<int>>& buildings) {
 }
 ```
 
-
 219 包含重复数字，并且两个的坐标不超过k
 ------
 
@@ -5745,7 +5747,7 @@ bool containsNearbyDuplicate(vector<int>& nums, int k) {
 }
 ```
 
-*220 同上一题，同时保证两个数字之间小于t
+220 同上一题，同时保证两个数字之间小于t
 ------
 
 保证两个数字之差小于t
@@ -5769,7 +5771,7 @@ bool containsNearbyAlmostDuplicate(vector<int>& nums, int k, int t) {
 }
 ```
 
-＊221 找到最大的正方形
+221 找到最大的正方形
 ------
 
 使用动态规划 https://leetcode.com/discuss/38489/easy-solution-with-detailed-explanations-8ms-time-and-space
@@ -5794,8 +5796,6 @@ int maximalSquare(vector<vector<char>>& matrix) {
     return maxsize * maxsize;
 }
 ```
-
-
 
 
 222 给定一个完全树，计算节点的数量。
@@ -5976,7 +5976,7 @@ int calculate(string s) {
 }
 ```
 
-聚合区间，给定一排序数组，把相邻的数字用区间表示
+228 聚合区间，给定一排序数组，把相邻的数字用区间表示
 ------
 
 ```C++
@@ -6038,7 +6038,7 @@ vector<int> majorityElement(vector<int>& nums) {
 }
 ```
 
-＊230 二叉树中第k小的数字
+230 二叉树中第k小的数字
 ------
 
 ```C
@@ -6070,8 +6070,6 @@ bool isPowerOfTwo(int n) {
     return (n & (n - 1)) == 0;
 }
 ```
-
-
 
 232 使用栈模拟队列
 ------
@@ -6118,7 +6116,7 @@ private:
 };
 ```
 
-*233 小于n的数字中1的个数
+233 小于n的数字中1的个数
 ------
 
 对于每一位，有三种情况：
@@ -6166,7 +6164,6 @@ int countDigitOneBinary(int n) {
     ...
     99999999  10000000
 
-即｀f(10^n-1) ＝ n * 10^(n-1)｀，找到之后递减找最大的即可
 
 234 判断一个链表是否是回文
 ------
@@ -6229,7 +6226,7 @@ struct TreeNode* lowestCommonAncestor(struct TreeNode* root, struct TreeNode* p,
 }
 ```
 
-*236 二叉树公共祖先
+236 二叉树公共祖先
 ------
 
 如果二叉树的根就是其中一个节点，那显然是这个。
@@ -6271,11 +6268,6 @@ void deleteNode(struct ListNode* node) {
 
 首先从前往后乘，错开一位元素，这样每个元素都乘到了他之前的所有元素，最后一个元素已经是结果了。
 然后从后往前乘，同样错开一位，这样每个元素又把他之后的元素都得到了。
-
-```C++
-
-```
-
 
 239 滑动窗口最大值，给定一个滑动窗口，返回它移动过程中的最大值
 ------
@@ -6367,7 +6359,6 @@ bool isAnagram(char* s, char* t) {
 ```
 
 243-256 Locked
-------
 
 257 二叉树左右路径
 ------
@@ -6408,7 +6399,6 @@ int addDigits(int num) {
 ```
 
 259 Locked
-------
 
 260 给定一个数组，每个数字都是重复的，只有两个数字不是，找出这两个数字
 ------
@@ -6434,7 +6424,6 @@ vector<int> singleNumber(vector<int>& nums) {
 ```
 
 261 262 Locked
-------
 
 263 丑陋的数字，质数因子只含有2,3,5的数字
 ------
@@ -6502,7 +6491,6 @@ int missingNumber(int* nums, int n) {
 ```
 
 269-272 Locked
-------
 
 273 数字转换为英语单词
 ------
@@ -6611,7 +6599,6 @@ int hIndex(int* citations, int n) {
 ```
 
 276-277 Locked
-------
 
 278 第一个坏版本
 ------
@@ -6936,7 +6923,7 @@ int* intersection(int* A, int m, int* B, int n, int* k) {
 
 使用两个指针，不过需要注意元音字母包括了大小写
 
-```
+```Python
 class Solution:
     def reverseVowels(self, s):
         """
@@ -6986,5 +6973,3 @@ int getSum(int a, int b) {
     return rv;
 }
 ```
-
-
