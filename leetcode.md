@@ -1986,7 +1986,6 @@ vector<vector<string>> groupAnagrams(vector<string>& strs) {
 ```
 </details>
 
-```
 
 50 实现pow(x, n)
 ------
@@ -2926,8 +2925,11 @@ bool searchMatrix(int** matrix, int row, int col, int target) {
 
 一种方法是简单地2 pass解法，遍历一遍计数再输出。另一种方法是把红色往前交换，蓝色往后交换
 
-```
 
+<details>
+    <summary>C 解答</summary>
+
+```C
 void swap(int* a, int* b) {
     int t = *a; *a = *b; *b = t;
 }
@@ -2941,6 +2943,8 @@ void sortColors(int* nums, int numsSize) {
     }
 }
 ```
+</details>
+
 
 76 跳过
 
@@ -3615,7 +3619,11 @@ vector<int> inorderTraversal(TreeNode* root) {
 95 生成二叉树，同下题一样
 ------
 
-```C＋＋
+
+<details>
+    <summary>C++ 解答</summary>
+
+```C++
 vector<TreeNode*> generateTrees(int n) {
     return gen(1, n);
 }
@@ -3642,6 +3650,8 @@ vector<TreeNode*> gen(int start, int end) {
     return result;
 }
 ```
+</details>
+
 
 96 给定数字n，从1到 n 作为节点有多少种方式生成二叉树
 ------
@@ -4249,7 +4259,11 @@ void connect(struct TreeLinkNode *root) {
 
 通过上一层已经被连接的 next 指针，顺序层序访问，从而连接下一层。
 
-```
+
+<details>
+    <summary>C 解答</summary>
+
+```C
 void connect(struct TreeLinkNode *root) {
     struct TreeLinkNode* head = root, * prev = NULL, *p = NULL;
     while (head) { // head 是每层的开始
@@ -4277,6 +4291,8 @@ void connect(struct TreeLinkNode *root) {
     }
 }
 ```
+</details>
+
 
 118 杨辉三角
 ------
@@ -5598,7 +5614,6 @@ int findPeakElement(int* nums, int numsSize) {
 
 根据抽屉原理，最大差不可能小于(max - min) / (n - 1)。证明：如果小于，那么整个数组的大小就会小于max - min。
 因此我们把
-```
 
 165 比较版本号大小
 ------
@@ -5683,7 +5698,6 @@ string fractionToDecimal(long numerator, long denominator) {
 
 
 167 Locked
-```
 
 168 生成 Excel 表格标题
 ------
@@ -5737,7 +5751,6 @@ int majorityElement(vector<int>& nums) {
 
 
 170 Locked
-```
 
 171 Excel 标题转换为数字
 ------
@@ -5999,7 +6012,11 @@ int hammingWeight(uint32_t n) {
 
 还可以采用查表法，对于表我们可以预先构造，或者利用上一个方法生成，对于长度过大的，我们可以分块查表。
 
-```
+
+<details>
+    <summary>C 解答</summary>
+
+```C
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -6036,6 +6053,8 @@ int main() {
     return 0;
 }
 ```
+</details>
+
 
 192-197 Missing
 
@@ -7324,12 +7343,18 @@ int kthSmallest(struct TreeNode* root, int k) {
 231 2的次方
 ------
 
-```
+
+<details>
+    <summary>C 解答</summary>
+
+```C
 bool isPowerOfTwo(int n) {
     if (n <= 0) return false;
     return (n & (n - 1)) == 0;
 }
 ```
+</details>
+
 
 232 使用栈模拟队列
 ------
@@ -7724,11 +7749,17 @@ void paths(vector<string>& result, string path, TreeNode* root) {
 
 这完全是一道数学题，对于每个进制的数字都有规律 `(n - 1) % (x - 1) + 1`。实际上是把10进制的转化为9进制数字
 
-```
+
+<details>
+    <summary>C 解答</summary>
+
+```C
 int addDigits(int num) {
     return (num - 1) % 9 + 1;
 }
 ```
+</details>
+
 
 259 Locked
 
@@ -7917,7 +7948,11 @@ public:
 
 H-Index的定义：一个科学家的N篇论文h个至少有h个引用，而且剩下的N-h篇论文都没有超过h个引用。
 
-```
+
+<details>
+    <summary>C 解答</summary>
+
+```C
 int hIndex(int* cites, int n) {
     int hs[n+1]; // Hindex不可能大于N
 
@@ -7940,6 +7975,8 @@ int hIndex(int* cites, int n) {
     return 0;
 }
 ```
+</details>
+
 
 275 H-index II，论文已经按照引用数量排序
 ------
