@@ -300,7 +300,11 @@ char* longestPalindrome(char* s) {
 
 考察数学, 找出规律, 所以实际上并不是 Z 子形，而是由 V 组成的，然后组合按行号重构后的字符串即可。
 
-``` C
+
+<details>
+    <summary>C 解答</summary>
+
+```C
 char* convert(char* s, int numRows) {
     int len = strlen(s);
     if (!s || numRows <= 1 || len < numRows) return s; // no need to convert
@@ -322,6 +326,8 @@ char* convert(char* s, int numRows) {
     return zigzag;
 }
 ```
+</details>
+
 
 7 翻转数字, 溢出返回0
 ------
