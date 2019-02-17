@@ -1286,11 +1286,8 @@ vector<int> findSubstring(string s, vector<string>& words) {
     unordered_map<string, int> counts;
     for (string word : words)
         counts[word]++;
-    int n = s.length(), num = words.size();
+    int n = s.length(), num = words.size(), len = words[0].size();
     vector<int> indexes;
-    if (num == 0)
-        return indexes;
-    int len = words[0].size();
     for (int i = 0; i < n - num * len + 1; i++) {
         unordered_map<string, int> seen;
         int j = 0;
@@ -2019,6 +2016,7 @@ vector<vector<string>> groupAnagrams(vector<string>& strs) {
 
 显然不能直接阶乘过去，分治法
 
+递归做法
 
 <details>
     <summary>C 解答</summary>
@@ -2040,7 +2038,12 @@ double myPow(double x, int n) {
 </details>
 
 
-```
+迭代做法
+
+<details>
+    <summary>C 解答</summary>
+
+```C
 // iteratively
 double myPow(double x, long p) {
     double result = 1;
@@ -2055,6 +2058,8 @@ double myPow(double x, long p) {
     return result;
 }
 ```
+</details>
+
 
 51 N 皇后问题
 ------
@@ -8485,6 +8490,54 @@ int getSum(int a, int b) {
     }
 
     return rv;
+}
+```
+</details>
+
+
+904 找出包含了两个不同数字的最长子序列
+------
+
+这道题的题目很坑爹,但是翻译过来其实要求很明确. 解题思路也很简单, 存储一下当前的最长序列
+就好了.
+
+
+<details>
+    <summary>C++ 解答</summary>
+
+```C++
+```
+</details>
+
+
+
+<details>
+    <summary>Rust 解答</summary>
+
+```Rust
+use std::collections::HashMap;
+use std::cmp::max;
+
+impl Solution {
+    pub fn total_fruit(tree: Vec<i32>) -> i32 {
+        let mut i = 0;
+        let mut res = 0;
+        let mut counter = HashMap::new();
+        for (j, el) in tree.iter().enumerate() {
+            *counter.entry(el).or_insert(0) += 1;
+            while counter.len() > 2 {
+                *counter.get_mut(&tree[i]).unwrap() -= 1;
+                if let Some(x) = counter.get(&tree[i]) {
+                    if *x == 0 {
+                        counter.remove(&tree[i]);
+                    }
+                }
+                i += 1;
+            }
+            res = max(res, j - i + 1);
+        }
+        res as i32
+    }
 }
 ```
 </details>
