@@ -1570,6 +1570,28 @@ void per(vector<vector<int>>& result, vector<int>& nums, int begin) {
 }
 ```
 
+```Rust
+impl Solution {
+    pub fn permute(nums: Vec<i32>) -> Vec<Vec<i32>> {
+        let mut result: Vec<Vec<i32>> = vec![];
+        Self::per(&mut result, nums, 0);
+        result
+    }
+
+    pub fn per(result: &mut Vec<Vec<i32>>, nums: Vec<i32>, begin: usize) {
+        if begin >= nums.len() {
+            result.push(nums);
+            return
+        }
+        for i in begin..nums.len() {
+            let mut nums = nums.clone();
+            nums.swap(begin, i);
+            Self::per(result, nums, begin + 1);
+        }
+    }
+}
+```
+
 47 全排列，数组中有重复元素
 ------
 
