@@ -767,6 +767,25 @@ bool isValid(string s) {
 }
 ```
 
+```Rust
+impl Solution {
+    pub fn is_valid(s: String) -> bool {
+        let mut stack = vec![];
+        // let map =
+        for ch in s.chars() {
+            match ch {
+                '(' | '{' | '[' => stack.push(ch),
+                ')' => if let Some('(') = stack.pop() {} else { return false },
+                '}' => if let Some('{') = stack.pop() {} else { return false },
+                ']' => if let Some('[') = stack.pop() {} else { return false },
+                _ => return false
+            }
+        }
+        stack.len() == 0
+    }
+}
+```
+
 21 合并两个已经排序的链表
 ------
 
@@ -1443,6 +1462,42 @@ int trap(int* height, int heightSize) {
     return water;
 }
 ```
+
+```Rust
+impl Solution {
+    pub fn trap(height: Vec<i32>) -> i32 {
+
+        if height.is_empty() {
+            return 0;
+        }
+
+        let mut left = 0;
+        let mut right = height.len() - 1;
+        let mut water = 0;
+        let mut max_left = 0;
+        let mut max_right = 0;
+
+        while left <= right {
+            if height[left] <= height[right] {
+                if height[left] >= max_left {
+                    max_left = height[left];
+                } else {
+                    water += max_left - height[left];
+                }
+                left += 1;
+            } else {
+                if height[right] >= max_right {
+                    max_right = height[right];
+                } else {
+                    water += max_right - height[right];
+                }
+                right -= 1;
+            }
+        }
+        water
+    }
+}
+```t 
 
 43 给定两个任意长的字符串，返回一个字符串，代表他们相乘的结果
 ------
@@ -2176,9 +2231,8 @@ def isNumber(self, s):
 66 给定一个字符串代表的数字，返回加1后的数字
 ------
 
-我们知道只有当数字是999....999的时候，才会使得数字的长度+1变为1000...000。
+乍一看如果需要进位的话, 可能需要拷贝整个数组. 实际上并不需要, 我们知道只有当数字是999...999的时候，才会使得数字的长度+1变为1000...000。
 
-我们知道只有当数字是999...999的时候，才会使得数字的长度+1变为1000..000。
 
 ```C++
 vector<int> plusOne(vector<int>& digits) {
@@ -2189,13 +2243,27 @@ vector<int> plusOne(vector<int>& digits) {
         } else {
             digits[i]++;
             return digits;
-    // real trick here, we know that the number is 999...999
     }
-    // real trick here, we know that the number is 999..999
-    // 改成insert
+    // trick here, we know that the number is 999...999
     digits[0] = 1;
     digits.push_back(0);
     return digits;
+}
+```
+
+```Rust
+impl Solution {
+    pub fn plus_one(mut digits: Vec<i32>) -> Vec<i32> {
+        for i in (0..digits.len()).rev() {
+            match digits[i] {
+                9 => digits[i] = 0,
+                _ => {digits[i] += 1; return digits}
+            }
+        }
+        digits[0] = 1;
+        digits.push(0);
+        digits
+    }
 }
 ```
 
@@ -6083,6 +6151,17 @@ int kthSmallest(struct TreeNode* root, int k) {
 bool isPowerOfTwo(int n) {
     if (n <= 0) return false;
     return (n & (n - 1)) == 0;
+}
+```
+
+```Rust
+impl Solution {
+    pub fn is_power_of_two(n: i32) -> bool {
+        if n <= 0 {
+            return false;
+        }
+        (n & (n-1)) == 0
+    }
 }
 ```
 
