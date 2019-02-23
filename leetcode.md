@@ -1926,7 +1926,7 @@ Cracking上给出了一种解法，通过不断的添加下一个元素到上一
     y + per(xz)
     z + per(xy)
 
-那么我们通过把每个元素交换到第一个位置，就把问题规模缩小了，知道把问题规模缩小为1.
+那么我们通过把每个元素交换到第一个位置，就把问题规模缩小了，直到把问题规模缩小为1.
 
 
 <details>
@@ -1988,6 +1988,7 @@ impl Solution {
 
 和上一题基本是一样的，注意跳过重复元素就好了
 
+下面的解法中，循环中只判断了要置换的元素和头元素是否重复，因此采用了不复原的方式置换，为了避免递归的时候打乱了后续用来置换的数组的顺序，所以索性就改为传值的方式了。
 
 <details>
     <summary>C++ 解答</summary>
@@ -2821,6 +2822,19 @@ int mySqrt(int x) {
 ```
 </details>
 
+<details>
+    <summary>C 解答</summary>
+
+```C
+int mySqrt(int x) {
+    long r = x;
+    while (r * r > x)
+        r = (r + x / r) / 2;
+    return r;
+}
+```
+</details>
+
 
 70 爬梯子，一次可以爬一步或者两步，有几种方法爬完梯子
 ------
@@ -3096,7 +3110,7 @@ void combine(vector<vector<int>>& result, vector<int>& temp, int start, int coun
         return;
     }
     // 2. 深度优先搜索
-    for (int i = start; i < n; i++) {
+    for (int i = start; i < n - (k - count) + 1; i++) {
         temp.push_back(i + 1);
         // 只搜索比 i 大的即可
         combine(result, temp, i+ 1, count+1, n, k);
