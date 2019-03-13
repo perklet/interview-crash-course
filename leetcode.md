@@ -2257,6 +2257,24 @@ int maxSubArray(int* nums, int numsSize) {
 </details>
 
 
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+class Solution:
+    def maxSubArray(self, nums: List[int]) -> int:
+        current_sum = 0
+        max_value = float('-inf')
+        for i in nums:
+            current_sum += i
+            max_value = max(max_value, current_sum)
+            current_sum = max(0, current_sum)
+        return max_value
+```
+</details>
+
+
 54 顺时针螺旋打印矩阵
 ------
 
@@ -8612,6 +8630,34 @@ int getSum(int a, int b) {
 </details>
 
 
+482 注册码格式化
+------
+
+要求每 K 个字符添加一个 "-", 如果不够的话, 第一个分组可以不全.
+
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+class Solution:
+    def licenseKeyFormatting(self, S: str, K: int) -> str:
+        key = []
+        i = 0
+        for c in reversed(S):
+            if c == "-":
+                continue
+            key.append(c.upper())
+            i += 1
+            if i % K == 0:
+                key.append("-")
+        if key and key[-1] == "-":
+            key = key[:-1]
+        return "".join(reversed(key))
+```
+</details>
+
+
 904 找出包含了两个不同数字的最长子序列
 ------
 
@@ -8656,6 +8702,35 @@ impl Solution {
         res as i32
     }
 }
+```
+</details>
+
+
+929 唯一邮件地址
+------
+
+类似 Gmail 的规则, `.` 去掉, `+` 后面的也去掉. 但是要注意域名中的 `.` 不能去掉
+
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+class Solution:
+    def normalize(self, username: str) -> str:
+        username = username.replace('.', "")
+        # 使用 split 更好, 懒得改了
+        username = re.sub(r"\+.*$", "", username)
+        return username
+
+    def numUniqueEmails(self, emails: List[str]) -> int:
+        unique_emails = set()
+        for email in emails:
+            username, domain = email.split("@")
+            username = self.normalize(username)
+            print(username, domain)
+            unique_emails.add(f"{username}@{domain}")
+        return len(unique_emails)
 ```
 </details>
 
