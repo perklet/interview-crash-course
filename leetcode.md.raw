@@ -37,6 +37,22 @@ class Solution:
                  possible_answers[target - num[i]] = i
 ```
 
+```rust
+use std::collections::HashMap;
+impl Solution {
+    pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
+        let mut map = HashMap::with_capacity(nums.len());
+        for (idx, num) in nums.iter().enumerate() {
+            match map.get(&(target - num)) {
+                None => {map.insert(num, idx);},
+                Some(sub_idx) => {return vec![*sub_idx as i32, idx as i32]; }
+            }
+        }
+        vec! []
+    }
+}
+```
+
 Follow up: 如果数组是已经排序的呢？
 
 ```C++
@@ -118,6 +134,41 @@ class Solution {
             return result->next;
         }
 };
+```
+
+```rust
+impl Solution {
+    pub fn add_two_numbers(l1: Option<Box<ListNode>>, l2: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+        let (mut l1, mut l2) = (l1, l2);
+        let mut dummy = Box<ListNode::new(0)>;
+        let mut carry = 0;
+        let mut p = dummy;
+        while l1.is_some() || l2.is_some() || carry != 0 {
+            match l1, l2{
+                Some(a), Some(b) => {
+                    let mut v = a + b + carry;
+                    l1 = l1.next();
+                    l2 = l2.next();
+                },
+                Some(a), None => {
+                    let mut v = a + carry;
+                    l1 = l1.next();
+                },
+                None, Some(b) => {
+                    let mut v = b + carry;
+                    l2 = l2.next();
+                },
+                None, None => {
+                }
+            }
+            p.next = Some(Box<ListNode::new(v)>);
+            p = p.next;
+            p.val = v % 10;
+            carry = v / 10;
+        }
+        dummy.next
+    }
+}
 ```
 
 3 最长不重复子串
