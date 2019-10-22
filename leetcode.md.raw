@@ -53,6 +53,21 @@ impl Solution {
 }
 ```
 
+```go
+func twoSum(nums []int, target int) []int {
+    m := make(map[int]int)
+    for index, num := range nums {
+        last_index, ok := m[num]
+        if ok {
+            return []int{last_index, index}
+        } else {
+            m[target - num] = index
+        }
+    }
+    return []int{-1, -1}
+}
+```
+
 Follow up: 如果数组是已经排序的呢？
 
 ```C++

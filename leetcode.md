@@ -49,6 +49,49 @@ class Solution:
 </details>
 
 
+
+<details>
+    <summary>rust 解答</summary>
+
+```rust
+use std::collections::HashMap;
+impl Solution {
+    pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
+        let mut map = HashMap::with_capacity(nums.len());
+        for (idx, num) in nums.iter().enumerate() {
+            match map.get(&(target - num)) {
+                None => {map.insert(num, idx);},
+                Some(sub_idx) => {return vec![*sub_idx as i32, idx as i32]; }
+            }
+        }
+        vec! []
+    }
+}
+```
+</details>
+
+
+
+<details>
+    <summary>go 解答</summary>
+
+```go
+func twoSum(nums []int, target int) []int {
+    m := make(map[int]int)
+    for index, num := range nums {
+        last_index, ok := m[num]
+        if ok {
+            return []int{last_index, index}
+        } else {
+            m[target - num] = index
+        }
+    }
+    return []int{-1, -1}
+}
+```
+</details>
+
+
 Follow up: 如果数组是已经排序的呢？
 
 
@@ -146,6 +189,47 @@ class Solution {
             return result->next;
         }
 };
+```
+</details>
+
+
+
+<details>
+    <summary>rust 解答</summary>
+
+```rust
+impl Solution {
+    pub fn add_two_numbers(l1: Option<Box<ListNode>>, l2: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+        let (mut l1, mut l2) = (l1, l2);
+        let mut dummy = Box<ListNode::new(0)>;
+        let mut carry = 0;
+        let mut p = dummy;
+        while l1.is_some() || l2.is_some() || carry != 0 {
+            match l1, l2{
+                Some(a), Some(b) => {
+                    let mut v = a + b + carry;
+                    l1 = l1.next();
+                    l2 = l2.next();
+                },
+                Some(a), None => {
+                    let mut v = a + carry;
+                    l1 = l1.next();
+                },
+                None, Some(b) => {
+                    let mut v = b + carry;
+                    l2 = l2.next();
+                },
+                None, None => {
+                }
+            }
+            p.next = Some(Box<ListNode::new(v)>);
+            p = p.next;
+            p.val = v % 10;
+            carry = v / 10;
+        }
+        dummy.next
+    }
+}
 ```
 </details>
 
@@ -1926,7 +2010,7 @@ Cracking上给出了一种解法，通过不断的添加下一个元素到上一
     y + per(xz)
     z + per(xy)
 
-那么我们通过把每个元素交换到第一个位置，就把问题规模缩小了，直到把问题规模缩小为1.
+那么我们通过把每个元素交换到第一个位置，就把问题规模缩小了，知道把问题规模缩小为1.
 
 
 <details>
@@ -1988,7 +2072,6 @@ impl Solution {
 
 和上一题基本是一样的，注意跳过重复元素就好了
 
-下面的解法中，循环中只判断了要置换的元素和头元素是否重复，因此采用了不复原的方式置换，为了避免递归的时候打乱了后续用来置换的数组的顺序，所以索性就改为传值的方式了。
 
 <details>
     <summary>C++ 解答</summary>
@@ -2840,19 +2923,6 @@ int mySqrt(int x) {
 ```
 </details>
 
-<details>
-    <summary>C 解答</summary>
-
-```C
-int mySqrt(int x) {
-    long r = x;
-    while (r * r > x)
-        r = (r + x / r) / 2;
-    return r;
-}
-```
-</details>
-
 
 70 爬梯子，一次可以爬一步或者两步，有几种方法爬完梯子
 ------
@@ -3128,7 +3198,7 @@ void combine(vector<vector<int>>& result, vector<int>& temp, int start, int coun
         return;
     }
     // 2. 深度优先搜索
-    for (int i = start; i < n - (k - count) + 1; i++) {
+    for (int i = start; i < n; i++) {
         temp.push_back(i + 1);
         // 只搜索比 i 大的即可
         combine(result, temp, i+ 1, count+1, n, k);
