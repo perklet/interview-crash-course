@@ -3158,6 +3158,18 @@ vector<int> inorderTraversal(TreeNode* root) {
 }
 ```
 
+递归解法
+```go
+func inorderTraversal(root *TreeNode) []int {
+    if root == nil {
+        return nil
+    }
+    left := inorderTraversal(root.Left)
+    right := inorderTraversal(root.Right)
+    return append(append(left, root.Val), right...)
+}
+```
+
 95 生成二叉树，同下题一样
 ------
 
