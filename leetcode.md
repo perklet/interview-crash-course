@@ -1,3 +1,4 @@
+
 LeetCode 突击手册
 ======
 
@@ -8808,6 +8809,48 @@ class Solution:
         return "".join(reversed(key))
 ```
 </details>
+
+
+547 朋友圈
+------
+
+UnionFind 的定义见第200题
+
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+class Solution:
+    def findCircleNum(self, M: List[List[int]]) -> int:
+        n = len(M)
+        uf = UnionFind(n)
+        for i in range(n):
+            for j in range(i):
+                if M[i][j] == 1:
+                    uf.union(i, j)
+        return uf.count
+```
+</details>
+
+
+864 矩形重叠
+------
+
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+class Solution:
+    def isRectangleOverlap(self, rec1: List[int], rec2: List[int]) -> bool:
+        # 注意要包含等于号
+        x_overlap = not(rec1[0] >= rec2[2] or rec1[2] <= rec2[0])
+        y_overlap = not(rec1[1] >= rec2[3] or rec1[3] <= rec2[1])
+        return x_overlap and y_overlap
+```
+</details>
+
 
 
 904 找出包含了两个不同数字的最长子序列

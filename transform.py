@@ -11,4 +11,5 @@ with open('leetcode.md.raw') as f, open('leetcode.md', 'w') as wf:
 </details>
 '''
     content = re.sub(pattern, sub, content, flags=re.DOTALL)
+    content = re.sub("# vi: filetype=markdown", "", content)
     wf.write(content)
