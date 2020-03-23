@@ -8819,6 +8819,30 @@ int getSum(int a, int b) {
 </details>
 
 
+435 无重叠区间
+------
+
+不要被题目迷惑,从反面开始思考,求去除多少个区间其实就是求最多有多少个有效区间
+
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+class Solution:
+    def eraseOverlapIntervals(self, intervals: List[List[int]]) -> int:
+        intervals.sort(key=lambda x: x[1])
+        max_intervals = 0
+        end = float("-inf")
+        for interval in intervals:
+            if interval[0] >= end:
+                max_intervals += 1
+                end = interval[1]
+        return len(intervals) - max_intervals
+```
+</details>
+
+
 482 注册码格式化
 ------
 
@@ -9021,7 +9045,7 @@ class Solution:
 </details>
 
 
-5364. 按既定顺序创建目标数组
+5364 按既定顺序创建目标数组
 ------
 
 
