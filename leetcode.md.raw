@@ -28,18 +28,19 @@ vector<int> twoSum(vector<int>& nums, int target) {
 
 ```Python
 class Solution:
-    # @return a tuple, (index1, index2)
-     def twoSum(self, num, target):
-         possible_answers = {}
-         for i in range(len(num)):
-             if num[i] in possible_answers:
-                 return possible_answers[num[i]] + 1, i + 1
-             else:
-                 possible_answers[target - num[i]] = i
+    def twoSum(self, nums: List[int], target: int) -> List[int]:
+        seen = {}
+        for i, num in enumerate(nums):
+            if target - num in seen:
+                return [seen[target-num], i]
+            else:
+                seen[num] = i
+        return [-1, -1]
 ```
 
 ```rust
 use std::collections::HashMap;
+
 impl Solution {
     pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
         let mut map = HashMap::with_capacity(nums.len());
@@ -187,16 +188,50 @@ impl Solution {
 }
 ```
 
+```Python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
+        dummy = ListNode(-1)
+        p = dummy
+        carry = 0
+        while l1 or l2 or carry:
+            if l1:
+                v1 = l1.val
+                l1 = l1.next
+            else:
+                v1 = 0
+            if l2:
+                v2 = l2.val
+                l2 = l2.next
+            else:
+                v2 = 0
+            v = v1 + v2 + carry  # 别忘了这里
+            if v >= 10:
+                carry = 1
+                v -= 10
+            else:
+                carry = 0
+            p.next = ListNode(v)
+            p = p.next
+        return dummy.next
+```
+
 3 最长不重复子串
 ------
 
-使用动态规划，在一个 Hash 中存储已经出现的字符的上一次出现的索引值，如果索引值
-存在，则把当前最长子串的左边界更新为该索引值。
+tags: #slide-window
+
+滑动窗口解决
 
 注意，当字符有限的时候，比如限定为 ASCII 字符，可以使用一个数组代替 Hash。
 
 ```C
-
 int lengthOfLongestSubstring(char* s) {
     int indices[256];
     for (int i = 0; i < 256; i++)  // init the array, memset can only be used for char
@@ -213,12 +248,26 @@ int lengthOfLongestSubstring(char* s) {
 }
 ```
 
+```Python
+class Solution:
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        last_seen = {}
+        ans = 0
+        lo = 0
+        for i, c in enumerate(s):
+            lo = max(lo, last_seen.get(c, -1) + 1)  # 更新下边界
+            last_seen[c] = i
+            ans = max(ans, i - lo + 1)
+        return ans
+```
+
+
 4 找到两个排序数组的中位数
 ------
 
 解法参见[这里](https://leetcode.com/discuss/15790/share-my-o-log-min-m-n-solution-with-explanation)
 
-使用两个数字 i 和 j, 分别作为 AB 的分隔元素，把 AB 分成两份， 比如
+使用两个数字 i 和 j, 分别作为 AB 的分隔元素，把 AB 分成两份，比如
 `A[0..i]`, `B[0..j]` 和 `A[i, m]`, `B[j, n]`，这样我们只需要下面两个条件就可以了：
 
 * `i+j = m-i + n-j`, 也就是 `i+j = (m+n)/2`
@@ -232,18 +281,21 @@ int lengthOfLongestSubstring(char* s) {
 #define min(a,b) ((a)<(b)?(a):(b))
 double findMedianSortedArrays(int* A, int m, int* B, int n) {
     if (m > n) return findMedianSortedArrays(B, n, A, m);
-    int imin = 0, maxidx = m, i, j, num1, mid = (m + n + 1) >> 1, num2;
-    while (imin <= maxidx) {
-        i = (imin + maxidx) >> 1;
+    int imin = 0, imax = m, i, j, num1, mid = (m + n + 1) >> 1, num2;
+    while (imin <= imax) {
+        i = (imin + imax) // 2;
         j = mid - i;
-        if (i < m && j > 0 && B[j-1] > A[i])  // B 中的数字偏大
+        if (i < m && j > 0 && B[j-1] > A[i]) {  // B 中的数字偏大
             imin = i + 1;
-        else if (i > 0 && j < n && B[j] < A[i-1])  // A 中的数字偏大
-            maxidx = i - 1;
-        else {
-            if (i == 0) num1 = B[j-1];
-            else if (j == 0) num1 = A[i - 1];
-            else num1 = max(A[i-1],B[j-1]);  // 普通情况
+        } else if (i > 0 && j < n && B[j] < A[i-1]) { // A 中的数字偏大
+            imax = i - 1;
+        } else {
+            if (i == 0)
+                num1 = B[j-1];
+            else if (j == 0)
+                num1 = A[i - 1];
+            else
+                num1 = max(A[i-1],B[j-1]);  // 普通情况
             break;
         }
     }
@@ -265,6 +317,29 @@ double findMedianSortedArrays(int* A, int m, int* B, int n) {
 1. 以某个元素为中心，向两边展开，注意处理奇数和偶数两种情况
 2. Manacher 算法，参见[这里](http://taop.marchtea.com/01.05.html)
 
+```Python
+class Solution:
+    def longestPalindrome(self, s: str) -> str:
+        ans = ""
+        length = 0
+        for i in range(len(s)):
+            j = 0
+            # 奇数长度回文子串
+            while i - j >= 0 and i + j < len(s) and s[i-j] == s[i+j]:
+                if j * 2 + 1 > length:
+                    length = j * 2 + 1
+                    ans = s[i-j:i+j+1]
+                j += 1
+            j = 0
+            # 偶数长度回文子串
+            while i - j >= 0 and i + j + 1 < len(s) and s[i-j] == s[i+j+1]:
+                if j * 2 + 2 > length:
+                    length = j * 2 + 2
+                    ans = s[i-j:i+j+2]
+                j += 1
+        return ans
+```
+
 ```C
 char* longestPalindrome(char* s) {
     if (!s) return NULL;
@@ -275,7 +350,7 @@ char* longestPalindrome(char* s) {
     int len = strlen(s);
     for (int i = 0; i < len; i++) {
 
-        // length is odd
+        // 奇数长度的回文子串
         for (int j = 0; (i - j >= 0) && (i + j < len); j++) {
             if (s[i - j] != s[i + j])
                 break;
@@ -285,7 +360,7 @@ char* longestPalindrome(char* s) {
             }
         }
 
-        // length is even
+        // 偶数长度的回文子串
         for (int j = 0; (i - j >= 0) && (i + j + 1 < len); j++) {
             if (s[i - j] != s[i + j + 1])
                 break;
@@ -310,6 +385,7 @@ char* longestPalindrome(char* s) {
 考察数学，找出规律，所以实际上并不是 Z 子形，而是由 V 组成的，然后组合按行号重构后的字符串即可。
 
 ```C
+// 这个方法不容易理解，建议看 Python 的
 char* convert(char* s, int numRows) {
     int len = strlen(s);
     if (!s || numRows <= 1 || len < numRows) return s; // no need to convert
@@ -332,6 +408,35 @@ char* convert(char* s, int numRows) {
 }
 ```
 
+```Python
+class Solution:
+    def convert(self, s: str, numRows: int) -> str:
+        if numRows <= 1 or len(s) <= numRows:  # 没有这个条件会超时
+            return s
+        interval = 2 * numRows - 2
+        ans = []
+        # 第一行
+        j = 0
+        while j < len(s):
+            ans.append(s[j])
+            j += interval
+        # 中间行
+        for i in range(1, numRows-1):
+            j = 0
+            while j < len(s):
+                if i + j < len(s):
+                    ans.append(s[i+j])
+                if interval - i + j < len(s):  # 一定要注意这里的索引
+                    ans.append(s[interval - i + j])
+                j += interval
+        # 最后一行
+        j = numRows - 1
+        while j < len(s):
+            ans.append(s[j])
+            j += interval
+        return "".join(ans)
+```
+
 7 翻转数字，溢出返回 0
 ------
 
@@ -352,6 +457,20 @@ int reverse(int x) {
 }
 ```
 
+```Python
+class Solution:
+    def reverse(self, x: int) -> int:
+        sign = 1 if x >= 0 else -1
+        x *= sign
+        y = 0
+        while x > 0:
+            y = y * 10 + x % 10
+            x //= 10
+        if y > 2**31:
+            return 0
+        return y * sign
+```
+
 8 实现 atoi
 ------
 
@@ -360,6 +479,27 @@ int reverse(int x) {
 1. 首先过滤空格
 2. 判定符号，符号只能出现一次
 3. 是否溢出，溢出返回 `INT_MAX` 或者 `INT_MIN`
+
+```Python
+class Solution:
+    def myAtoi(self, s: str) -> int:
+        s = s.lstrip()
+        if not s:
+            return 0
+        sign = 1
+        ans = 0
+        i = 0
+        if s[i] == "-":
+            sign = -1
+            i += 1
+        elif s[i] == "+":
+            i += 1
+        while i < len(s) and s[i].isdigit():
+            ans = ans * 10 + ord(s[i]) - ord("0")
+            i += 1
+        ans *= sign
+        return max(min(ans, 2**31-1), - 2 ** 31)
+```
 
 ```C
 int myAtoi(char* str) {
@@ -395,6 +535,22 @@ int myAtoi(char* str) {
 ------
 
 限定不能用额外空间，所以直接把 x 取余得到的数字作为一个反向作为一个新的数字
+
+```Python
+class Solution:
+    def isPalindrome(self, x: int) -> bool:
+        if x < 0:
+            return False
+        if x != 0 and x % 10 == 0:
+            return False
+        y = 0
+        # 回文走到一半就行了，没必要完全翻转过来
+        while x > y:
+            y = y * 10 + x % 10
+            x //= 10
+        return x == y or x == y // 10
+```
+
 
 ```C
 bool isPalindrome(int x) {
@@ -436,10 +592,10 @@ bool isMatch(char* s, char* p) {
 }
 ```
 
-11 Container with most water
+11 盛最多水的容器
 ------
 
-从左右向中间逼近，如果有更大的就更新
+从左右向中间逼近，如果有更大的就更新。简单的一道双指针题目，别想太多。
 
 ```C++
 int maxArea(vector<int>& height) {
@@ -457,11 +613,38 @@ int maxArea(vector<int>& height) {
 }
 ```
 
+```Python
+class Solution:
+    def maxArea(self, height: List[int]) -> int:
+        lo = 0
+        hi = len(height) - 1
+        ans = 0
+        while lo < hi:
+            water = min(height[lo], height[hi]) * (hi - lo)
+            ans = max(ans, water)
+            if height[lo] < height[hi]:
+                lo += 1
+            else:
+                hi -= 1
+        return ans
+```
+
 
 12 十进制转换为罗马数字
 ------
 
 直接按每位把罗马数字转换出来在拼接就好了，使用 C 的话，拼接字符串很麻烦。
+
+```Python
+class Solution:
+    def intToRoman(self, x: int) -> str:
+        thousands = ["", "M", "MM", "MMM"]
+        hundreds = ["", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"]
+        tens = ["", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"]
+        ones = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
+        return thousands[x//1000] + hundreds[x%1000//100] + tens[x%100//10] + ones[x%10]
+```
+
 
 ```C++
 string intToRoman(int num) {
@@ -555,7 +738,31 @@ void doRoman(int number, char ten, char five, char one, char** str) {
 13 罗马数字转为十进制
 ------
 
-主要是当前一个数字小于后一个数字的时候，需要添加的是后一个数和前一个数字的差
+主要是当前一个数字小于后一个数字的时候，需要添加的是后一个数和前一个数字的差。
+
+```Python
+class Solution:
+    def romanToInt(self, s: str) -> int:
+        vals = {
+            "I": 1,
+            "V": 5,
+            "X": 10,
+            "L": 50,
+            "C": 100,
+            "D": 500,
+            "M": 1000
+        }
+        ans = 0
+        i = 0
+        while i < len(s):
+            if i+1<len(s) and vals[s[i]] < vals[s[i+1]]:
+                ans += vals[s[i+1]] - vals[s[i]]
+                i += 2
+            else:
+                ans += vals[s[i]]
+                i += 1
+        return ans
+```
 
 
 ```C
@@ -587,17 +794,24 @@ int romanToInt(char* s) {
 14 最长公共前缀
 ------
 
-一种 naive 的做法：
-
 纵向扫描，从头到尾，如果不一致，返回当前子串即可。
 
-如果约定不能更改当前字符串，最好用 C++ 做，不然操作字符串太复杂了，没必要出错。
 
-另一种方法是使用 trie
-
-```C++
-// 待续
+```Python
+class Solution:
+    def longestCommonPrefix(self, strs: List[str]) -> str:
+        if not strs:
+            return ""
+        if len(strs) == 1:
+            return strs[0]
+        minlen = min([len(str) for str in strs])
+        for i in range(minlen):
+            for j in range(1, len(strs)):
+                if strs[j][i] != strs[0][i]:
+                    return strs[0][:i]
+        return strs[0][:minlen]
 ```
+
 
 ```C
 // 纵向扫描
@@ -621,9 +835,38 @@ char* longestCommonPrefix(char** strs, int strsSize) {
 15 从数组中找出三个数使得他们的和是 0
 ------
 
-使用 C 做，返回值太复杂了，所以用 C++ 做了。
+首先把数组排序，然后使用类似 two sum 的方法做就好了。做这种数组题的套路就是实在不行排个
+序。
 
-首先把数组排序，然后使用类似 two sum 的方法做就好了
+```Python
+class Solution:
+    def threeSum(self, nums: List[int]) -> List[List[int]]:
+        if len(nums) < 3:
+            return []
+        nums.sort()
+        ans = []
+        for i in range(len(nums)):
+            if i > 0 and nums[i] == nums[i-1]:
+                continue
+            k = len(nums) - 1
+            j = i + 1
+            while j < k:
+                sum = nums[i] + nums[j] + nums[k]
+                if sum > 0:
+                    k -= 1
+                elif sum < 0:
+                    j += 1
+                else:
+                    ans.append([nums[i], nums[j], nums[k]])
+                    while j < k and nums[j] == nums[j+1]:
+                        j += 1
+                    while j < k and nums[k] == nums[k-1]:
+                        k -= 1
+                    j += 1
+                    k -= 1
+        return ans
+```
+
 
 ```C++
 vector<vector<int>> threeSum(vector<int>& nums) {
@@ -660,6 +903,32 @@ vector<vector<int>> threeSum(vector<int>& nums) {
 
 和上一题解法类似，在 http://stackoverflow.com/q/2070359 有详尽解释
 
+```Python
+class Solution:
+    def threeSumClosest(self, nums: List[int], target: int) -> int:
+        if len(nums) < 3:
+            return []
+        nums.sort()
+        ans = nums[0] + nums[1] + nums[2]
+        for i in range(len(nums)):
+            j = i + 1
+            k = len(nums) - 1
+            while j < k:
+                sum = nums[i] + nums[j] + nums[k]
+                if sum == target:
+                    return target
+                elif abs(target-sum) < abs(target-ans):
+                    ans = sum
+                else:
+                    if sum > target:
+                        k -= 1
+                    else:
+                        j += 1
+        return ans
+```
+
+
+
 ```C
 int cmp(int* a, int* b) {
     return *a - *b;
@@ -695,6 +964,12 @@ int threeSumClosest(int* nums, int numsSize, int target) {
 
 ![键盘](http://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Telephone-keypad2.svg/200px-Telephone-keypad2.svg.png)
 
+递归:
+
+这道题是一道典型的，最简单的深度优先遍历，生成所有可能解的问题。
+
+迭代:
+
 遍历数字，设当前结果为`{a, b, c}`, 下一个数字是`3`, 找出对应的字母`{d, e, f}`, 则新的结果是
 
 ```
@@ -702,6 +977,33 @@ int threeSumClosest(int* nums, int numsSize, int target) {
 ```
 
 然后把新获得的数组作为下一轮的初始数组。最开始时，使用空数组开始。
+
+```Python
+class Solution:
+    def letterCombinations(self, digits: str) -> List[str]:
+        c2n = {
+            "2": "abc",
+            "3": "def",
+            "4": "ghi",
+            "5": "jkl",
+            "6": "mno",
+            "7": "pqrs",
+            "8": "tuv",
+            "9": "wxyz"
+        }
+        def dfs(combination, next_digits):
+            if not next_digits:
+                ans.append(combination)
+                return
+            for char in c2n[next_digits[0]]:
+                dfs(combination + char, next_digits[1:])
+        if not digits:
+            return []
+        ans = []
+        dfs("", digits)
+        return ans
+```
+
 
 ```C++
 // iterative
@@ -726,9 +1028,6 @@ vector<string> letterCombinations(string digits) {
 
 还可以使用深度优先的搜索方法
 
-```C++
-// recursive
-```
 
 追问：如何通过用户按的数字来查找是否有对应的单词呢
 
@@ -2026,27 +2325,30 @@ def merge(intervals):
 57 添加序列，给定一组已经排序的序列，向其中插入一个序列，需要合并的合并
 ------
 
-这道题 inplace 的做法感觉没有什么意义，因为如果在中间插入的话，后半部分还是要被拷贝
+把剩余的部分都拷贝过来也不失为一种机智的做法。
 
 ```Python
-def insert(self, intervals, newInterval):
-    result = []
-    start = newInterval.start
-    end = newInterval.end
-    remainder = 0
-    for interval in intervals:
-        if start <= interval.end:
-            if end < interval.start:
-                break
-            start = min(start, interval.start)
-            end = max(end, interval.end)
-        else:
-            result.append(interval)
-        remainder += 1
-    result.append(Interval(start, end))
-    result += intervals[remainder:]
-    return result
+class Solution:
+    def insert(self, intervals, newInterval):
+        ans = []
+        start, end = newInterval
+        remainder = 0
+        for x, y in intervals:
+            # 未重叠
+            if start > y:
+                ans.append([x, y])
+            # 进入重叠状态
+            else:
+                if end < x:  # 当前区间已经不重叠了
+                    break  # 找到了结尾了
+                start = min(start, x)
+                end = max(end, y)
+            remainder += 1
+        ans.append([start, end])
+        ans += intervals[remainder:]
+        return ans
 ```
+
 
 58 给定一个字符串，求其中最后一个单词的长度
 ------
@@ -7089,6 +7391,26 @@ bool canWinNim(int n) {
 }
 ```
 
+300 最长递增子序列
+-----
+
+最经典的动态规划题目
+
+```Python
+class Solution:
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        if not nums:
+            return 0
+        if len(nums) == 1:
+            return 1
+        dp = [1 for _ in range(len(nums))]
+        for i in range(len(nums)):
+            for j in range(i):
+                if nums[i] > nums[j]:
+                    dp[i] = max(dp[i], dp[j] + 1)
+        return max(*dp)
+```
+
 344 翻转字符串
 ------
 
@@ -7250,7 +7572,7 @@ int getSum(int a, int b) {
 435 无重叠区间
 ------
 
-不要被题目迷惑,从反面开始思考,求去除多少个区间其实就是求最多有多少个有效区间
+不要被题目迷惑，从反面开始思考，求去除多少个区间其实就是求最多有多少个有效区间
 
 ```Python
 class Solution:
@@ -7420,7 +7742,51 @@ class Solution:
         return list(ans)
 ```
 
-5178 四素数
+1272 删除区间
+------
+
+```python
+class Solution:
+    def removeInterval(self, intervals: List[List[int]], toBeRemoved: List[int]) -> List[List[int]]:
+        lo, hi = toBeRemoved
+        ans = []
+        for x, y in intervals:
+            if y < lo or x > hi:
+                ans.append([x, y])
+            else:
+                if lo > x:
+                    ans.append([x, lo])
+                if hi < y:
+                    ans.append([hi, y])
+        return ans
+```
+
+1317 将整数转换为两个无零整数的和
+------
+
+```python
+class Solution:
+    def getNoZeroIntegers(self, n: int) -> List[int]:
+        for a in range(1, n):
+            b = n - a
+            if "0" not in str(a) and "0" not in str(b):
+                return [a, b]
+        return []
+```
+
+1389 按既定顺序创建目标数组
+------
+
+```Python
+class Solution:
+    def createTargetArray(self, nums: List[int], index: List[int]) -> List[int]:
+        target = []
+        for n, i in zip(nums, index):
+            target = target[:i] + [n] + target[i:]
+        return target
+```
+
+1390 四因数
 ------
 
 解释见注释，这道题还是很坑的。不过其实也很简单，四个因数就是能够分解成两个质数乘积或者是立方数。
@@ -7467,16 +7833,4 @@ class Solution:
                     ans += (1 + num + prim + num // prim)
                     break
         return ans
-```
-
-5364 按既定顺序创建目标数组
-------
-
-```Python
-class Solution:
-    def createTargetArray(self, nums: List[int], index: List[int]) -> List[int]:
-        target = []
-        for n, i in zip(nums, index):
-            target = target[:i] + [n] + target[i:]
-        return target
 ```
