@@ -1,10 +1,17 @@
-
 LeetCode 突击手册
 ======
 
 
+
+一共定义了几个标签，可以通过 Ctrl+F/Cmd+F 搜索这些标签还快速浏览相同的题目。
+
+标签：#hash #backtracking #slidewindow #stack #queue #pointers
+
+
 1 从数组中找出两个数字使得他们的和是给定的数字
 ------
+
+tags: #hash
 
 使用一个散列，存储数字和他对应的索引。然后遍历数组，如果另一半在散列当中，那么返回
 这两个数的索引，程序结束；如果不在，把当前数字加入到散列中。
@@ -279,7 +286,7 @@ class Solution:
 3 最长不重复子串
 ------
 
-tags: #slide-window
+tags: #slidewindow
 
 滑动窗口解决
 
@@ -1178,13 +1185,15 @@ int threeSumClosest(int* nums, int numsSize, int target) {
 17 生成电话键盘按键数字对应的所有可能的字符串，不限制返回结果的顺序
 ------
 
+tags: #backtracking
+
 ![键盘](http://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Telephone-keypad2.svg/200px-Telephone-keypad2.svg.png)
 
-递归:
+递归：
 
 这道题是一道典型的，最简单的深度优先遍历，生成所有可能解的问题。
 
-迭代:
+迭代：
 
 遍历数字，设当前结果为`{a, b, c}`, 下一个数字是`3`, 找出对应的字母`{d, e, f}`, 则新的结果是
 
@@ -1265,6 +1274,66 @@ vector<string> letterCombinations(string digits) {
 18 4Sum
 ------
 
+tags: #backtracking
+
+其实可以用 深度优先搜索的方式直接解答 nSum
+
+
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+class Solution:
+    def fourSum(self, nums: List[int], target: int) -> List[List[int]]:
+        return self.nSum(nums, target, 4)
+
+    def nSum(self, nums, target, n):
+        def dfs(pos: int, cur: List[int], n: int, target: int):
+            if n == 2:
+                j = pos
+                k = len(nums) - 1
+                while j < k:
+                    sum = nums[j] + nums[k]
+                    if sum < target:
+                        j += 1
+                    elif sum > target:
+                        k -= 1
+                    else:
+                        solution = cur[:] + [nums[j], nums[k]]
+                        ans.append(solution)
+                        while j < k and nums[j] == nums[j+1]:
+                            j += 1
+                        while j < k and nums[k] == nums[k-1]:
+                            k -= 1
+                        j += 1
+                        k -= 1
+                return
+            i = pos
+            while i < len(nums) - n + 1:
+                # 剪枝的一种情况
+                if nums[i] * n > target or nums[-1] * n < target:
+                    break
+                # 排除重复数字
+                if i > pos and nums[i] == nums[i-1]:
+                    i += 1
+                    continue
+                cur.append(nums[i])
+                dfs(i+1, cur, n-1, target-nums[i])
+                cur.pop()
+                i += 1
+        ans = []
+        nums.sort()
+        dfs(0, [], n, target)
+        return ans
+```
+</details>
+
+
+
+下面的 C++ 解法是一个传统解法
+
+
 
 <details>
     <summary>C++ 解答</summary>
@@ -1314,9 +1383,34 @@ vector<vector<int>> fourSum(vector<int>& nums, int target) {
 19 删除链表中倒数第 k 的节点
 ------
 
+tags: #pointers
+
 双指针经典题目，一个快指针先走 k 步，另一个慢指针再出发，注意链表长度小于 k 时。
 
 注意：LeetCode 给定的 n 都是有效地，但要求返回头指针，如果头指针被删除需要额外注意，因此采用 dummy head
+
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+class Solution:
+    def removeNthFromEnd(self, head: ListNode, n: int) -> ListNode:
+        dummy = ListNode(-1)
+        dummy.next = head
+        p = dummy
+        while n >= 0:
+            p = p.next
+            n -= 1
+        q = dummy
+        while p:
+            q = q.next
+            p = p.next
+        q.next = q.next.next
+        return dummy.next
+```
+</details>
+
 
 
 <details>
@@ -1347,7 +1441,33 @@ struct ListNode* removeNthFromEnd(struct ListNode* head, int n) {
 20 判定给定的字符串是否是合法的括号序列，可能包括大中小三类
 ------
 
+tags: #stack
+
 使用栈的基础题，注意逻辑简化
+
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+class Solution:
+    def isValid(self, s: str) -> bool:
+        valid = True
+        stack = []
+        match = {")": "(", "]": "[", "}": "{"}
+        for c in s:
+            if c in ("(", "[", "{"):
+                stack.append(c)
+            else:
+                if not stack:
+                    return False
+                if stack[-1] != match[c]:
+                    return False
+                stack.pop()
+        return not stack
+```
+</details>
+
 
 
 <details>
@@ -1407,7 +1527,41 @@ impl Solution {
 21 合并两个已经排序的链表
 ------
 
+tags: #pointers
+
 考察链表的基本操作，很简单
+
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    def mergeTwoLists(self, l1: ListNode, l2: ListNode) -> ListNode:
+        dummy = ListNode(-1)
+        p = dummy
+        while l1 and l2:
+            if l1.val < l2.val:
+                p.next = l1
+                l1 = l1.next
+            else:
+                p.next = l2
+                l2 = l2.next
+            p = p.next
+        if l1:
+            p.next = l1
+        if l2:
+            p.next = l2
+        return dummy.next
+```
+</details>
+
 
 
 <details>
@@ -1447,7 +1601,31 @@ struct ListNode* mergeTwoLists(struct ListNode* l1, struct ListNode* l2) {
 22 给定数字 n, 生成所有合法的 n 个括号组成的序列
 ------
 
-Cracking 上还提供了另一种复杂的思路
+tags: #backtracking
+
+一道典型的深度优先搜索题目
+
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+class Solution:
+    def generateParenthesis(self, n: int) -> List[str]:
+        def dfs(s, lefts, rights):
+            if lefts == 0 and rights == 0:
+                ans.append(s)
+                return
+            if lefts > 0:
+                dfs(s+"(", lefts-1, rights)
+            if (lefts < rights):
+                dfs(s+")", lefts, rights-1)
+        ans = []
+        dfs("", n, n)
+        return ans
+```
+</details>
+
 
 
 <details>
@@ -1475,8 +1653,20 @@ void gen(vector<string>& result, string s, int left, int right) {
 </details>
 
 
-23 合并 k 个已经排序的列表
+23 合并 K 个排序的列表
 ------
+
+使用优先级队列，复杂度最小。
+
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+```
+</details>
+
+
 
 把列表看做一个队列，每次拿出两个列表，合并他们后放回到列表中，每次遍历列表的一半，这样每次遍历完一遍，
 列表的长度都会减半，直到列表的长度为 1,  合并函数使用 21 题中的合并两个列表的函数
@@ -1516,6 +1706,27 @@ struct ListNode* mergeKLists(struct ListNode** lists, int listsSize) {
 
 
 <details>
+    <summary>Python 解答</summary>
+
+```Python
+class Solution:
+    def swapPairs(self, head: ListNode) -> ListNode:
+        dummy = ListNode(-1)
+        dummy.next = head
+        p = dummy
+        while p.next and p.next.next:
+            t = p.next
+            p.next = t.next
+            t.next = p.next.next
+            p.next.next = t
+            p = p.next.next
+        return dummy.next
+```
+</details>
+
+
+
+<details>
     <summary>C 解答</summary>
 
 ```C
@@ -1538,7 +1749,55 @@ struct ListNode* swapPairs(struct ListNode* head) {
 25 给定一个链表，把相邻的 k 个节点反转
 ------
 
-和上题一样，同样禁止改变节点的值。比较简单地解法是浪费一点空间，使用 Stack, 实现逆转 k 个节点，注意如果 k 较大的话，这种方法是不合适的。
+和上题一样，同样禁止改变节点的值。比较简单地解法是浪费一点空间，使用 Stack, 实现
+逆转 k 个节点，注意如果 k 较大的话，这种方法是不合适的。另一种方法是直接翻转，空间是
+O(1) 的，但是时间复杂度是 2N。
+
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+class Solution:
+
+    def reverseList(self, head):
+        prev = None
+        curr = head
+        while curr:
+            next = curr.next
+            curr.next = prev
+            prev = curr
+            curr = next
+        return prev
+
+    def reverseKGroup(self, head: ListNode, k: int) -> ListNode:
+        dummy = ListNode(-1)
+        dummy.next = head
+        p = dummy
+
+        while p.next:
+            n = k
+            q = p
+            # 找到下一组接点的头
+            while n > 0 and q.next:
+                q = q.next
+                n -= 1
+            # 如果节点不够了直接退出
+            if n > 0:
+                break
+            # 把这段链表先截下来
+            next = q.next
+            q.next = None
+            tail = p.next
+            p.next = self.reverseList(p.next)
+            p = tail
+            p.next = next
+        return dummy.next
+```
+</details>
+
+
+使用 Stack 的 C++ 解法
 
 
 <details>
@@ -1577,12 +1836,37 @@ ListNode* reverseKGroup(ListNode* head, int k) {
 </details>
 
 
-26 从已排序数组中删除重复元素，并返回新数组的长度
+26 删除排序数组中的重复项
 ------
+
+tags: #naive
 
 in-place 的删除重复元素，使用两个指针，一个遍历，一个指向当前的结尾。
 
 PS：这个基础题竟然做了半个小时才做对，⊙﹏⊙b 汗，要加强基础啊！
+
+这类数组中去除中间元素的题写的时候还是很容易出错，重点是使用一个 length 变量，
+然后还是要遍历整个数组。不要想什么双指针了。
+
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+class Solution:
+    def removeDuplicates(self, nums: List[int]) -> int:
+        if len(nums) < 2:
+            return len(nums)
+        length = 0
+        for i in range(len(nums)):
+            # 处理 i == 0 的情况也是需要注意的
+            if i == 0 or nums[i] != nums[length-1]:
+                nums[length] = nums[i]
+                length += 1
+        return length
+```
+</details>
+
 
 
 <details>
@@ -1608,6 +1892,25 @@ int removeDuplicates(int* nums, int numsSize) {
 
 
 <details>
+    <summary>Python 解答</summary>
+
+```Python
+class Solution:
+    def removeElement(self, nums: List[int], val: int) -> int:
+        if not nums:
+            return 0
+        length = 0
+        for i in range(len(nums)):
+            if nums[i] != val:
+                nums[length] = nums[i]
+                length += 1
+        return length
+```
+</details>
+
+
+
+<details>
     <summary>C 解答</summary>
 
 ```C
@@ -1628,6 +1931,38 @@ int removeElement(int* nums, int numsSize, int val) {
 ------
 
 使用暴力算法，时间复杂度 O(n)。也可以用 kmp 算法。
+
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+# kmp 算法
+class Solution:
+    def strStr(self, haystack: str, needle: str) -> int:
+        if not needle:
+            return 0
+        next = [0]
+        j = 0
+        # 特别注意这里的 1
+        for i in range(1, len(needle)):
+            while j > 0 and needle[i] != needle[j]:
+                j = next[j-1]
+            if needle[i] == needle[j]:
+                j += 1
+            next.append(j)
+        j = 0
+        for i in range(len(haystack)):
+            while j > 0 and haystack[i] != needle[j]:
+                j = next[j-1]
+            if haystack[i] == needle[j]:
+                j += 1
+            if j == len(needle):
+                return i - j + 1
+        return -1
+```
+</details>
+
 
 
 <details>
@@ -1655,66 +1990,6 @@ int strStr(char* haystack, char* needle) {
 ```
 </details>
 
-
-
-<details>
-    <summary>C 解答</summary>
-
-```C
-/*
- * KMP
- */
-
-int strStr(char* haystack, char* needle) {
-    if (strlen(needle) == 0) return 0;
-    return kmp(needle, haystack);
-}
-
-void construct(char* pattern, int* lps) {
-
-    int n = strlen(pattern);
-    lps[0] = 0;
-    int i = 1, len = 0;
-    while (i < n) {
-        if (pattern[i] == pattern[len]) {
-            lps[i++] = ++len;
-        } else {
-            if (len != 0)
-                len = lps[len - 1];
-            else
-                lps[i++] = 0;
-        }
-    }
-}
-
-int kmp(char* needle, char* haystack) {
-
-    int n = strlen(needle);
-    int m = strlen(haystack);
-
-    int* lps = malloc(sizeof(int) * n);
-    construct(needle, lps);
-
-    int i = 0, j = 0;
-    while (i < m) {
-        if (haystack[i] == needle[j])
-            i++, j++;
-        if (j == n) {
-            return i - n;
-            j = lps[j - 1];
-        } else if (i < m && needle[j] != haystack[i]) {
-            if (j != 0)
-                j = lps[j - 1];
-            else
-                i++;
-        }
-    }
-
-    free(lps);
-    return -1;
-}
-```
-</details>
 
 
 29 给定连个整数，不使用乘法和除法计算除法。
@@ -1755,8 +2030,21 @@ int divide(int dividend, int divisor) {
 </details>
 
 
-30 包含所有单词的子字符串，找出所有。单词的长度都是一样的
+30 包串联所有单词的子串
 ------
+
+tags: #slidewindow
+
+一道诡异的滑动窗口的题目，对这类问题还是不很熟啊。
+
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+```
+</details>
+
 
 
 <details>
@@ -1796,8 +2084,48 @@ vector<int> findSubstring(string s, vector<string>& words) {
 
 首先，对于所有的组合，最小的一个一定是按照升序排序的，最大的一定是倒过来，因此
 
-1. 如果我们发现是倒序的，直接翻转就好了；
-2. 如果是一般情况，从后向前遍历，找到逆序的数字的边界，假设是 k。那么我们翻转
+1. 如果我们发现是完全倒序的，直接翻转就好了；
+2. 如果是一般情况，从后向前遍历，找到逆序的数字的边界，假设是 k。那么后边这段已经是完全
+   逆序的，无法变小了，为了保证生成的数字变大，我们再从后向前找到第一个比 k 大的数字，交
+   换这两个数字，再把后续的逆序数组翻转。
+
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+class Solution:
+    def nextPermutation(self, nums: List[int]) -> None:
+        """
+        Do not return anything, modify nums in-place instead.
+        """
+        # 前后都是闭区间
+        def reverse(nums, lo, hi):
+            while lo < hi:
+                nums[lo], nums[hi] = nums[hi], nums[lo]
+                lo += 1
+                hi -= 1
+
+        k = -1
+        for i in range(len(nums)-2, -1, -1):
+            if nums[i] < nums[i + 1]:
+                k = i
+                break
+
+        if k == -1:
+            reverse(nums, 0, len(nums)-1)
+            return
+
+        l = -1
+        for i in range(len(nums)-1, k, -1):
+            if nums[i] > nums[k]:
+                l = i
+                break
+        nums[l], nums[k] = nums[k], nums[l]
+        reverse(nums, k+1, len(nums)-1)
+```
+</details>
+
 
 
 <details>
@@ -1834,39 +2162,36 @@ void nextPermutation(vector<int>& nums) {
 32 从一个括号构成的字符串中找出最长的合法括号序列
 ------
 
-显然判定合法括号顺序的题都可以用栈来做，但是不妨使用动态规划来尝试一下 😄
-
-动态规划：见注释
+动态规划的基础题目。
 
 
 <details>
-    <summary>C 解答</summary>
+    <summary>Python 解答</summary>
 
-```C
-int longestValidParentheses(char* s) {
-    int len = strlen(s);
-    // 遍历到当前位置时的最长序列
-    int dp[len];
-    for (int i = 0; i < len; i++)
-        dp[i] = 0;
-    int longest = 0;
-    // 从倒数第二个位置开始遍历
-    for (int i = len - 2; i >= 0; i--) {
-        // 尝试把上一个序列包围住
-        int match = i + dp[i+1] + 1; // 向右查找配对括号
-        if (s[i] == '(' && match < len && s[match] == ')') {
-            dp[i] = dp[i+1] + 2;
-            // 拼接合法序列，注意 match + 1 表示 match 右侧相邻的合法序列
-            if (match + 1 < len)
-                dp[i] += dp[match + 1];
-        }
-        longest = longest > dp[i] ? longest : dp[i];
-    }
-    return longest;
-}
+```Python
+class Solution:
+    def longestValidParentheses(self, s: str) -> int:
+        dp = [0] * len(s)
+        ans = 0
+        for i in range(1, len(s)):
+            if s[i] == ")":
+                if s[i-1] == "(":
+                    if i >= 2:
+                        dp[i] = dp[i-2] + 2
+                    else:
+                        dp[i] = 2
+                elif i - dp[i-1] > 0 and s[i-dp[i-1]-1] == "(":
+                    if i - dp[i-1] >= 2:
+                        dp[i] = dp[i-1] + dp[i-dp[i-1]-2] + 2
+                    else:
+                        dp[i] = dp[i-1] + 2
+                ans = max(ans, dp[i])
+        return ans
 ```
 </details>
 
+
+也可以使用栈来解。但是这种方法非常 tricky, 因为要考虑到 `()()` 的情况。
 
 33 在排序后又被反转的数组中搜索
 ------
@@ -1881,13 +2206,43 @@ int longestValidParentheses(char* s) {
 
 
 <details>
+    <summary>Python 解答</summary>
+
+```Python
+class Solution:
+    def search(self, nums: List[int], target: int) -> int:
+        if not nums:
+            return -1
+        lo = 0
+        hi = len(nums) - 1
+        while lo <= hi:
+            mi = lo + (hi - lo) // 2
+            if nums[mi] == target:
+                return mi
+            # 这里为什么要包含等于号呢
+            if nums[lo] <= nums[mi]:
+                if nums[lo] <= target < nums[mi]:
+                    hi = mi - 1
+                else:
+                    lo = mi + 1
+            else:
+                if nums[mi] < target <= nums[hi]:
+                    lo = mi + 1
+                else:
+                    hi = mi - 1
+        return -1
+```
+</details>
+
+
+
+<details>
     <summary>C 解答</summary>
 
 ```C
 int search(int* nums, int numsSize, int target) {
     int left = 0, right = numsSize - 1;
 
-    // plain old binary search
     while (left <= right) {
         int mid = left + (right - left) / 2;
         if (nums[mid] == target)
@@ -1914,7 +2269,7 @@ int search(int* nums, int numsSize, int target) {
 </details>
 
 
-34 查找数组中一个重复出现数字的下界和上界，数组已排序
+34 在排序数组中查找元素的第一个和最后一个位置
 ------
 
 在 C++ 的标准库中包含了这两个函数，分别是`std::lower_bound`和`std::upper_bound`.
@@ -1925,35 +2280,36 @@ int search(int* nums, int numsSize, int target) {
     <summary>C++ 解答</summary>
 
 ```C++
-vector<int> searchRange(vector<int>& nums, int target) {
-    return vector<int> {lower(nums, target), upper(nums, target)};
-}
+class Solution:
+    def searchRange(self, nums: List[int], target: int) -> List[int]:
+        if not nums:
+            return [-1, -1]
 
-int lower(vector<int>& nums, int target) {
-    int first = 0, last = nums.size();
-    while (first < last) {
-        int middle = first + (last - first) / 2;
-        if (target > nums[middle]) // 寻找下界
-            first = middle + 1;
-        else
-            last = middle;
-    }
-    return nums[first] == target ? first : -1;
-}
+        lo = 0
+        hi = len(nums)
+        lower = -1
+        while lo < hi:
+            mi = lo + (hi - lo) // 2
+            if nums[mi] < target:
+                lo = mi + 1
+            else:
+                hi = mi
+        if lo < len(nums) and nums[lo] == target:
+            lower = lo
 
-int upper(vector<int>& nums, int target) {
-    int first = 0, last = nums.size();
-    while (first < last) {
-        int middle = first + (last - first) / 2;
-        if (target >= nums[middle]) // 寻找上界 only difference with lower
-            first = middle + 1;
-        else
-            last = middle;
-    }
+        lo = 0
+        hi = len(nums)
+        upper = -1
+        while lo < hi:
+            mi = lo + (hi - lo) // 2
+            if nums[mi] <= target:
+                lo = mi + 1
+            else:
+                hi = mi
+        if nums[lo-1] == target:
+            upper = lo - 1
 
-    // note: std::upper_bound return offset by 1
-    return nums[first - 1] == target ? first - 1 : -1;
-}
+        return [lower, upper]
 ```
 </details>
 
@@ -1962,6 +2318,27 @@ int upper(vector<int>& nums, int target) {
 ------
 
 就是最基础的二分查找
+
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+class Solution:
+    def searchInsert(self, nums: List[int], target: int) -> int:
+        lo = 0
+        hi = len(nums)
+        while lo < hi:
+            mi = lo + (hi - lo) // 2
+            if nums[mi] == target:
+                return mi
+            elif nums[mi] < target:
+                lo = mi + 1
+            else:
+                hi = mi
+        return lo
+```
+</details>
 
 
 
@@ -1988,6 +2365,36 @@ int searchInsert(int* nums, int numsSize, int target) {
 
 36 合法数独，给定一个数独表，判定当前是否合法
 ------
+
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+class Solution:
+    def isValidSudoku(self, board: List[List[str]]) -> bool:
+        """
+        这道题的关键就在于小格子也是可以用 i 和 j 来计算的：
+        box_index = (row / 3) * 3 + columns / 3
+        """
+        # 特别注意浅拷贝的问题
+        used_i = [[0] * 9 for _ in range(9)]
+        used_j = [[0] * 9 for _ in range(9)]
+        used_k = [[0] * 9 for _ in range(9)]
+        for i in range(9):
+            for j in range(9):
+                piece = board[i][j]
+                if piece == ".":
+                    continue
+                n = int(piece) - 1
+                k = i // 3 * 3 + j // 3
+                if used_i[i][n] or used_j[j][n] or used_k[k][n]:
+                    return False
+                used_i[i][n] = used_j[j][n] = used_k[k][n] = 1
+        return True
+```
+</details>
+
 
 
 <details>
@@ -7044,6 +7451,29 @@ bool isIsomorphic(char* s, char* t) {
 206 反转链表
 ------
 
+tags: #pointers
+
+最最基础的指针操作题目了
+
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+class Solution:
+    def reverseList(self, head: ListNode) -> ListNode:
+        prev = None
+        curr = head
+        while curr:
+            next = curr.next
+            curr.next = prev
+            prev = curr
+            curr = next
+        return prev  # 关键在这里
+```
+</details>
+
+
 
 <details>
     <summary>C 解答</summary>
@@ -7900,7 +8330,7 @@ struct TreeNode* invertTree(struct TreeNode* root) {
 </details>
 
 
-227 给定一个字符串包含 +-*/ 计算他的值
+227 给定一个字符串包含 `+-*/` 计算他的值
 ------
 
 
@@ -8329,7 +8759,55 @@ void deleteNode(struct ListNode* node) {
 239 滑动窗口最大值，给定一个滑动窗口，返回它移动过程中的最大值
 ------
 
-这道题和 min stack 的思路完全一样，只不过换成了 deque
+单调队列的应用，复杂度是 O(n) 的。
+
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+from collections import deque
+
+class MonoQueue:
+    def __init__(self):
+        self.q = deque()  # 实际储存数据
+        self.m = deque()  # 维护单调关系，队首元素总是最大值
+
+    def push(self, x):
+        self.q.append(x)
+        while len(self.m) > 0 and self.m[-1] < x:
+            self.m.pop()
+        self.m.append(x)
+
+    def pop(self):
+        x = self.q.popleft()
+        if self.m[0] == x:
+            self.m.popleft()
+        return x
+
+    def __len__(self):
+        return len(self.q)
+
+    def top(self):
+        return self.m[0]
+
+class Solution:
+    def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:
+        q = MonoQueue()
+        for i in range(k):
+            q.push(nums[i])
+        ans = []
+        for i in range(k, len(nums)):
+            ans.append(q.top())
+            q.pop()
+            q.push(nums[i])
+        ans.append(q.top())
+        return ans
+```
+</details>
+
+
+另一种现在我已经看不懂的做法
 
 
 <details>
@@ -9290,6 +9768,32 @@ class Solution:
                 if M[i][j] == 1:
                     uf.union(i, j)
         return uf.count
+```
+</details>
+
+
+739
+------
+
+单调栈的简单应用
+
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+class Solution:
+    def dailyTemperatures(self, T: List[int]) -> List[int]:
+        stack = []
+        ans = [0] * len(T)
+        for i in range(len(T)-1, -1, -1):
+            # 如果当前温度大于当前最低温度
+            while stack and T[i] >= T[stack[-1]]:
+                stack.pop()
+            if stack:
+                ans[i] = stack[-1] - i
+            stack.append(i)
+        return ans
 ```
 </details>
 
