@@ -6150,8 +6150,10 @@ vector<int> preorderTraversal(TreeNode* root) {
 </details>
 
 
-145 后序遍历
+145 二叉树的后序遍历
 ------
+
+参见[树的遍历](tree.md)
 
 
 <details>
@@ -9697,6 +9699,40 @@ int getSum(int a, int b) {
 </details>
 
 
+388
+------
+
+使用栈的一道简单题目, 其实计算长度部分还可以优化
+
+
+<details>
+    <summary>Python 解答</summary>
+
+```Python
+class Solution:
+    def lengthLongestPath(self, input: str) -> int:
+        path = []
+        ans = 0
+        for name in input.split("\n"):
+            l = 0
+            for c in name:
+                if c == "\t":
+                    l += 1
+                else:
+                    break
+            if len(path) > l:
+                for i in range(len(path) - l):
+                    path.pop()
+            path.append(name.strip("\t"))
+            if "." in name:
+                length = sum([len(p) for p in path]) + len(path) - 1
+                ans = max(ans, length)
+                print(path)
+        return ans
+```
+</details>
+
+
 435 无重叠区间
 ------
 
@@ -9915,7 +9951,7 @@ class Solution:
         for email in emails:
             username, domain = email.split("@")
             username = self.normalize(username)
-            print(username, domain)
+            # print(username, domain)
             unique_emails.add(f"{username}@{domain}")
         return len(unique_emails)
 ```
