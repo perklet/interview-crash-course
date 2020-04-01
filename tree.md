@@ -72,6 +72,8 @@ class Solution:
 
 ## 后续遍历
 
+[LeetCode 145](https://leetcode-cn.com/problems/binary-tree-postorder-traversal/)
+
 ### 递归版
 
 ```Python
@@ -91,7 +93,7 @@ class Solution:
     1
    / \
   2   3
-``
+```
 
 比如：前序遍历是 123, 现在这种遍历方式是 132, 在翻转一次正好是 231, 也就是后续遍历了。
 
