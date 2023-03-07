@@ -1,5 +1,3 @@
 *.swp
 a.out
-*.c
-*.cpp
 .mypy_cache
